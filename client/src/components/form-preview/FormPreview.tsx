@@ -279,7 +279,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   }));
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-6">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="max-w-[400px] w-full">
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
