@@ -1,11 +1,15 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+component.tsx
 "use client"
 
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { ChevronDown, Mail, MapPin, User } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Input } from "@/components/ui/input"
 
 const Accordion = AccordionPrimitive.Root
 
@@ -57,6 +61,17 @@ const AccordionContent = React.forwardRef<
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+
+
+demo.tsx
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Input } from "@/components/ui/input"
+import { Mail, MapPin, User } from "lucide-react"
 
 interface FormSection {
   id: string
@@ -126,3 +141,5 @@ function FormSectionAccordion() {
 }
 
 export { FormSectionAccordion }
+
+```
