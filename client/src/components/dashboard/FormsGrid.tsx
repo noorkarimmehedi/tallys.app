@@ -28,19 +28,23 @@ export default function FormsGrid() {
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="block relative">
-            <div className="relative group border-2 border-gray-200 hover:shadow-lg transition-all duration-300 h-full bg-white rounded-xl overflow-hidden">
+            <div className="relative group border-2 border-gray-200 shadow-lg transition-all duration-300 h-full rounded-xl overflow-hidden">
+              {/* Solid background to ensure visibility */}
+              <div className="absolute inset-0 bg-white"></div>
+              
               {/* Animated border overlay */}
               <div 
-                className="absolute inset-0 z-0 opacity-50"
+                className="absolute inset-0 z-10"
                 style={{
                   background: 'linear-gradient(90deg, #444, #888, #444, #888)',
                   backgroundSize: '300% 100%',
                   animation: 'shimmer 6s linear infinite',
+                  opacity: 1,
                 }}
-              />
+              ></div>
               
               {/* Card content */}
-              <div className="absolute inset-[3px] bg-white rounded-[9px] z-10">
+              <div className="absolute inset-[3px] bg-white rounded-[9px] z-20 shadow-md">
                 <div className="p-5">
                   <Skeleton className="h-4 w-6 mb-5" />
                   <Skeleton className="h-6 w-3/4 mb-2" />
@@ -80,23 +84,27 @@ export default function FormsGrid() {
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {forms.map((form: Form) => (
         <Link href={`/form-builder/${form.id}`} key={form.id} className="block relative">
-          <div className="relative group border-2 border-gray-200 hover:shadow-lg transition-all duration-300 h-full bg-white rounded-xl overflow-hidden">
+          <div className="relative group border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 h-full rounded-xl overflow-hidden">
+            {/* Solid background to ensure visibility */}
+            <div className="absolute inset-0 bg-white"></div>
+            
             {/* Animated border overlay */}
             <div 
-              className="absolute inset-0 z-0 opacity-70"
+              className="absolute inset-0 z-10"
               style={{
                 background: `linear-gradient(90deg, ${form.published ? '#A07CFE, #FE8FB5, #FFBE7B, #A07CFE' : '#444, #888, #444, #888'})`,
                 backgroundSize: '300% 100%',
                 animation: 'shimmer 6s linear infinite',
+                opacity: 1,
               }}
-            />
+            ></div>
             
             {/* Card content */}
-            <div className="absolute inset-[3px] bg-white rounded-[9px] z-10">
+            <div className="absolute inset-[3px] bg-white rounded-[9px] z-20 shadow-md">
               <div className="p-5">
                 {/* Status indicator */}
                 <div className="absolute top-3 right-3">
-                  <span className={`inline-flex h-2 w-2 rounded-full ${
+                  <span className={`inline-flex h-3 w-3 rounded-full ${
                     form.published 
                       ? "bg-green-500" 
                       : "bg-gray-400"
@@ -128,7 +136,7 @@ export default function FormsGrid() {
                 
                 {/* Bottom section with status and actions */}
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 font-medium">
                     {form.published ? "Published" : "Draft"}
                   </span>
                   
@@ -136,7 +144,7 @@ export default function FormsGrid() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-8 px-2 text-gray-500 hover:text-gray-900"
+                      className="h-8 px-2 text-gray-500 hover:text-red-500"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
