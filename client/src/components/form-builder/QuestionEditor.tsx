@@ -1,11 +1,12 @@
 import React from "react";
-import { FormQuestion } from "@shared/schema";
+import { FormQuestion, FormSection } from "@shared/schema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ShortText from "@/components/ui/form-fields/ShortText";
 import Paragraph from "@/components/ui/form-fields/Paragraph";
 import MultipleChoice from "@/components/ui/form-fields/MultipleChoice";
@@ -17,6 +18,7 @@ interface QuestionEditorProps {
   question: FormQuestion;
   onChange: (id: string, updates: Partial<FormQuestion>) => void;
   onDelete: () => void;
+  sections?: FormSection[];
 }
 
 export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorProps) {

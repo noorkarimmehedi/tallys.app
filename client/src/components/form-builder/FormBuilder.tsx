@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { QuestionEditor } from "./QuestionEditor";
 import { ElementsSidebar } from "./ElementsSidebar";
-import { Form, FormQuestion, FieldType } from "@shared/schema";
-import { createQuestion, getDefaultFormTheme } from "@/lib/utils";
+import { Form, FormQuestion, FormSection, FieldType } from "@shared/schema";
+import { createQuestion, createSection, getDefaultFormTheme } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -21,6 +21,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
   const { toast } = useToast();
   const [title, setTitle] = useState("New Form");
   const [questions, setQuestions] = useState<FormQuestion[]>([]);
+  const [sections, setSections] = useState<FormSection[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [formUrl, setFormUrl] = useState("");
@@ -88,11 +89,16 @@ export function FormBuilder({ id }: FormBuilderProps) {
   useEffect(() => {
     if (form && !isLoadingForm) {
       setTitle(form.title);
-      setQuestions(form.questions);
+      setQuestions(form.questions || []);
+      setSections(form.sections || []);
       setLoading(false);
     } else if (!id) {
-      // New form with one default question
-      setQuestions([createQuestion('shortText', "What's your name?")]);
+      // New form with default section and question
+      const personalInfoSection = createSection('Personal Information', 'Please provide your contact information');
+      const nameQuestion = createQuestion('shortText', "What's your name?", personalInfoSection.id);
+      
+      setQuestions([nameQuestion]);
+      setSections([personalInfoSection]);
       setLoading(false);
     }
   }, [form, isLoadingForm, id]);
@@ -150,6 +156,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
     const formData: Partial<Form> = {
       title,
       questions,
+      sections,
       theme: getDefaultFormTheme(),
       published: publish
     };
