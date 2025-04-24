@@ -12,6 +12,13 @@ import Rating from "@/components/ui/form-fields/Rating";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
+import { Mail, MapPin, User, FileText, Star, CheckCircle } from "lucide-react";
 
 interface FormPreviewProps {
   form: Form;
@@ -161,85 +168,97 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     );
   }
   
+  // Helper function to get icon based on question type
+  const getQuestionIcon = (type: string) => {
+    switch (type) {
+      case 'shortText':
+        return <User className="size-4 stroke-2 text-muted-foreground" />;
+      case 'email':
+        return <Mail className="size-4 stroke-2 text-muted-foreground" />;
+      case 'paragraph':
+        return <FileText className="size-4 stroke-2 text-muted-foreground" />;
+      case 'multipleChoice':
+        return <CheckCircle className="size-4 stroke-2 text-muted-foreground" />;
+      case 'rating':
+        return <Star className="size-4 stroke-2 text-muted-foreground" />;
+      default:
+        return <User className="size-4 stroke-2 text-muted-foreground" />;
+    }
+  };
+
+  const isQuestionComplete = (questionId: string) => {
+    return answers[questionId] !== undefined && answers[questionId] !== "";
+  };
+  
+  const handleSubmit = () => {
+    // Check if all required questions are answered
+    const allRequiredAnswered = questions.every(question => 
+      !question.required || isQuestionComplete(question.id)
+    );
+    
+    if (allRequiredAnswered) {
+      if (!preview) {
+        submitResponseMutation.mutate({ answers });
+      } else {
+        setCompleted(true);
+      }
+    } else {
+      toast({
+        title: "Missing required fields",
+        description: "Please answer all required questions",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-full p-6">
       <div className="max-w-xl w-full">
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
-          {currentQuestionIndex === 0 && (
-            <p className="text-gray-600">Help us by filling out this form</p>
-          )}
+          <p className="text-gray-600 mb-6">Please complete all the sections below</p>
         </div>
         
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentQuestionIndex}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="text-center mb-8">
-              <h3 className="text-xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
-                {currentQuestion.title}
-              </h3>
-              {currentQuestion.description && (
-                <p className="text-gray-600">{currentQuestion.description}</p>
-              )}
-            </div>
-            
-            <Card className="bg-white rounded-lg shadow-md">
-              <CardContent className="p-6">
-                {renderField(currentQuestion)}
-              </CardContent>
-            </Card>
-            
-            <div className="mt-6 flex justify-between">
-              {currentQuestionIndex > 0 ? (
-                <Button 
-                  variant="outline"
-                  onClick={goToPrevious}
-                  className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
-                >
-                  <i className="ri-arrow-left-line mr-2"></i>
-                  Previous
-                </Button>
-              ) : (
-                <div></div> 
-              )}
-              
-              <Button 
-                onClick={goToNext}
-                disabled={!canProceed() || submitResponseMutation.isPending}
-                className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
-              >
-                {submitResponseMutation.isPending ? (
-                  <span className="animate-spin mr-2">●</span>
-                ) : currentQuestionIndex === questions.length - 1 ? (
-                  "Submit"
-                ) : (
-                  <>Next <i className="ri-arrow-right-line ml-2"></i></>
-                )}
-              </Button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+        <Card className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md mb-6">
+          <CardContent className="p-6">
+            <Accordion type="single" collapsible className="w-full">
+              {questions.map((question, index) => (
+                <AccordionItem key={question.id} value={question.id}>
+                  <AccordionTrigger className="group">
+                    <div className="flex items-center gap-2">
+                      {getQuestionIcon(question.type)}
+                      <span>{question.title}</span>
+                      {isQuestionComplete(question.id) && (
+                        <span className="ml-2 text-sm text-green-500">✓</span>
+                      )}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="py-2">
+                      {question.description && (
+                        <p className="text-gray-600 mb-4">{question.description}</p>
+                      )}
+                      {renderField(question)}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardContent>
+        </Card>
         
-        <div className="mt-10 flex justify-center">
-          <div className="flex gap-1">
-            {questions.map((_, index) => (
-              <div 
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index === currentQuestionIndex 
-                    ? "bg-black" 
-                    : index < currentQuestionIndex 
-                      ? "bg-gray-500" 
-                      : "bg-gray-300"
-                }`}
-              />
-            ))}
-          </div>
+        <div className="flex justify-end">
+          <Button 
+            onClick={handleSubmit}
+            disabled={submitResponseMutation.isPending}
+            className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+          >
+            {submitResponseMutation.isPending ? (
+              <span className="animate-spin mr-2">●</span>
+            ) : (
+              "Submit Form"
+            )}
+          </Button>
         </div>
       </div>
     </div>

@@ -83,16 +83,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
               </Link>
               
-              {/* Form Demo Navigation Item */}
-              <Link 
-                href="/form-demo" 
-                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/form-demo" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <LayoutGrid className={`mr-2 h-4 w-4 ${location === "/form-demo" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Form Demo</span>
-              </Link>
-
               {/* Settings Navigation Item */}
               <Link 
                 href="/settings" 

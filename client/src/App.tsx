@@ -7,7 +7,6 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import FormBuilder from "@/pages/form-builder";
 import FormPreview from "@/pages/form-preview";
-import FormDemo from "@/pages/form-demo";
 import Inbox from "@/pages/inbox";
 import Settings from "@/pages/settings";
 import Calendar from "@/pages/calendar";
@@ -31,11 +30,7 @@ function Router() {
           <FormPreview />
         </MainLayout>
       </Route>
-      <Route path="/form-demo">
-        <MainLayout>
-          <FormDemo />
-        </MainLayout>
-      </Route>
+
       <Route path="/inbox">
         <MainLayout>
           <Inbox />
