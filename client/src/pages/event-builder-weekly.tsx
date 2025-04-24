@@ -14,7 +14,7 @@ import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema'
 
 // Extended Event type with our custom properties
 interface Event extends EventType {
-  weeklySchedule?: string;
+  weeklySchedule: string | null;
   availableTimes: EventAvailability[];
 }
 import MainLayout from '@/components/layouts/MainLayout';
@@ -78,7 +78,7 @@ export default function EventBuilder() {
       setDescription(event.description || '');
       setLocation(event.location || '');
       setDuration(event.duration);
-      setIsPublished(event.published);
+      setIsPublished(event.published || false);
       setAvailableTimes(event.availableTimes || []);
       
       // If the event has a weekly schedule stored, use it
