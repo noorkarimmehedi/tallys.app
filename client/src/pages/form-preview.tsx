@@ -19,6 +19,16 @@ export default function FormPreview() {
   
   const { data: form, isLoading } = useQuery({
     queryKey,
+    onSuccess: (data) => {
+      console.log("Form data from API:", {
+        id: data?.id,
+        title: data?.title,
+        questions: data?.questions,
+        questionCount: data?.questions?.length || 0,
+        sections: data?.sections,
+        sectionCount: data?.sections?.length || 0,
+      });
+    }
   });
   
   if (isLoading) {
