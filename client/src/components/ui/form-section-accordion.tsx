@@ -195,8 +195,8 @@ export function FormSectionAccordion({
 
   return (
     <Accordion 
-      type="multiple" 
-      defaultValue={sectionsGroups.map(g => g.sectionId || 'unsectioned')} 
+      type="single" 
+      collapsible
       className="w-full"
     >
       {sectionsGroups.map((group) => (
@@ -217,7 +217,7 @@ export function FormSectionAccordion({
           <AccordionContent>
             <div className="space-y-6 p-4 bg-white">
               {group.questions.map((question) => (
-                <div key={question.id} className="animate-fadeIn border-b pb-4 last:border-b-0 last:pb-0">
+                <div key={question.id} className="border-b pb-4 last:border-b-0 last:pb-0">
                   <div className="mb-2">
                     <h4 className="text-base font-medium mb-1">
                       {question.title}
@@ -229,12 +229,17 @@ export function FormSectionAccordion({
                   </div>
                   
                   <div className="mt-2">
-                    {onAnswerChange && (
+                    {onAnswerChange ? (
                       <FieldRenderer
                         question={question}
                         value={formResponses[question.id] || ""}
                         onChange={(value: any) => onAnswerChange(question.id, value)}
                         preview={preview}
+                      />
+                    ) : (
+                      <ShortText 
+                        value=""
+                        onChange={() => {}}
                       />
                     )}
                   </div>
