@@ -38,6 +38,12 @@ function Router() {
         </MainLayout>
       )} />
       
+      <ProtectedRoute path="/dashboard" component={() => (
+        <MainLayout>
+          <Dashboard />
+        </MainLayout>
+      )} />
+      
       <ProtectedRoute path="/form-builder/:id?" component={() => (
         <MainLayout>
           <FormBuilder />
