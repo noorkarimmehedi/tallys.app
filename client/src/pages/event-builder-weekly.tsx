@@ -186,9 +186,9 @@ export default function EventBuilder() {
         description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
       });
       
-      // Navigate to the dashboard after creating/updating
+      // Navigate to the dashboard events section after creating/updating
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/#events-section');
       }, 1000);
     },
     onError: () => {
@@ -245,7 +245,7 @@ export default function EventBuilder() {
               variant="ghost" 
               size="sm" 
               className="mr-2"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/#events-section')}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -285,7 +285,7 @@ export default function EventBuilder() {
               variant="outline"
               size="sm"
               className="text-gray-700"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/#events-section')}
             >
               Cancel
             </Button>
