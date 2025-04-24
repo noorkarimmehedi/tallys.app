@@ -12,13 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TimeSlot, EventAvailability } from '@shared/schema';
-import { Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft } from 'lucide-react';
-import { Tiles } from '@/components/ui/tiles';
+import MainLayout from '@/components/layouts/MainLayout';
+import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings, Eye, User, ChevronLeft, Globe } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar-new';
 import { format } from 'date-fns';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-export default function EventBuilderNew() {
+export default function EventBuilder() {
   const params = useParams();
   const eventId = params.id;
   const [, navigate] = useLocation();
@@ -31,47 +32,13 @@ export default function EventBuilderNew() {
   const [availableTimes, setAvailableTimes] = useState<EventAvailability[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [activeTab, setActiveTab] = useState('what');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [timeSlotsForDate, setTimeSlotsForDate] = useState<TimeSlot[]>([]);
-  
-  // Sample time slots for the demo
-  const getAvailableTimeSlotsForDate = (date: Date | undefined) => {
-    if (!date) return [];
-    
-    // Generate time slots from 9 AM to 5 PM every 30 minutes
-    const slots: TimeSlot[] = [];
-    const baseDate = new Date(date);
-    
-    // Start at 9 AM
-    baseDate.setHours(9, 0, 0, 0);
-    
-    // Add slots every 30 minutes until 5 PM
-    for (let i = 0; i < 16; i++) {
-      const slotTime = new Date(baseDate);
-      slotTime.setMinutes(baseDate.getMinutes() + (i * 30));
-      
-      // Don't add slots after 5 PM
-      if (slotTime.getHours() > 17) break;
-      
-      const timeString = format(slotTime, 'HH:mm');
-      
-      // Make some slots unavailable randomly for demo purposes
-      const isAvailable = Math.random() > 0.3;
-      
-      slots.push({
-        time: timeString,
-        available: isAvailable
-      });
-    }
-    
-    return slots;
-  };
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedTimes, setSelectedTimes] = useState<{[key: string]: string[]}>({});
   
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery({
     queryKey: ['/api/events', eventId],
-    queryFn: eventId === 'new' ? undefined : undefined,
-    // @ts-ignore - Using undefined for queryFn is valid when we don't want to fetch in certain conditions
+    queryFn: eventId === 'new' ? undefined : undefined
   });
   
   useEffect(() => {
@@ -80,62 +47,141 @@ export default function EventBuilderNew() {
       setDescription(event.description || '');
       setLocation(event.location || '');
       setDuration(event.duration);
-      setIsPublished(event.published || false);
-      setAvailableTimes(event.availableTimes || []);
+      setIsPublished(event.published);
+      
+      // Convert availableTimes to selectedTimes format
+      if (event.availableTimes && event.availableTimes.length > 0) {
+        const times: {[key: string]: string[]} = {};
+        event.availableTimes.forEach(dateAvail => {
+          const availableSlots = dateAvail.timeSlots
+            .filter(slot => slot.available)
+            .map(slot => slot.time);
+            
+          if (availableSlots.length > 0) {
+            times[dateAvail.date] = availableSlots;
+          }
+        });
+        setSelectedTimes(times);
+        setAvailableTimes(event.availableTimes);
+      }
     }
   }, [event]);
   
-  useEffect(() => {
-    // When a date is selected, generate time slots for that date
-    if (selectedDate) {
-      setTimeSlotsForDate(getAvailableTimeSlotsForDate(selectedDate));
-    }
-  }, [selectedDate]);
+  // Time slots for the day
+  const timeSlots = [
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
+  ];
   
-  // Handle time slot selection
-  const handleTimeSlotToggle = (time: string) => {
-    setTimeSlotsForDate(currentSlots => 
-      currentSlots.map(slot => 
-        slot.time === time 
-          ? { ...slot, available: !slot.available } 
-          : slot
-      )
-    );
+  // Select all time slots for the day
+  const handleSelectAll = () => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    setSelectedTimes(prev => ({
+      ...prev,
+      [dateStr]: [...timeSlots]
+    }));
+    
+    updateAvailableTimes(dateStr, timeSlots);
+  };
+  
+  // Clear all time slots for the day
+  const handleClearAll = () => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    setSelectedTimes(prev => {
+      const newTimes = {...prev};
+      delete newTimes[dateStr];
+      return newTimes;
+    });
+    
+    updateAvailableTimes(dateStr, []);
+  };
+  
+  // Toggle a specific time slot
+  const handleTimeToggle = (time: string) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const currentTimes = selectedTimes[dateStr] || [];
+    let newTimes: string[];
+    
+    if (currentTimes.includes(time)) {
+      // Remove time if already selected
+      newTimes = currentTimes.filter(t => t !== time);
+    } else {
+      // Add time if not selected
+      newTimes = [...currentTimes, time];
+    }
+    
+    // Sort times
+    newTimes.sort();
+    
+    // Update state
+    setSelectedTimes(prev => ({
+      ...prev,
+      [dateStr]: newTimes
+    }));
+    
+    // Update availableTimes for API
+    updateAvailableTimes(dateStr, newTimes);
+  };
+  
+  // Update availableTimes array for API
+  const updateAvailableTimes = (dateStr: string, times: string[]) => {
+    const newAvailableTimes = [...availableTimes];
+    const dateIndex = newAvailableTimes.findIndex(at => at.date === dateStr);
+    
+    if (times.length === 0) {
+      // If no times selected, remove the date entry
+      if (dateIndex >= 0) {
+        newAvailableTimes.splice(dateIndex, 1);
+      }
+    } else {
+      // Create or update times for this date
+      const allTimeSlots = timeSlots.map(slot => ({
+        time: slot,
+        available: times.includes(slot)
+      }));
+      
+      if (dateIndex >= 0) {
+        newAvailableTimes[dateIndex].timeSlots = allTimeSlots;
+      } else {
+        newAvailableTimes.push({
+          date: dateStr,
+          timeSlots: allTimeSlots
+        });
+      }
+    }
+    
+    console.log("Updated availableTimes:", newAvailableTimes);
+    setAvailableTimes(newAvailableTimes);
   };
   
   // Format date for display
-  const formatDate = (date?: Date) => {
-    return date ? format(date, 'EEEE, MMMM do') : '';
+  const formatDate = (date: Date) => {
+    return format(date, 'EEEE, MMMM do');
+  };
+  
+  // Helper for checking if a time is selected
+  const isTimeSelected = (time: string) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return selectedTimes[dateStr]?.includes(time) || false;
+  };
+  
+  // Check if day has any times selected
+  const hasTimesForDate = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return selectedTimes[dateStr] && selectedTimes[dateStr].length > 0;
   };
   
   // Create or update event mutation
   const eventMutation = useMutation({
     mutationFn: async () => {
-      // Save the current time slots to availableTimes for the selected date
-      let updatedAvailableTimes = [...availableTimes];
-      
-      if (selectedDate) {
-        const dateString = format(selectedDate, 'yyyy-MM-dd');
-        
-        // Remove existing entry for this date if it exists
-        updatedAvailableTimes = updatedAvailableTimes.filter(
-          day => day.date !== dateString
-        );
-        
-        // Add the new time slots for this date
-        updatedAvailableTimes.push({
-          date: dateString,
-          timeSlots: timeSlotsForDate
-        });
-      }
-      
       const eventData = {
         title,
         description,
         location,
         duration,
         published: isPublished,
-        availableTimes: updatedAvailableTimes
+        availableTimes
       };
       
       if (eventId === 'new') {
@@ -149,18 +195,14 @@ export default function EventBuilderNew() {
       }
     },
     onSuccess: (data) => {
-      console.log("Event saved successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-      
+      if (eventId === 'new') {
+        navigate(`/event-builder/${data.id}`);
+      }
       toast({
         title: 'Success',
         description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
       });
-      
-      // Navigate to the home page after creating/updating
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
     },
     onError: () => {
       toast({
@@ -187,50 +229,36 @@ export default function EventBuilderNew() {
     }
   };
   
-  const hasTimesForDate = (date: Date) => {
-    // For demo purposes, all dates have available times
-    return true;
-  };
-  
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
-      </div>
+      <MainLayout>
+        <div className="flex justify-center items-center h-full">
+          <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+        </div>
+      </MainLayout>
     );
   }
   
   return (
-    <>
-      {/* Background Tiles */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gray-50"></div>
-        <Tiles 
-          rows={30} 
-          cols={12}
-          tileSize="md"
-          tileClassName="opacity-30 border-primary/10"
-        />
-      </div>
-      
-      <div className="relative z-10 max-w-5xl pt-8 pb-16 px-2 sm:px-6 mx-auto">
+    <MainLayout>
+      <div className="container mx-auto max-w-screen-xl py-6 px-4 sm:px-6">
         {/* Header with back button and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
-              size="icon"
-              className="mr-2 rounded-full h-9 w-9 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              onClick={() => navigate('/')}
+              size="sm" 
+              className="mr-2"
+              onClick={() => navigate('/dashboard')}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-gray-900">
                 {eventId === 'new' ? 'New Event Type' : (title || 'Edit Event Type')}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                {eventId === 'new' ? 'Create a new event type for your calendar' : 'Update your event booking settings'}
+              <p className="text-sm text-gray-500">
+                {eventId === 'new' ? 'Create a new event type' : 'Update your event type'}
               </p>
             </div>
           </div>
@@ -239,17 +267,18 @@ export default function EventBuilderNew() {
             {event?.shortId && (
               <Button
                 variant="outline"
+                size="sm"
                 onClick={handleCopyLink}
-                className="rounded-full text-gray-700 border-gray-300 hover:bg-gray-50"
+                className="text-gray-700"
               >
                 {copySuccess ? (
                   <>
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4 mr-1" />
                     Copied
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4 mr-2" />
+                    <LinkIcon className="h-4 w-4 mr-1" />
                     Copy Link
                   </>
                 )}
@@ -258,8 +287,9 @@ export default function EventBuilderNew() {
             
             <Button
               variant="outline"
-              className="rounded-full text-gray-700 border-gray-300 hover:bg-gray-50"
-              onClick={() => navigate('/')}
+              size="sm"
+              className="text-gray-700"
+              onClick={() => navigate('/dashboard')}
             >
               Cancel
             </Button>
@@ -267,20 +297,21 @@ export default function EventBuilderNew() {
             <Button
               onClick={handleSave}
               disabled={eventMutation.isPending}
-              className="rounded-full bg-black hover:bg-gray-800 text-white"
+              size="sm"
+              className="bg-black hover:bg-gray-800 text-white"
             >
               {eventMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
               ) : null}
-              {eventId === 'new' ? 'Create Event' : 'Save Changes'}
+              {eventId === 'new' ? 'Create' : 'Update'}
             </Button>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Tabs */}
           <div className="col-span-2">
-            <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
+            <Card className="border border-gray-200 shadow-sm">
               <CardContent className="p-0">
                 <Tabs 
                   defaultValue="what" 
@@ -288,32 +319,32 @@ export default function EventBuilderNew() {
                   onValueChange={setActiveTab}
                   className="w-full"
                 >
-                  <TabsList className="w-full grid grid-cols-3 bg-transparent p-0 border-b">
+                  <TabsList className="w-full grid grid-cols-3 bg-transparent p-0 border-b border-gray-200">
                     <TabsTrigger 
                       value="what" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'what' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'what' ? 'border-b-2 border-black' : ''}`}
                     >
                       What
                     </TabsTrigger>
                     <TabsTrigger 
                       value="when" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'when' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'when' ? 'border-b-2 border-black' : ''}`}
                     >
                       When
                     </TabsTrigger>
                     <TabsTrigger 
                       value="advanced" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'advanced' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'advanced' ? 'border-b-2 border-black' : ''}`}
                     >
                       Advanced
                     </TabsTrigger>
                   </TabsList>
                   
                   {/* What Tab */}
-                  <TabsContent value="what" className="p-8 focus:outline-none">
-                    <div className="space-y-8">
+                  <TabsContent value="what" className="p-6 focus:outline-none">
+                    <div className="space-y-6">
                       <div>
-                        <Label htmlFor="title" className="text-sm font-medium block mb-2 text-gray-700">
+                        <Label htmlFor="title" className="text-sm font-medium">
                           Title
                         </Label>
                         <Input 
@@ -321,34 +352,34 @@ export default function EventBuilderNew() {
                           value={title} 
                           onChange={(e) => setTitle(e.target.value)}
                           placeholder="30 Minute Meeting"
-                          className="rounded-lg border-gray-300 focus:ring-black focus:border-black"
+                          className="mt-1"
                         />
                       </div>
                       
                       <div>
-                        <Label htmlFor="description" className="text-sm font-medium block mb-2 text-gray-700">
+                        <Label htmlFor="description" className="text-sm font-medium">
                           Description
                         </Label>
                         <Textarea 
                           id="description" 
                           value={description} 
                           onChange={(e) => setDescription(e.target.value)}
-                          placeholder="A brief description of what this meeting is about"
-                          rows={4}
-                          className="rounded-lg border-gray-300 focus:ring-black focus:border-black"
+                          placeholder="A brief description of your meeting"
+                          rows={3}
+                          className="mt-1"
                         />
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="duration" className="text-sm font-medium block mb-2 text-gray-700">
+                          <Label htmlFor="duration" className="text-sm font-medium">
                             Duration
                           </Label>
                           <Select 
                             value={duration.toString()} 
                             onValueChange={(value) => setDuration(parseInt(value))}
                           >
-                            <SelectTrigger className="rounded-lg border-gray-300 w-full focus:ring-black">
+                            <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select duration" />
                             </SelectTrigger>
                             <SelectContent>
@@ -363,22 +394,22 @@ export default function EventBuilderNew() {
                         </div>
                         
                         <div>
-                          <Label htmlFor="location" className="text-sm font-medium block mb-2 text-gray-700">
+                          <Label htmlFor="location" className="text-sm font-medium">
                             Location
                           </Label>
                           <Select 
                             value={location} 
                             onValueChange={setLocation}
                           >
-                            <SelectTrigger className="rounded-lg border-gray-300 w-full focus:ring-black">
-                              <SelectValue placeholder="Select location type" />
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select location" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="Google Meet">Google Meet</SelectItem>
                               <SelectItem value="Zoom">Zoom</SelectItem>
                               <SelectItem value="Microsoft Teams">Microsoft Teams</SelectItem>
+                              <SelectItem value="In Person">In Person</SelectItem>
                               <SelectItem value="Phone Call">Phone Call</SelectItem>
-                              <SelectItem value="In-Person">In-Person</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -387,86 +418,61 @@ export default function EventBuilderNew() {
                   </TabsContent>
                   
                   {/* When Tab */}
-                  <TabsContent value="when" className="p-8 focus:outline-none">
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-medium mb-3">Available times</h3>
-                        <p className="text-sm text-gray-500 mb-6">
-                          Set your availability for specific dates.
-                        </p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                          {/* Calendar Column */}
-                          <div className="md:col-span-5">
-                            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white p-4">
-                              <CalendarComponent
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                className="rounded-md"
-                                classNames={{
-                                  day_today: "bg-black text-white hover:bg-gray-800",
-                                  day_selected: "bg-black text-white hover:bg-gray-800",
-                                }}
-                                components={{
-                                  DayContent: (props) => {
-                                    const date = new Date(props.date);
-                                    const hasTime = hasTimesForDate(date);
-                                    return (
-                                      <div className="relative w-full h-full flex items-center justify-center">
-                                        {props.children}
-                                        {hasTime && (
-                                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-black"></div>
-                                        )}
-                                      </div>
-                                    );
-                                  }
-                                }}
-                              />
-                            </div>
+                  <TabsContent value="when" className="p-6 focus:outline-none">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="md:w-1/2">
+                        <h3 className="text-sm font-medium mb-3">Select date</h3>
+                        <div className="border rounded-md p-3 bg-white">
+                          <CalendarComponent
+                            mode="single"
+                            selected={date}
+                            onSelect={(newDate) => newDate && setDate(newDate)}
+                            modifiers={{
+                              booked: date => hasTimesForDate(date)
+                            }}
+                            modifiersClassNames={{
+                              booked: "border border-primary text-primary"
+                            }}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="md:w-1/2">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-medium">{formatDate(date)}</h3>
+                          <div className="flex gap-2">
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm"
+                              onClick={handleClearAll}
+                            >
+                              Clear
+                            </Button>
+                            <Button 
+                              type="button" 
+                              size="sm"
+                              onClick={handleSelectAll}
+                            >
+                              Select All
+                            </Button>
                           </div>
-                          
-                          {/* Time Slots Column */}
-                          <div className="md:col-span-7">
-                            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                              <div className="px-5 py-4 border-b border-gray-200 bg-gray-50">
-                                <h4 className="font-medium">
-                                  {selectedDate ? formatDate(selectedDate) : 'Select a date'}
-                                </h4>
-                              </div>
-                              
-                              <div className="p-5">
-                                {selectedDate ? (
-                                  timeSlotsForDate.length > 0 ? (
-                                    <div className="grid grid-cols-3 gap-2">
-                                      {timeSlotsForDate.map(slot => (
-                                        <Button 
-                                          key={slot.time}
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => handleTimeSlotToggle(slot.time)}
-                                          className={`h-8 w-full text-xs rounded-full transition-all ${
-                                            slot.available 
-                                              ? 'bg-black text-white border-black hover:bg-gray-800' 
-                                              : 'text-gray-700 border-gray-300 hover:bg-gray-100'
-                                          }`}
-                                        >
-                                          {slot.time}
-                                        </Button>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-gray-500 text-center py-4">
-                                      No time slots available for this date
-                                    </p>
-                                  )
-                                ) : (
-                                  <p className="text-sm text-gray-500 text-center py-4">
-                                    Please select a date to manage time slots
-                                  </p>
-                                )}
-                              </div>
-                            </div>
+                        </div>
+                        
+                        <div className="border rounded-md p-4 bg-white h-[290px] overflow-y-auto">
+                          <div className="grid grid-cols-2 gap-2">
+                            {timeSlots.map(time => (
+                              <Button
+                                key={time}
+                                type="button"
+                                size="sm"
+                                variant={isTimeSelected(time) ? "default" : "outline"}
+                                onClick={() => handleTimeToggle(time)}
+                                className={`w-full ${isTimeSelected(time) ? 'bg-primary text-primary-foreground' : 'text-gray-700'}`}
+                              >
+                                {time}
+                              </Button>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -474,28 +480,60 @@ export default function EventBuilderNew() {
                   </TabsContent>
                   
                   {/* Advanced Tab */}
-                  <TabsContent value="advanced" className="p-8 focus:outline-none">
-                    <div className="space-y-8">
-                      <div className="bg-gray-50 rounded-xl p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <Label htmlFor="published" className="text-base font-medium block">
-                              Event Visibility
-                            </Label>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {isPublished 
-                                ? 'Your event is published and available for booking.' 
-                                : 'Your event is hidden and not available for booking.'}
-                            </p>
-                          </div>
-                          <Switch 
-                            id="published"
-                            checked={isPublished} 
-                            onCheckedChange={setIsPublished}
-                            className="data-[state=checked]:bg-black"
-                          />
+                  <TabsContent value="advanced" className="p-6 focus:outline-none">
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                        <div>
+                          <h3 className="font-medium text-gray-900">Event Status</h3>
+                          <p className="text-sm text-gray-500">Enable or disable your event</p>
                         </div>
+                        <Switch 
+                          checked={isPublished}
+                          onCheckedChange={setIsPublished}
+                        />
                       </div>
+                      
+                      {event?.shortId && (
+                        <div className="flex flex-col py-2 border-b border-gray-200">
+                          <h3 className="font-medium text-gray-900">Public event link</h3>
+                          <p className="text-sm text-gray-500 mb-2">Share this link with anyone to book this event</p>
+                          
+                          <div className="flex mt-1">
+                            <div className="relative grow">
+                              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <Globe className="h-4 w-4 text-gray-400" />
+                              </div>
+                              <Input 
+                                value={getShareableLink()}
+                                readOnly
+                                className="pl-10 pr-10 rounded-r-none"
+                              />
+                            </div>
+                            <Button 
+                              type="button"
+                              variant="outline"
+                              className="rounded-l-none border-l-0"
+                              onClick={handleCopyLink}
+                            >
+                              {copySuccess ? (
+                                <Check className="h-4 w-4" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                          
+                          <Button 
+                            type="button"
+                            variant="outline"
+                            className="mt-2"
+                            onClick={() => window.open(`/e/${event.shortId}`, '_blank')}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Preview booking page
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -504,75 +542,60 @@ export default function EventBuilderNew() {
           </div>
           
           {/* Right Column - Preview */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium">Preview</CardTitle>
-                  <CardDescription className="text-sm">
-                    How your booking page will appear
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                    <div className="p-5 border-b border-gray-200">
-                      <h3 className="font-medium">{title || "30 Minute Meeting"}</h3>
-                      <div className="flex items-center text-sm text-gray-500 mt-2">
-                        <Clock className="h-4 w-4 mr-1.5" />
-                        <span>{duration} minutes</span>
+          <div className="col-span-1">
+            <Card className="border border-gray-200 shadow-sm sticky top-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Booking Preview</CardTitle>
+                <CardDescription>How your booking page will appear</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="border rounded-md overflow-hidden">
+                  <div className="p-4 bg-gray-50 border-b">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <User className="h-4 w-4 text-gray-600" />
                       </div>
-                    </div>
-                    
-                    <div className="p-5 space-y-4">
-                      <div className="text-sm">
-                        <p className="text-gray-600 leading-relaxed">
-                          {description || "This is a 30 minute meeting to discuss your needs."}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center text-sm">
-                        <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Select a date & time</span>
-                      </div>
-                      
-                      <div className="flex items-center text-sm">
-                        <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>{location || "Google Meet"}</span>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium">Your Name</p>
+                        <p className="text-xs text-gray-500">Tallys</p>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              {/* Event Link */}
-              {event?.shortId && (
-                <Card className="border-0 shadow-sm mt-5 bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
-                  <CardHeader className="py-4 px-5">
-                    <CardTitle className="text-base font-medium">Share your event</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-5 pb-5">
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        readOnly 
-                        value={getShareableLink()}
-                        className="text-sm rounded-lg border-gray-300 focus:ring-black focus:border-black"
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleCopyLink}
-                        className="shrink-0 h-10 w-10 rounded-full p-0 border-gray-300"
-                      >
-                        {copySuccess ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                      </Button>
+                  
+                  <div className="p-4 bg-white">
+                    <h3 className="text-lg font-semibold mb-1">{title || "30 Minute Meeting"}</h3>
+                    <div className="flex items-center text-gray-500 text-xs mb-3">
+                      <Clock className="h-3 w-3 mr-1" />
+                      <span>{duration} minutes</span>
+                      <div className="mx-2 w-1 h-1 rounded-full bg-gray-300"></div>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>{location || "Google Meet"}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                    
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                      {description || "No description provided"}
+                    </p>
+                    
+                    <div className="border rounded-md mt-3 p-2">
+                      <p className="text-xs text-center text-gray-500">Calendar view will appear here</p>
+                      <div className="grid grid-cols-3 gap-1 mt-2">
+                        {Array(6).fill(0).map((_, i) => (
+                          <div 
+                            key={i} 
+                            className="h-6 bg-gray-100 rounded text-xs flex items-center justify-center text-gray-500"
+                          >
+                            {i % 2 === 0 ? '09:00' : '09:30'}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-    </>
+    </MainLayout>
   );
 }

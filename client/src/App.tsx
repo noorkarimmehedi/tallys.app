@@ -68,9 +68,17 @@ function Router() {
         </MainLayout>
       )} />
       
-      <ProtectedRoute path="/event-builder/new" component={EventBuilderNew} />
+      <ProtectedRoute path="/event-builder/new" component={() => (
+        <MainLayout>
+          <EventBuilderNew />
+        </MainLayout>
+      )} />
 
-      <ProtectedRoute path="/event-builder/:id" component={EventBuilder} />
+      <ProtectedRoute path="/event-builder/:id" component={() => (
+        <MainLayout>
+          <EventBuilder />
+        </MainLayout>
+      )} />
       
       {/* Public Routes */}
       <Route path="/auth">
