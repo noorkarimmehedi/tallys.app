@@ -42,6 +42,7 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   availableTimes: json("available_times").$type<EventAvailability[]>().default([]).notNull(),
+  weeklySchedule: text("weekly_schedule"), // JSON string of weekly availability
 });
 
 export const bookings = pgTable("bookings", {

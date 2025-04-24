@@ -7,7 +7,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import FormBuilder from "@/pages/form-builder";
 import FormPreview from "@/pages/form-preview";
-import EventBuilder from "@/pages/event-builder-new";
+import EventBuilder from "@/pages/event-builder-weekly";
 import Inbox from "@/pages/inbox";
 import Settings from "@/pages/settings";
 import Calendar from "@/pages/calendar";
