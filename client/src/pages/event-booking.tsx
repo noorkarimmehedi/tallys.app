@@ -332,11 +332,11 @@ export default function EventBooking() {
       </header>
       
       {/* Main content */}
-      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative z-10 px-4">
-        <div className="flex flex-col space-y-8 w-full max-w-lg">
+      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative z-10 px-4 py-6 md:py-8">
+        <div className="flex flex-col space-y-6 md:space-y-8 w-full max-w-full sm:max-w-lg">
           {/* Event Title */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">{event.title}</h1>
             <div className="flex items-center justify-center text-gray-600">
               <Clock className="h-4 w-4 mr-2" />
               <span>{event.duration} min</span>
@@ -347,23 +347,23 @@ export default function EventBooking() {
           <Accordion
             type="single"
             collapsible
-            className="w-full max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm"
+            className="w-full max-w-full sm:max-w-md mx-auto bg-white/90 backdrop-blur-md rounded-lg p-3 md:p-4 shadow-sm border border-gray-100"
             value={activeAccordion}
             onValueChange={setActiveAccordion}
           >
-            <AccordionItem value="event-details">
-              <AccordionTrigger className="group">
+            <AccordionItem value="event-details" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
+              <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
                   <Clock className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Event Details</span>
+                  <span className="font-medium">Event Details</span>
                   {activeAccordion !== "event-details" && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
                   )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2">
-                  <p className="text-gray-600">
+              <AccordionContent className="px-3 sm:px-4">
+                <div className="flex flex-col gap-2 py-2">
+                  <p className="text-gray-600 text-sm sm:text-base">
                     {event.description || "No description provided."}
                   </p>
                   
@@ -416,18 +416,18 @@ export default function EventBooking() {
               </AccordionContent>
             </AccordionItem>
             
-            <AccordionItem value="date-time">
-              <AccordionTrigger className="group">
+            <AccordionItem value="date-time" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
+              <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Date & Time</span>
+                  <span className="font-medium">Date & Time</span>
                   {selectedDate && selectedTime && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
                   )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2">
+              <AccordionContent className="px-3 sm:px-4">
+                <div className="flex flex-col gap-2 py-2">
                   <AppointmentPicker
                     initialDate={selectedDate || undefined}
                     initialTime={selectedTime}
@@ -456,18 +456,18 @@ export default function EventBooking() {
               </AccordionContent>
             </AccordionItem>
             
-            <AccordionItem value="your-info">
-              <AccordionTrigger className="group">
+            <AccordionItem value="your-info" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
+              <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
                   <User className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Your Information</span>
+                  <span className="font-medium">Your Information</span>
                   {name && email && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
                   )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2">
+              <AccordionContent className="px-3 sm:px-4">
+                <div className="flex flex-col gap-2 py-2">
                   {selectedDate && selectedTime && (
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 mb-2">
                       <h3 className="font-medium text-gray-900">
