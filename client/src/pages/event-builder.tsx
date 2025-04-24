@@ -149,10 +149,10 @@ export default function EventBuilder() {
   
   return (
     <MainLayout>
-      <div className="container max-w-4xl mx-auto py-8 px-4 sm:px-6">
-        <div className="flex flex-col gap-4">
+      <div className="container max-w-3xl mx-auto py-8 px-4 sm:px-6">
+        <div className="flex flex-col gap-6">
           {/* Header with title and action buttons */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold">
                 {eventId === 'new' ? 'New Event Type' : title || 'Edit Event Type'}
@@ -183,172 +183,159 @@ export default function EventBuilder() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left column - Event details */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Event Details</CardTitle>
-                  <CardDescription>Configure your event's basic information</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Event Title</Label>
-                    <Input 
-                      id="title" 
-                      value={title} 
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Enter event title"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea 
-                      id="description" 
-                      value={description} 
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Describe your event"
-                      rows={4}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input 
-                      id="location" 
-                      value={location} 
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Add a location (optional)"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="duration">Duration (minutes)</Label>
-                    <Select 
-                      value={duration.toString()} 
-                      onValueChange={(value) => setDuration(parseInt(value))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select duration" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="15">15 minutes</SelectItem>
-                        <SelectItem value="30">30 minutes</SelectItem>
-                        <SelectItem value="45">45 minutes</SelectItem>
-                        <SelectItem value="60">60 minutes</SelectItem>
-                        <SelectItem value="90">90 minutes</SelectItem>
-                        <SelectItem value="120">2 hours</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="pt-4 flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="published">Published</Label>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Make your event available for booking
-                      </p>
-                    </div>
-                    <Switch 
-                      id="published"
-                      checked={isPublished}
-                      onCheckedChange={setIsPublished}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Event Details</CardTitle>
+              <CardDescription>Configure your event's basic information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Event Title</Label>
+                <Input 
+                  id="title" 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter event title"
+                />
+              </div>
               
-              {event?.shortId && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Share Event</CardTitle>
-                    <CardDescription>Share your event with others</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-4">
-                      <Label>Shareable Link</Label>
-                      <div className="mt-1.5 flex">
-                        <Input 
-                          value={getShareableLink()}
-                          readOnly
-                          className="rounded-r-none"
-                        />
-                        <Button 
-                          variant="outline" 
-                          className="rounded-l-none"
-                          onClick={handleCopyLink}
-                        >
-                          {copySuccess ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => window.open(`/e/${event.shortId}`, '_blank')}
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      View Booking Page
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-            
-            {/* Right column - Availability Calendar */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Available Times</CardTitle>
-                  <CardDescription>Set when you're available for appointments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-4">
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Click on time slots to toggle availability for your event.
-                    </p>
-                    <AppointmentPicker 
-                      onDateTimeSelected={handleDateTimeSelected}
-                      availableTimeSlots={availableTimes.length > 0 ? availableTimes[0].timeSlots : []}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea 
+                  id="description" 
+                  value={description} 
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe your event"
+                  rows={4}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input 
+                  id="location" 
+                  value={location} 
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Add a location (optional)"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="duration">Duration (minutes)</Label>
+                <Select 
+                  value={duration.toString()} 
+                  onValueChange={(value) => setDuration(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="15">15 minutes</SelectItem>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="45">45 minutes</SelectItem>
+                    <SelectItem value="60">60 minutes</SelectItem>
+                    <SelectItem value="90">90 minutes</SelectItem>
+                    <SelectItem value="120">2 hours</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="pt-4 flex items-center justify-between">
+                <div>
+                  <Label htmlFor="published">Published</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Make your event available for booking
+                  </p>
+                </div>
+                <Switch 
+                  id="published"
+                  checked={isPublished}
+                  onCheckedChange={setIsPublished}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Available Times</CardTitle>
+              <CardDescription>Set when you're available for appointments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Click on time slots to toggle availability for your event.
+                </p>
+                <AppointmentPicker 
+                  onDateTimeSelected={handleDateTimeSelected}
+                  availableTimeSlots={availableTimes.length > 0 ? availableTimes[0].timeSlots : []}
+                />
+              </div>
               
               {availableTimes.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Selected Availability</CardTitle>
-                    <CardDescription>Your current availability schedule</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {availableTimes.map((dateAvail, idx) => (
-                        <div key={idx} className="pb-3 border-b last:border-b-0">
-                          <p className="text-sm font-medium mb-2">{dateAvail.date}</p>
-                          <div className="flex flex-wrap gap-2">
-                            {dateAvail.timeSlots
-                              .filter(slot => slot.available)
-                              .map((slot, i) => (
-                                <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                                  {slot.time}
-                                </span>
-                              ))}
-                          </div>
+                <div className="mt-6 pt-6 border-t">
+                  <h3 className="text-base font-medium mb-3">Selected Availability</h3>
+                  <div className="space-y-3">
+                    {availableTimes.map((dateAvail, idx) => (
+                      <div key={idx} className="pb-3 border-b last:border-b-0">
+                        <p className="text-sm font-medium mb-2">{dateAvail.date}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {dateAvail.timeSlots
+                            .filter(slot => slot.available)
+                            .map((slot, i) => (
+                              <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                {slot.time}
+                              </span>
+                            ))}
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+          
+          {event?.shortId && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Share Event</CardTitle>
+                <CardDescription>Share your event with others</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4">
+                  <Label>Shareable Link</Label>
+                  <div className="mt-1.5 flex">
+                    <Input 
+                      value={getShareableLink()}
+                      readOnly
+                      className="rounded-r-none"
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="rounded-l-none"
+                      onClick={handleCopyLink}
+                    >
+                      {copySuccess ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.open(`/e/${event.shortId}`, '_blank')}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  View Booking Page
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </MainLayout>
