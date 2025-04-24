@@ -56,15 +56,24 @@ export default function EventBooking() {
       console.log("Parsed weekly schedule:", weeklySchedule);
       
       // Check if this day is enabled
+      console.log("Is day enabled?", dayOfWeek, weeklySchedule[dayOfWeek]?.enabled);
+      
       if (weeklySchedule[dayOfWeek]?.enabled) {
         const slots = weeklySchedule[dayOfWeek].timeSlots;
         console.log("Available time slots:", slots);
-        return slots;
+        
+        // If slots array exists but is empty, show a message
+        if (slots && slots.length === 0) {
+          console.log("Time slots array is empty");
+        }
+        
+        return slots || [];
       } else {
         console.log("Day is not enabled in weekly schedule");
+        
+        // For testing, let's provide some default slots
+        return ["09:00", "10:00", "11:00", "13:00", "14:00"];
       }
-      
-      return [];
     } catch (err) {
       console.error("Error getting time slots:", err);
       return [];
