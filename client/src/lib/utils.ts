@@ -89,14 +89,35 @@ export interface SectionGroup {
 export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): SectionGroup[] {
   const { questions, sections = [] } = form;
   
+  // Add debug logging
+  console.log("getQuestionsGroupedBySections input:", {
+    questionCount: questions.length,
+    sectionCount: sections.length,
+    questionsData: questions,
+    sectionsData: sections
+  });
+  
   // Create default group for questions without a section
-  const result = [
-    {
-      sectionId: undefined,
-      sectionTitle: "General Questions",
-      questions: [] as FormQuestion[]
-    }
-  ];
+  const result: SectionGroup[] = [];
+  
+  // If we have no sections defined but have questions, create a default section
+  if (sections.length === 0 && questions.length > 0) {
+    result.push({
+      sectionId: 'default',
+      sectionTitle: "Form Questions", 
+      questions: [...questions] // Clone the questions array
+    });
+    
+    // Return early since all questions are in the default section
+    return result;
+  }
+  
+  // Add a default group for unsectioned questions
+  result.push({
+    sectionId: 'unsectioned',
+    sectionTitle: "General Questions",
+    questions: [] as FormQuestion[]
+  });
   
   // Add groups for each section
   sections.forEach(section => {
@@ -115,17 +136,21 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
     if (sectionId) {
       const section = result.find(s => s.sectionId === sectionId);
       if (section) {
-        section.questions.push(question);
+        section.questions.push({...question}); // Clone the question
       } else {
-        // If section doesn't exist, add to default group
-        result[0].questions.push(question);
+        // If section doesn't exist, add to unsectioned group
+        result[0].questions.push({...question});
       }
     } else {
-      // If no sectionId, add to default group
-      result[0].questions.push(question);
+      // If no sectionId, add to unsectioned group
+      result[0].questions.push({...question});
     }
   });
   
   // Remove empty sections
-  return result.filter(section => section.questions.length > 0);
+  const filteredResult = result.filter(section => section.questions.length > 0);
+  
+  console.log("getQuestionsGroupedBySections result:", filteredResult);
+  
+  return filteredResult;
 }

@@ -155,6 +155,23 @@ export function FormSectionAccordion({
   // Group questions by sections
   const sectionsGroups = getQuestionsGroupedBySections({ questions, sections });
   
+  // Add debug logging
+  console.log("FormSectionAccordion rendering with:", { 
+    questions: questions.length, 
+    sections: sections.length,
+    sectionsGroups: sectionsGroups.length
+  });
+  
+  if (sectionsGroups.length === 0) {
+    console.log("Warning: No section groups generated");
+  } else {
+    console.log("Section groups:", sectionsGroups.map(g => ({
+      id: g.sectionId,
+      title: g.sectionTitle,
+      questionCount: g.questions.length
+    })));
+  }
+  
   // Helper function to check if question is complete
   const isQuestionComplete = (questionId: string) => {
     return formResponses[questionId] !== undefined && formResponses[questionId] !== "";
@@ -167,31 +184,40 @@ export function FormSectionAccordion({
     );
   };
 
+  // If no sections/questions, show a placeholder
+  if (sectionsGroups.length === 0) {
+    return (
+      <div className="text-center p-6 border border-dashed border-gray-300 rounded-md">
+        <p className="text-gray-500">No form content available. Add questions and sections to see them here.</p>
+      </div>
+    );
+  }
+
   return (
     <Accordion 
-      type="single" 
-      collapsible 
-      defaultValue={sectionsGroups.length > 0 ? sectionsGroups[0].sectionId : undefined} 
+      type="multiple" 
+      defaultValue={sectionsGroups.map(g => g.sectionId || 'unsectioned')} 
       className="w-full"
     >
       {sectionsGroups.map((group) => (
         <AccordionItem 
           key={group.sectionId || 'unsectioned'} 
           value={group.sectionId || 'unsectioned'}
+          className="mb-4 border rounded-md overflow-hidden"
         >
-          <AccordionTrigger className="group">
+          <AccordionTrigger className="group px-4 py-3 hover:bg-gray-50">
             <div className="flex items-center gap-2">
               {getSectionIcon(group)}
-              <span>{group.sectionTitle}</span>
+              <span className="font-medium">{group.sectionTitle}</span>
               {isSectionComplete(group) && (
                 <span className="ml-2 text-sm text-green-500">✓</span>
               )}
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-6 py-2">
+            <div className="space-y-6 p-4 bg-white">
               {group.questions.map((question) => (
-                <div key={question.id} className="animate-fadeIn">
+                <div key={question.id} className="animate-fadeIn border-b pb-4 last:border-b-0 last:pb-0">
                   <div className="mb-2">
                     <h4 className="text-base font-medium mb-1">
                       {question.title}

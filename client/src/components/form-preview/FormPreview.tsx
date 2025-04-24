@@ -23,10 +23,20 @@ interface FormPreviewProps {
 }
 
 export function FormPreview({ form, preview = false }: FormPreviewProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<FormResponse>({});
   const [completed, setCompleted] = useState(false);
   const { toast } = useToast();
+  
+  console.log("FormPreview rendering with form:", {
+    id: form.id,
+    title: form.title,
+    questionCount: form.questions?.length || 0,
+    sectionCount: form.sections?.length || 0
+  });
+  
+  // Ensure form has questions and sections arrays
+  const questions = form.questions || [];
+  const sections = form.sections || [];
   
   const submitResponseMutation = useMutation({
     mutationFn: async (responseData: { answers: FormResponse }) => {
@@ -50,90 +60,36 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     }
   });
   
-  const questions = form.questions;
-  const currentQuestion = questions[currentQuestionIndex];
-  
   const handleAnswer = (questionId: string, answer: any) => {
-    setAnswers({
-      ...answers,
+    setAnswers(prev => ({
+      ...prev,
       [questionId]: answer
-    });
+    }));
+    console.log("Updated answers:", { ...answers, [questionId]: answer });
   };
   
-  const canProceed = () => {
-    if (!currentQuestion) return true;
-    if (!currentQuestion.required) return true;
-    return answers[currentQuestion.id] !== undefined && answers[currentQuestion.id] !== "";
+  const isQuestionComplete = (questionId: string) => {
+    return answers[questionId] !== undefined && answers[questionId] !== "";
   };
   
-  const goToNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
+  const handleSubmit = () => {
+    // Check if all required questions are answered
+    const allRequiredAnswered = questions.every(question => 
+      !question.required || isQuestionComplete(question.id)
+    );
+    
+    if (allRequiredAnswered) {
       if (!preview) {
         submitResponseMutation.mutate({ answers });
       } else {
         setCompleted(true);
       }
-    }
-  };
-  
-  const goToPrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-  
-  const renderField = (question: FormQuestion) => {
-    const value = answers[question.id] || "";
-    
-    switch (question.type) {
-      case "shortText":
-        return (
-          <ShortText
-            value={value as string}
-            onChange={(value) => handleAnswer(question.id, value)}
-          />
-        );
-      case "paragraph":
-        return (
-          <Paragraph
-            value={value as string}
-            onChange={(value) => handleAnswer(question.id, value)}
-          />
-        );
-      case "email":
-        return (
-          <Email
-            value={value as string}
-            onChange={(value) => handleAnswer(question.id, value)}
-          />
-        );
-      case "multipleChoice":
-        return (
-          <MultipleChoice
-            value={value as string}
-            onChange={(value) => handleAnswer(question.id, value)}
-            options={question.options || []}
-          />
-        );
-      case "fileUpload":
-        return (
-          <FileUpload
-            value={value as string}
-            onChange={(value) => handleAnswer(question.id, value)}
-          />
-        );
-      case "rating":
-        return (
-          <Rating
-            value={Number(value) || 0}
-            onChange={(value) => handleAnswer(question.id, value)}
-            maxRating={question.maxRating || 5}
-          />
-        );
-      default:
-        return <div>Unsupported question type</div>;
+    } else {
+      toast({
+        title: "Missing required fields",
+        description: "Please answer all required questions",
+        variant: "destructive",
+      });
     }
   };
   
@@ -163,7 +119,6 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
                   className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
                   onClick={() => {
                     setAnswers({});
-                    setCurrentQuestionIndex(0);
                     setCompleted(false);
                   }}
                 >
@@ -176,75 +131,6 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
       </div>
     );
   }
-  
-  // Helper function to get icon based on question type
-  const getQuestionIcon = (type: string) => {
-    switch (type) {
-      case 'shortText':
-        return <User className="size-4 stroke-2 text-muted-foreground" />;
-      case 'email':
-        return <Mail className="size-4 stroke-2 text-muted-foreground" />;
-      case 'paragraph':
-        return <FileText className="size-4 stroke-2 text-muted-foreground" />;
-      case 'multipleChoice':
-        return <CheckCircle className="size-4 stroke-2 text-muted-foreground" />;
-      case 'rating':
-        return <Star className="size-4 stroke-2 text-muted-foreground" />;
-      default:
-        return <User className="size-4 stroke-2 text-muted-foreground" />;
-    }
-  };
-
-  // Helper function to get section icon
-  const getSectionIcon = (icon?: string) => {
-    if (!icon) return <User className="size-4 stroke-2 text-muted-foreground" />;
-    
-    switch (icon) {
-      case 'user':
-        return <User className="size-4 stroke-2 text-muted-foreground" />;
-      case 'mail':
-        return <Mail className="size-4 stroke-2 text-muted-foreground" />;
-      case 'map':
-        return <MapPin className="size-4 stroke-2 text-muted-foreground" />;
-      default:
-        return <User className="size-4 stroke-2 text-muted-foreground" />;
-    }
-  };
-
-  const isQuestionComplete = (questionId: string) => {
-    return answers[questionId] !== undefined && answers[questionId] !== "";
-  };
-  
-  // Check if section is complete (all required questions answered)
-  const isSectionComplete = (sectionQuestions: FormQuestion[]) => {
-    return sectionQuestions.every(q => 
-      !q.required || isQuestionComplete(q.id)
-    );
-  };
-  
-  const handleSubmit = () => {
-    // Check if all required questions are answered
-    const allRequiredAnswered = questions.every(question => 
-      !question.required || isQuestionComplete(question.id)
-    );
-    
-    if (allRequiredAnswered) {
-      if (!preview) {
-        submitResponseMutation.mutate({ answers });
-      } else {
-        setCompleted(true);
-      }
-    } else {
-      toast({
-        title: "Missing required fields",
-        description: "Please answer all required questions",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // We don't need this mapping anymore with our new FormSectionAccordion component
-  // The component will handle grouping and rendering internally
 
   return (
     <div className="flex items-center justify-center min-h-screen relative">
@@ -258,25 +144,31 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
         />
       </div>
       
-      <div className="max-w-[500px] w-full p-6">
+      <div className="max-w-[600px] w-full p-6">
         <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-8">
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
             <p className="text-gray-600 mb-6">Please complete all the sections below</p>
           </div>
           
-          <FormSectionAccordion 
-            questions={form.questions}
-            sections={form.sections}
-            onAnswerChange={handleAnswer}
-            formResponses={answers}
-            preview={preview}
-          />
+          {questions.length === 0 ? (
+            <div className="text-center p-6 border border-dashed border-gray-300 rounded-md">
+              <p className="text-gray-500">This form has no questions yet.</p>
+            </div>
+          ) : (
+            <FormSectionAccordion 
+              questions={questions}
+              sections={sections}
+              onAnswerChange={handleAnswer}
+              formResponses={answers}
+              preview={preview}
+            />
+          )}
           
           <div className="flex justify-end mt-6">
             <Button 
               onClick={handleSubmit}
-              disabled={submitResponseMutation.isPending}
+              disabled={submitResponseMutation.isPending || questions.length === 0}
               className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
             >
               {submitResponseMutation.isPending ? (
