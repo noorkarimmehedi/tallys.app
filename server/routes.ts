@@ -1,17 +1,28 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertFormSchema, insertResponseSchema } from "@shared/schema";
+import { setupAuth } from "./auth";
+
+// Middleware to check if a user is authenticated
+function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication
+  setupAuth(app);
+  
   // API routes
   const apiRouter = app.route('/api');
   
-  // Forms
-  app.get("/api/forms", async (req, res) => {
-    // In a real app, we'd get the user ID from the session
-    const userId = 1; // Demo user
+  // Forms - authenticated routes
+  app.get("/api/forms", isAuthenticated, async (req, res) => {
+    const userId = req.user!.id; 
     const forms = await storage.getForms(userId);
     res.json(forms);
   });

@@ -1,9 +1,17 @@
 import { 
   Form, InsertForm, 
   Response, InsertResponse,
-  User, InsertUser 
+  User, InsertUser,
+  users, forms, responses
 } from "@shared/schema";
 import { nanoid } from "nanoid";
+import { db } from './db';
+import { eq } from 'drizzle-orm';
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from './db';
+
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User
@@ -23,35 +31,43 @@ export interface IStorage {
   // Response
   getFormResponses(formId: number): Promise<Response[]>;
   createResponse(response: InsertResponse): Promise<Response>;
+  
+  // Session store for authentication
+  sessionStore: any; // Using any to avoid the type issue with session.SessionStore
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private forms: Map<number, Form>;
-  private responses: Map<number, Response>;
-  private userIdCounter: number;
-  private formIdCounter: number;
-  private responseIdCounter: number;
+export class DatabaseStorage implements IStorage {
+  sessionStore: any; // Using any type to avoid the session.SessionStore typing issue
 
   constructor() {
-    this.users = new Map();
-    this.forms = new Map();
-    this.responses = new Map();
-    this.userIdCounter = 1;
-    this.formIdCounter = 1;
-    this.responseIdCounter = 1;
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true
+    });
     
-    // Add demo user
-    this.createUser({
-      username: "demo",
-      password: "password"
-    }).then(user => {
-      // Create a demo form with sections
-      this.createForm({
-        userId: user.id,
+    // Create sample data if the database is empty
+    this.seedDatabase();
+  }
+  
+  private async seedDatabase() {
+    // Check if users table is empty
+    const existingUsers = await db.select().from(users);
+    if (existingUsers.length === 0) {
+      console.log("Seeding database with initial data...");
+      
+      // Create demo user
+      const [demoUser] = await db.insert(users).values({
+        username: "demo",
+        password: "password"
+      }).returning();
+      
+      // Create a sample form
+      await db.insert(forms).values({
+        userId: demoUser.id,
         title: "Customer Information Form",
-        published: true,
         shortId: "demo-form",
+        published: true,
+        views: 0,
         questions: [
           {
             id: "q1",
@@ -136,99 +152,104 @@ export class MemStorage implements IStorage {
           fontFamily: "Alternate Gothic"
         }
       });
-    });
+      
+      console.log("Database seeded successfully");
+    }
   }
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   // Form methods
   async getForms(userId: number): Promise<Form[]> {
-    return Array.from(this.forms.values()).filter(
-      (form) => form.userId === userId
-    );
+    return db.select().from(forms).where(eq(forms.userId, userId));
   }
 
   async getForm(id: number): Promise<Form | undefined> {
-    return this.forms.get(id);
+    const [form] = await db.select().from(forms).where(eq(forms.id, id));
+    return form;
   }
 
   async getFormByShortId(shortId: string): Promise<Form | undefined> {
-    return Array.from(this.forms.values()).find(
-      (form) => form.shortId === shortId
-    );
+    const [form] = await db.select().from(forms).where(eq(forms.shortId, shortId));
+    return form;
   }
 
   async createForm(insertForm: InsertForm): Promise<Form> {
-    const id = this.formIdCounter++;
-    const shortId = insertForm.shortId || nanoid(10);
-    const form: Form = { 
-      ...insertForm, 
-      id, 
-      shortId,
-      views: 0,
-      published: insertForm.published || false,
-      createdAt: new Date(),
-      updatedAt: new Date()
+    // Generate a shortId if one is not provided
+    const formData = {
+      ...insertForm,
+      shortId: insertForm.shortId || `form-${nanoid(8)}`,
+      published: insertForm.published || false
     };
-    this.forms.set(id, form);
+    
+    // Convert the form data to match the expected schema
+    const [form] = await db.insert(forms).values({
+      userId: formData.userId,
+      title: formData.title,
+      shortId: formData.shortId,
+      description: formData.description || '',
+      questions: formData.questions || [],
+      sections: formData.sections || [],
+      theme: formData.theme || {},
+      published: formData.published || false,
+      views: formData.views || 0
+    }).returning();
+    
     return form;
   }
 
   async updateForm(id: number, updates: Partial<Form>): Promise<Form | undefined> {
-    const form = this.forms.get(id);
-    if (!form) return undefined;
+    const [updatedForm] = await db
+      .update(forms)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(forms.id, id))
+      .returning();
     
-    const updatedForm = { ...form, ...updates, updatedAt: new Date() };
-    this.forms.set(id, updatedForm);
     return updatedForm;
   }
 
   async deleteForm(id: number): Promise<boolean> {
-    return this.forms.delete(id);
+    const result = await db.delete(forms).where(eq(forms.id, id));
+    return !!result;
   }
 
   async incrementFormViews(id: number): Promise<boolean> {
-    const form = this.forms.get(id);
+    const form = await this.getForm(id);
     if (!form) return false;
     
-    form.views = (form.views || 0) + 1;
-    this.forms.set(id, form);
-    return true;
+    const [updatedForm] = await db
+      .update(forms)
+      .set({ views: (form.views || 0) + 1 })
+      .where(eq(forms.id, id))
+      .returning();
+    
+    return !!updatedForm;
   }
 
   // Response methods
   async getFormResponses(formId: number): Promise<Response[]> {
-    return Array.from(this.responses.values()).filter(
-      (response) => response.formId === formId
-    );
+    return db.select().from(responses).where(eq(responses.formId, formId));
   }
 
   async createResponse(insertResponse: InsertResponse): Promise<Response> {
-    const id = this.responseIdCounter++;
-    const response: Response = { 
-      ...insertResponse, 
-      id,
-      createdAt: new Date()
-    };
-    this.responses.set(id, response);
+    const [response] = await db.insert(responses).values(insertResponse).returning();
     return response;
   }
 }
 
-export const storage = new MemStorage();
+// Use the database storage instead of in-memory storage
+export const storage = new DatabaseStorage();
