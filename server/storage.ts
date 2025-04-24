@@ -2,7 +2,9 @@ import {
   Form, InsertForm, 
   Response, InsertResponse,
   User, InsertUser,
-  users, forms, responses
+  Event, InsertEvent,
+  Booking, InsertBooking,
+  users, forms, responses, events, bookings
 } from "@shared/schema";
 import { nanoid } from "nanoid";
 import { db } from './db';
@@ -33,6 +35,19 @@ export interface IStorage {
   // Response
   getFormResponses(formId: number): Promise<Response[]>;
   createResponse(response: InsertResponse): Promise<Response>;
+  
+  // Event
+  getEvents(userId: number): Promise<Event[]>;
+  getEvent(id: number): Promise<Event | undefined>;
+  getEventByShortId(shortId: string): Promise<Event | undefined>;
+  createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: number, event: Partial<Event>): Promise<Event | undefined>;
+  deleteEvent(id: number): Promise<boolean>;
+  
+  // Booking
+  getEventBookings(eventId: number): Promise<Booking[]>;
+  createBooking(booking: InsertBooking): Promise<Booking>;
+  updateBookingStatus(id: number, status: string): Promise<Booking | undefined>;
   
   // Session store for authentication
   sessionStore: any; // Using any to avoid the type issue with session.SessionStore
@@ -267,6 +282,78 @@ export class DatabaseStorage implements IStorage {
   async createResponse(insertResponse: InsertResponse): Promise<Response> {
     const [response] = await db.insert(responses).values(insertResponse).returning();
     return response;
+  }
+  
+  // Event methods
+  async getEvents(userId: number): Promise<Event[]> {
+    return db.select().from(events).where(eq(events.userId, userId));
+  }
+
+  async getEvent(id: number): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event;
+  }
+
+  async getEventByShortId(shortId: string): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.shortId, shortId));
+    return event;
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    // Generate a shortId if one is not provided
+    const eventData = {
+      ...insertEvent,
+      shortId: insertEvent.shortId || `event-${nanoid(8)}`,
+      published: insertEvent.published || false
+    };
+    
+    const [event] = await db.insert(events).values({
+      userId: eventData.userId,
+      title: eventData.title,
+      description: eventData.description || '',
+      shortId: eventData.shortId,
+      duration: eventData.duration,
+      location: eventData.location || '',
+      published: eventData.published || false,
+      availableTimes: eventData.availableTimes || []
+    }).returning();
+    
+    return event;
+  }
+
+  async updateEvent(id: number, updates: Partial<Event>): Promise<Event | undefined> {
+    const [updatedEvent] = await db
+      .update(events)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(events.id, id))
+      .returning();
+    
+    return updatedEvent;
+  }
+
+  async deleteEvent(id: number): Promise<boolean> {
+    const result = await db.delete(events).where(eq(events.id, id));
+    return !!result;
+  }
+  
+  // Booking methods
+  async getEventBookings(eventId: number): Promise<Booking[]> {
+    return db.select().from(bookings).where(eq(bookings.eventId, eventId));
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db.insert(bookings).values(insertBooking).returning();
+    return booking;
+  }
+
+  async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
+    const [updatedBooking] = await db
+      .update(bookings)
+      .set({ status })
+      .where(eq(bookings.id, id))
+      .returning();
+    
+    return updatedBooking;
   }
 }
 
