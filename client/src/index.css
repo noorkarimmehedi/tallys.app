@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 :root {
+  --tile: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --tile: rgba(255, 255, 255, 0.1);
+}
+
+:root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;
 --muted: 60 4.8% 95.9%;

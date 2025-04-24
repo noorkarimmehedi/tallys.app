@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Tiles } from "@/components/ui/tiles";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -99,10 +100,19 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row relative overflow-hidden">
+      {/* Tiled Background */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        <div className="absolute inset-0 opacity-30">
+          <div className="w-full h-full">
+            <Tiles rows={50} cols={20} tileSize="md" />
+          </div>
+        </div>
+      </div>
+      
       {/* Auth Form Column */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <Card className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-6 z-10">
+        <Card className="w-full max-w-md backdrop-blur-sm bg-background/80">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Welcome to Tallys</CardTitle>
             <CardDescription>
@@ -282,35 +292,42 @@ export default function AuthPage() {
       </div>
 
       {/* Hero Section Column */}
-      <div className="flex-1 bg-black text-white p-12 flex flex-col justify-center">
-        <div className="max-w-md mx-auto">
+      <div className="flex-1 bg-primary/90 text-white p-12 flex flex-col justify-center relative overflow-hidden">
+        {/* Tiled Background for Hero */}
+        <div className="absolute inset-0 overflow-hidden opacity-10">
+          <div className="w-full h-full">
+            <Tiles rows={30} cols={6} tileSize="lg" tileClassName="border-white/20" />
+          </div>
+        </div>
+        
+        <div className="max-w-md mx-auto z-10">
           <h1 className="text-4xl font-bold mb-6">Build beautiful forms in minutes</h1>
           <p className="text-lg mb-8">
             Tallys lets you create professional forms with our intuitive builder. 
             Collect responses, analyze data, and grow your business.
           </p>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 p-4 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
               <h3 className="font-medium mb-2">Easy Form Building</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white/80">
                 Create forms with our drag-and-drop interface.
               </p>
             </div>
-            <div className="bg-white/10 p-4 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
               <h3 className="font-medium mb-2">Real-time Responses</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white/80">
                 View submissions as they happen.
               </p>
             </div>
-            <div className="bg-white/10 p-4 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
               <h3 className="font-medium mb-2">Beautiful Forms</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white/80">
                 Customizable themes and layouts.
               </p>
             </div>
-            <div className="bg-white/10 p-4 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
               <h3 className="font-medium mb-2">Organized Sections</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white/80">
                 Group questions by topic or theme.
               </p>
             </div>
