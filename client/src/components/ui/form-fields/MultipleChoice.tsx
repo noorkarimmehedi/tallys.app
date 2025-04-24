@@ -10,6 +10,9 @@ interface MultipleChoiceProps {
   options: string[];
   onOptionsChange?: (options: string[]) => void;
   preview?: boolean;
+  label?: string;
+  description?: string;
+  required?: boolean;
 }
 
 export default function MultipleChoice({ 
@@ -17,7 +20,10 @@ export default function MultipleChoice({
   onChange, 
   options, 
   onOptionsChange,
-  preview = false 
+  preview = false,
+  label = "Choose an option", 
+  description = "",
+  required = false
 }: MultipleChoiceProps) {
   const [newOption, setNewOption] = useState("");
   
@@ -45,6 +51,14 @@ export default function MultipleChoice({
   
   return (
     <div className="space-y-4">
+      <div>
+        <Label className="block text-sm font-medium text-gray-700 mb-1">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+        {description && (
+          <p className="text-sm text-gray-500 mb-2">{description}</p>
+        )}
+      </div>
       <RadioGroup value={value} onValueChange={onChange}>
         {options.map((option, index) => (
           <div key={index} className="flex items-center justify-between gap-2 py-2">
