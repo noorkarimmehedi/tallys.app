@@ -52,7 +52,11 @@ const AccordionContent = React.forwardRef<
       backfaceVisibility: 'hidden',
       WebkitTransform: 'translateZ(0)',
       WebkitPerspective: '1000',
-      WebkitBackfaceVisibility: 'hidden'
+      WebkitBackfaceVisibility: 'hidden',
+      willChange: 'transform, opacity, height',
+      transitionProperty: 'transform, opacity, height',
+      transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      transitionDuration: '300ms'
     }}
     {...props}
   >
