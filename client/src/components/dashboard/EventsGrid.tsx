@@ -69,10 +69,10 @@ export default function EventsGrid() {
             </CardContent>
             <CardFooter className="flex justify-between items-center pt-2 border-t">
               <Button variant="ghost" asChild size="sm">
-                <Link href={`/e/${event.shortId}`}>
+                <a href={`/e/${event.shortId}`} target="_blank" rel="noopener noreferrer">
                   <Calendar className="mr-1 h-4 w-4" />
-                  View
-                </Link>
+                  View Booking
+                </a>
               </Button>
               <Button variant="ghost" asChild size="sm">
                 <Link href={`/event-builder/${event.id}`}>

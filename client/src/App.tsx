@@ -8,6 +8,8 @@ import Dashboard from "@/pages/dashboard";
 import FormBuilder from "@/pages/form-builder";
 import FormPreview from "@/pages/form-preview";
 import EventBuilder from "@/pages/event-builder-weekly";
+import EventBuilderNew from "@/pages/event-builder-new";
+import EventBooking from "@/pages/event-booking";
 import Inbox from "@/pages/inbox";
 import Settings from "@/pages/settings";
 import Calendar from "@/pages/calendar";
@@ -66,7 +68,17 @@ function Router() {
         </MainLayout>
       )} />
       
-      <ProtectedRoute path="/event-builder/:id?" component={EventBuilder} />
+      <ProtectedRoute path="/event-builder/new" component={() => (
+        <MainLayout>
+          <EventBuilderNew />
+        </MainLayout>
+      )} />
+
+      <ProtectedRoute path="/event-builder/:id" component={() => (
+        <MainLayout>
+          <EventBuilder />
+        </MainLayout>
+      )} />
       
       {/* Public Routes */}
       <Route path="/auth">
@@ -78,15 +90,7 @@ function Router() {
       </Route>
       
       <Route path="/e/:shortId">
-        {(params) => (
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <h1 className="text-2xl font-bold mb-4">Event Booking</h1>
-              <p className="text-gray-600 mb-2">This is a placeholder for the event booking page.</p>
-              <p className="text-gray-600">Event ID: <span className="font-mono">{params.shortId}</span></p>
-            </div>
-          </div>
-        )}
+        <EventBooking />
       </Route>
       
       <Route path="/demo-accordion">

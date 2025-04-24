@@ -245,6 +245,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(events);
   });
 
+  // Get event by shortId (public route)
+  app.get("/api/events/by-shortid/:shortId", async (req, res) => {
+    const shortId = req.params.shortId;
+    
+    const event = await storage.getEventByShortId(shortId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    
+    // Make sure the event is published
+    if (!event.published) {
+      return res.status(403).json({ message: "This event is not currently available" });
+    }
+    
+    res.json(event);
+  });
+  
   app.get("/api/events/:id", isAuthenticated, async (req, res) => {
     // Special case for 'new' event ID
     if (req.params.id === 'new') {
@@ -391,6 +408,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(bookings);
   });
 
+  app.post("/api/bookings", async (req, res) => {
+    try {
+      const eventId = req.body.eventId;
+      if (!eventId) {
+        return res.status(400).json({ message: "Event ID is required" });
+      }
+      
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      if (!event.published) {
+        return res.status(403).json({ message: "Event is not published" });
+      }
+      
+      const validatedData = insertBookingSchema.parse({
+        eventId: eventId,
+        name: req.body.name,
+        email: req.body.email,
+        date: req.body.date,
+        time: req.body.time,
+        status: 'confirmed'
+      });
+      
+      const booking = await storage.createBooking(validatedData);
+      res.status(201).json(booking);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid booking data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+  
   app.post("/api/events/:id/bookings", async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
