@@ -228,33 +228,33 @@ export default function EventBuilder() {
     <>
       {/* Background Tiles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gray-50"></div>
+        <div className="absolute inset-0 bg-white"></div>
         <Tiles 
           rows={30} 
           cols={12}
           tileSize="md"
-          tileClassName="opacity-30 border-primary/10"
+          tileClassName="opacity-40 border-primary/20"
         />
       </div>
       
-      <div className="relative z-10 max-w-5xl pt-8 pb-16 px-2 sm:px-6 mx-auto">
+      <div className="container relative z-10 mx-auto max-w-screen-xl py-6 px-4 sm:px-6">
         {/* Header with back button and actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
-              size="icon"
-              className="mr-2 rounded-full h-9 w-9 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              size="sm" 
+              className="mr-2"
               onClick={() => navigate('/dashboard')}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-gray-900">
                 {eventId === 'new' ? 'New Event Type' : (title || 'Edit Event Type')}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                {eventId === 'new' ? 'Create a new event type for your calendar' : 'Update your event booking settings'}
+              <p className="text-sm text-gray-500">
+                {eventId === 'new' ? 'Create a new event type' : 'Update your event type'}
               </p>
             </div>
           </div>
@@ -263,17 +263,18 @@ export default function EventBuilder() {
             {event?.shortId && (
               <Button
                 variant="outline"
+                size="sm"
                 onClick={handleCopyLink}
-                className="rounded-full text-gray-700 border-gray-300 hover:bg-gray-50"
+                className="text-gray-700"
               >
                 {copySuccess ? (
                   <>
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4 mr-1" />
                     Copied
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4 mr-2" />
+                    <Copy className="h-4 w-4 mr-1" />
                     Copy Link
                   </>
                 )}
@@ -282,7 +283,8 @@ export default function EventBuilder() {
             
             <Button
               variant="outline"
-              className="rounded-full text-gray-700 border-gray-300 hover:bg-gray-50"
+              size="sm"
+              className="text-gray-700"
               onClick={() => navigate('/dashboard')}
             >
               Cancel
@@ -291,20 +293,21 @@ export default function EventBuilder() {
             <Button
               onClick={handleSave}
               disabled={eventMutation.isPending}
-              className="rounded-full bg-black hover:bg-gray-800 text-white"
+              size="sm"
+              className="bg-black hover:bg-gray-800 text-white"
             >
               {eventMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
               ) : null}
-              {eventId === 'new' ? 'Create Event' : 'Save Changes'}
+              {eventId === 'new' ? 'Create' : 'Update'}
             </Button>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Tabs */}
           <div className="col-span-2">
-            <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
+            <Card className="border border-gray-200 shadow-sm bg-white/80 backdrop-blur-sm">
               <CardContent className="p-0">
                 <Tabs 
                   defaultValue="what" 
@@ -312,32 +315,32 @@ export default function EventBuilder() {
                   onValueChange={setActiveTab}
                   className="w-full"
                 >
-                  <TabsList className="w-full grid grid-cols-3 bg-transparent p-0 border-b">
+                  <TabsList className="w-full grid grid-cols-3 bg-transparent p-0 border-b border-gray-200">
                     <TabsTrigger 
                       value="what" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'what' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'what' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       What
                     </TabsTrigger>
                     <TabsTrigger 
                       value="when" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'when' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'when' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       When
                     </TabsTrigger>
                     <TabsTrigger 
                       value="advanced" 
-                      className={`py-4 rounded-none transition-all ${activeTab === 'advanced' ? 'border-b-2 border-black font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`py-3 rounded-none ${activeTab === 'advanced' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       Advanced
                     </TabsTrigger>
                   </TabsList>
                   
                   {/* What Tab */}
-                  <TabsContent value="what" className="p-8 focus:outline-none">
-                    <div className="space-y-8">
+                  <TabsContent value="what" className="p-6 focus:outline-none">
+                    <div className="space-y-6">
                       <div>
-                        <Label htmlFor="title" className="text-sm font-medium block mb-2 text-gray-700">
+                        <Label htmlFor="title" className="text-sm font-medium">
                           Title
                         </Label>
                         <Input 
@@ -345,34 +348,34 @@ export default function EventBuilder() {
                           value={title} 
                           onChange={(e) => setTitle(e.target.value)}
                           placeholder="30 Minute Meeting"
-                          className="rounded-lg border-gray-300 focus:ring-black focus:border-black"
+                          className="mt-1"
                         />
                       </div>
                       
                       <div>
-                        <Label htmlFor="description" className="text-sm font-medium block mb-2 text-gray-700">
+                        <Label htmlFor="description" className="text-sm font-medium">
                           Description
                         </Label>
                         <Textarea 
                           id="description" 
                           value={description} 
                           onChange={(e) => setDescription(e.target.value)}
-                          placeholder="A brief description of what this meeting is about"
-                          rows={4}
-                          className="rounded-lg border-gray-300 focus:ring-black focus:border-black"
+                          placeholder="A brief description of your meeting"
+                          rows={3}
+                          className="mt-1"
                         />
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="duration" className="text-sm font-medium block mb-2 text-gray-700">
+                          <Label htmlFor="duration" className="text-sm font-medium">
                             Duration
                           </Label>
                           <Select 
                             value={duration.toString()} 
                             onValueChange={(value) => setDuration(parseInt(value))}
                           >
-                            <SelectTrigger className="rounded-lg border-gray-300 w-full focus:ring-black">
+                            <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select duration" />
                             </SelectTrigger>
                             <SelectContent>
@@ -387,15 +390,15 @@ export default function EventBuilder() {
                         </div>
                         
                         <div>
-                          <Label htmlFor="location" className="text-sm font-medium block mb-2 text-gray-700">
+                          <Label htmlFor="location" className="text-sm font-medium">
                             Location
                           </Label>
                           <Select 
                             value={location} 
                             onValueChange={setLocation}
                           >
-                            <SelectTrigger className="rounded-lg border-gray-300 w-full focus:ring-black">
-                              <SelectValue placeholder="Select location type" />
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select location" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="Google Meet">Google Meet</SelectItem>
@@ -411,24 +414,24 @@ export default function EventBuilder() {
                   </TabsContent>
                   
                   {/* When Tab */}
-                  <TabsContent value="when" className="p-8 focus:outline-none">
+                  <TabsContent value="when" className="p-6 focus:outline-none">
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-medium mb-3">Weekly availability</h3>
-                        <p className="text-sm text-gray-500 mb-6">
+                        <h3 className="text-base font-medium mb-3">Set your weekly availability</h3>
+                        <p className="text-sm text-gray-500 mb-4">
                           Define which days and times you're available for bookings.
                         </p>
                         
                         {/* Weekly Schedule */}
-                        <div className="space-y-5">
+                        <div className="space-y-4">
                           {Object.entries(weeklySchedule).map(([day, { enabled, timeSlots }]) => (
-                            <div key={day} className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                              <div className="flex items-center justify-between px-5 py-4 bg-gray-50">
+                            <div key={day} className="border border-gray-200 rounded-md overflow-hidden">
+                              <div className="flex items-center justify-between px-4 py-3 bg-gray-50">
                                 <div className="flex items-center">
                                   <Switch 
                                     checked={enabled} 
                                     onCheckedChange={() => toggleDay(day)}
-                                    className="mr-4 data-[state=checked]:bg-black"
+                                    className="mr-3"
                                   />
                                   <span className="text-sm font-medium capitalize">{day}</span>
                                 </div>
@@ -436,18 +439,18 @@ export default function EventBuilder() {
                                 {enabled && (
                                   <div className="flex items-center space-x-2">
                                     <Button
-                                      variant="outline"
+                                      variant="ghost"
                                       size="sm"
                                       onClick={() => selectAllTimesForDay(day)}
-                                      className="text-xs h-8 rounded-full border-gray-300"
+                                      className="text-xs"
                                     >
                                       Select all
                                     </Button>
                                     <Button
-                                      variant="outline"
+                                      variant="ghost"
                                       size="sm"
                                       onClick={() => clearAllTimesForDay(day)}
-                                      className="text-xs h-8 rounded-full border-gray-300"
+                                      className="text-xs"
                                     >
                                       Clear all
                                     </Button>
@@ -456,18 +459,14 @@ export default function EventBuilder() {
                               </div>
                               
                               {enabled && (
-                                <div className="p-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                                <div className="p-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                                   {allTimeSlots.map(time => (
                                     <Button 
                                       key={time}
                                       variant="outline"
                                       size="sm"
                                       onClick={() => toggleTimeSlot(day, time)}
-                                      className={`h-8 w-full text-xs rounded-full transition-all ${
-                                        timeSlots.includes(time) 
-                                          ? 'bg-black text-white border-black hover:bg-gray-800' 
-                                          : 'text-gray-700 border-gray-300 hover:bg-gray-100'
-                                      }`}
+                                      className={`w-full text-xs ${timeSlots.includes(time) ? 'bg-primary text-primary-foreground' : 'text-gray-700'}`}
                                     >
                                       {time}
                                     </Button>
@@ -482,27 +481,24 @@ export default function EventBuilder() {
                   </TabsContent>
                   
                   {/* Advanced Tab */}
-                  <TabsContent value="advanced" className="p-8 focus:outline-none">
-                    <div className="space-y-8">
-                      <div className="bg-gray-50 rounded-xl p-5">
+                  <TabsContent value="advanced" className="p-6 focus:outline-none">
+                    <div className="space-y-6">
+                      <div>
                         <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <Label htmlFor="published" className="text-base font-medium block">
-                              Event Visibility
-                            </Label>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {isPublished 
-                                ? 'Your event is published and available for booking.' 
-                                : 'Your event is hidden and not available for booking.'}
-                            </p>
-                          </div>
+                          <Label htmlFor="published" className="text-sm font-medium">
+                            Event Status
+                          </Label>
                           <Switch 
                             id="published"
                             checked={isPublished} 
                             onCheckedChange={setIsPublished}
-                            className="data-[state=checked]:bg-black"
                           />
                         </div>
+                        <p className="text-sm text-gray-500">
+                          {isPublished 
+                            ? 'Your event is published and available for booking.' 
+                            : 'Your event is hidden and not available for booking.'}
+                        </p>
                       </div>
                     </div>
                   </TabsContent>
@@ -513,83 +509,95 @@ export default function EventBuilder() {
           
           {/* Right Column - Preview */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium">Preview</CardTitle>
-                  <CardDescription className="text-sm">
-                    How your booking page will appear
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                    <div className="p-5 border-b border-gray-200">
-                      <h3 className="font-medium">{title || "30 Minute Meeting"}</h3>
-                      <div className="flex items-center text-sm text-gray-500 mt-2">
-                        <Clock className="h-4 w-4 mr-1.5" />
-                        <span>{duration} minutes</span>
-                      </div>
-                    </div>
-                    
-                    <div className="p-5 space-y-4">
-                      <div className="text-sm">
-                        <p className="text-gray-600 leading-relaxed">
-                          {description || "This is a 30 minute meeting to discuss your needs."}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center text-sm">
-                        <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Select a date & time</span>
-                      </div>
-                      
-                      <div className="flex items-center text-sm">
-                        <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>{location || "Google Meet"}</span>
-                      </div>
+            <Card className="border border-gray-200 shadow-sm bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Event Preview</CardTitle>
+                <CardDescription className="text-sm">
+                  Here's how your event booking page will look.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border border-gray-200 overflow-hidden">
+                  <div className="p-4 bg-gray-50 border-b border-gray-200">
+                    <h3 className="font-medium">{title || "30 Minute Meeting"}</h3>
+                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                      <Clock className="h-3.5 w-3.5 mr-1" />
+                      <span>{duration} minutes</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              {/* Event Link */}
-              {event?.shortId && (
-                <Card className="border-0 shadow-sm mt-5 bg-white/90 backdrop-blur-md rounded-xl overflow-hidden">
-                  <CardHeader className="py-4 px-5">
-                    <CardTitle className="text-base font-medium">Share your event</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-5 pb-5">
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        readOnly 
-                        value={getShareableLink()}
-                        className="text-sm rounded-lg border-gray-300 focus:ring-black focus:border-black"
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleCopyLink}
-                        className="shrink-0 h-10 w-10 rounded-full p-0 border-gray-300"
-                      >
-                        {copySuccess ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                      </Button>
+                  
+                  <div className="p-4 space-y-4">
+                    <div className="text-sm">
+                      <p className="text-gray-500">
+                        {description || "This is a 30 minute meeting to discuss your needs."}
+                      </p>
                     </div>
                     
-                    <div className="mt-4">
+                    <div className="flex items-center text-sm">
+                      <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>Select a date & time</span>
+                    </div>
+                    
+                    <div className="flex items-center text-sm">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{location || "Google Meet"}</span>
+                    </div>
+                  </div>
+                  
+                  {event?.shortId && (
+                    <div className="p-4 border-t border-gray-200">
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="w-full rounded-full text-gray-700 border-gray-300 hover:bg-gray-50"
-                        onClick={() => window.open(getShareableLink(), '_blank')}
+                        className="w-full"
+                        onClick={handleCopyLink}
                       >
-                        <Eye className="h-4 w-4 mr-2" />
-                        Preview booking page
+                        <Globe className="h-4 w-4 mr-2" />
+                        {copySuccess ? "Link copied!" : "Copy booking link"}
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Event Link */}
+            {event?.shortId && (
+              <Card className="border border-gray-200 shadow-sm mt-4 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Share your event</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-2">
+                    <Input 
+                      readOnly 
+                      value={getShareableLink()}
+                      className="text-sm"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCopyLink}
+                      className="shrink-0"
+                    >
+                      {copySuccess ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-3">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => window.open(getShareableLink(), '_blank')}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
