@@ -5,13 +5,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
-import { Mail, MapPin, User, FileText, Star } from "lucide-react"
+import { Mail, MapPin, User, FileText, Star, Calendar } from "lucide-react"
 import { FormQuestion, FormSection as FormSectionType, FieldType } from "@shared/schema"
 import ShortText from "@/components/ui/form-fields/ShortText";
 import Paragraph from "@/components/ui/form-fields/Paragraph";
 import Email from "@/components/ui/form-fields/Email";
 import MultipleChoice from "@/components/ui/form-fields/MultipleChoice";
 import Rating from "@/components/ui/form-fields/Rating";
+import FileUpload from "@/components/ui/form-fields/FileUpload";
 import { getQuestionsGroupedBySections } from "@/lib/utils";
 
 interface FormSection {
@@ -118,11 +119,10 @@ function FormSectionAccordion({
 
   // Helper to render the appropriate field component based on type
   const renderField = (question: FormQuestion) => {
-    const props = {
+    const fieldProps = {
       value: formResponses[question.id] || "",
       onChange: (value: any) => onAnswerChange(question.id, value),
       required: question.required,
-      key: question.id,
       id: question.id,
       placeholder: "",
       label: question.title,
@@ -133,17 +133,19 @@ function FormSectionAccordion({
 
     switch (question.type) {
       case "shortText":
-        return <ShortText {...props} />;
+        return <ShortText {...fieldProps} />;
       case "paragraph":
-        return <Paragraph {...props} />;
+        return <Paragraph {...fieldProps} />;
       case "email":
-        return <Email {...props} />;
+        return <Email {...fieldProps} />;
       case "multipleChoice":
-        return <MultipleChoice {...props} options={question.options || []} />;
+        return <MultipleChoice {...fieldProps} options={question.options || []} />;
       case "rating":
-        return <Rating {...props} maxRating={question.maxRating || 5} />;
+        return <Rating {...fieldProps} maxRating={question.maxRating || 5} />;
+      case "fileUpload":
+        return <FileUpload {...fieldProps} />;
       default:
-        return <ShortText {...props} />;
+        return <ShortText {...fieldProps} />;
     }
   };
 
@@ -161,6 +163,10 @@ function FormSectionAccordion({
       return <FileText className="size-4 stroke-2 text-muted-foreground" />;
     } else if (firstQuestionType === 'rating') {
       return <Star className="size-4 stroke-2 text-muted-foreground" />;
+    } else if (firstQuestionType === 'fileUpload') {
+      return <FileText className="size-4 stroke-2 text-muted-foreground" />;
+    } else if (firstQuestionType === 'date') {
+      return <Calendar className="size-4 stroke-2 text-muted-foreground" />;
     } else {
       return <FileText className="size-4 stroke-2 text-muted-foreground" />;
     }
