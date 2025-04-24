@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/accordion";
 import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Tiles } from '@/components/ui/tiles';
 import logoPath from '@assets/lgoooo.png';
 
 export default function EventBooking() {
@@ -211,16 +212,34 @@ export default function EventBooking() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      <div className="min-h-screen relative flex items-center justify-center bg-white">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <Tiles 
+            rows={50} 
+            cols={12}
+            tileSize="md"
+            tileClassName="opacity-30"
+          />
+        </div>
+        <div className="relative z-10">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
       </div>
     );
   }
   
   if (error || !event) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-lg">
+      <div className="min-h-screen relative flex items-center justify-center bg-white">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <Tiles 
+            rows={50} 
+            cols={12}
+            tileSize="md"
+            tileClassName="opacity-30"
+          />
+        </div>
+        <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-xl">Event Not Found</CardTitle>
             <CardDescription>The event you're looking for doesn't exist or has been removed.</CardDescription>
@@ -235,8 +254,16 @@ export default function EventBooking() {
   
   if (bookingComplete) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <Card className="w-full max-w-lg">
+      <div className="min-h-screen relative flex items-center justify-center bg-white p-4">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <Tiles 
+            rows={50} 
+            cols={12}
+            tileSize="md"
+            tileClassName="opacity-30"
+          />
+        </div>
+        <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
               <Check className="h-6 w-6 text-green-600" />
@@ -247,7 +274,7 @@ export default function EventBooking() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <div className="bg-white/80 p-4 rounded-lg mb-4 backdrop-blur-sm">
               <h3 className="font-medium text-gray-900">{event.title}</h3>
               <p className="text-sm text-gray-500">{event.duration} minutes</p>
             </div>
@@ -284,9 +311,19 @@ export default function EventBooking() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen relative bg-white">
+      {/* Interactive Tiles Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <Tiles 
+          rows={50} 
+          cols={12}
+          tileSize="md"
+          tileClassName="opacity-30"
+        />
+      </div>
+      
       {/* Header */}
-      <header className="border-b border-gray-200">
+      <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img src={logoPath} alt="Logo" className="h-8" />
@@ -295,7 +332,7 @@ export default function EventBooking() {
       </header>
       
       {/* Main content */}
-      <main className="container max-w-4xl mx-auto px-4 py-6 md:py-12">
+      <main className="container relative z-10 max-w-4xl mx-auto px-4 py-6 md:py-12">
         <div className="flex flex-col space-y-8">
           {/* Event Title */}
           <div className="text-center">
@@ -310,7 +347,7 @@ export default function EventBooking() {
           <Accordion
             type="single"
             collapsible
-            className="w-full max-w-[400px] mx-auto"
+            className="w-full max-w-[400px] mx-auto bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm"
             value={activeAccordion}
             onValueChange={setActiveAccordion}
           >

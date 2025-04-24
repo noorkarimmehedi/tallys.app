@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --tile: rgba(0, 0, 0, 0.1);
+  --tile: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
