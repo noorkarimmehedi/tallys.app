@@ -86,10 +86,18 @@ const sections: FormSection[] = [
 
 function FormSectionAccordionDemo() {
   return (
-    <Accordion type="single" collapsible className="w-full max-w-[500px]">
+    <Accordion 
+      type="single" 
+      collapsible 
+      className="w-full max-w-full sm:max-w-[500px]"
+    >
       {sections.map((section) => (
-        <AccordionItem key={section.id} value={section.id} className="mb-4 border rounded-md overflow-hidden">
-          <AccordionTrigger className="group px-4 py-3 hover:bg-gray-50">
+        <AccordionItem 
+          key={section.id} 
+          value={section.id} 
+          className="mb-4 border rounded-lg overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-primary/20"
+        >
+          <AccordionTrigger className="group px-4 py-3 hover:no-underline hover:bg-muted/20">
             <div className="flex items-center gap-2">
               {section.icon}
               <span className="font-medium">{section.title}</span>
@@ -101,7 +109,10 @@ function FormSectionAccordionDemo() {
           <AccordionContent>
             <div className="space-y-6 p-4 bg-white">
               {section.questions.map((question) => (
-                <div key={question.id} className="animate-fadeIn border-b pb-4 last:border-b-0 last:pb-0">
+                <div 
+                  key={question.id} 
+                  className="animate-fadeIn border-b pb-4 last:border-b-0 last:pb-0 transition-opacity duration-300"
+                >
                   <div className="mb-2">
                     <h4 className="text-base font-medium mb-1">
                       {question.title}
@@ -113,7 +124,11 @@ function FormSectionAccordionDemo() {
                   </div>
                   
                   <div className="mt-2">
-                    <Input type={question.id === "q3" ? "email" : "text"} placeholder="Enter your answer here" />
+                    <Input 
+                      type={question.id === "q3" ? "email" : "text"} 
+                      placeholder="Enter your answer here" 
+                      className="w-full focus:ring-2 focus:ring-primary/20" 
+                    />
                   </div>
                 </div>
               ))}

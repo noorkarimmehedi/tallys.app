@@ -55,19 +55,29 @@ const sections: FormSection[] = [
 
 function FormSectionAccordion() {
   return (
-    <Accordion type="single" collapsible className="w-full max-w-[400px]">
+    <Accordion 
+      type="single" 
+      collapsible 
+      className="w-full max-w-full sm:max-w-[400px]"
+    >
       {sections.map((section) => (
-        <AccordionItem key={section.id} value={section.id}>
-          <AccordionTrigger className="group">
+        <AccordionItem 
+          key={section.id} 
+          value={section.id}
+          className="mb-3 border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20"
+        >
+          <AccordionTrigger className="group px-4 py-3 hover:no-underline hover:bg-muted/20">
             <div className="flex items-center gap-2">
               {section.icon}
-              <span>{section.title}</span>
+              <span className="font-medium">{section.title}</span>
               {section.isComplete && (
                 <span className="ml-2 text-sm text-green-500">✓</span>
               )}
             </div>
           </AccordionTrigger>
-          <AccordionContent>{section.children}</AccordionContent>
+          <AccordionContent className="px-4">
+            <div className="py-2">{section.children}</div>
+          </AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>
