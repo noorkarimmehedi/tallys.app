@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { TimeSlot, EventAvailability } from '@shared/schema';
 import MainLayout from '@/components/layouts/MainLayout';
 import { Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, Globe, Eye } from 'lucide-react';
+import { Tiles } from '@/components/ui/tiles';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -220,9 +221,20 @@ export default function EventBuilder() {
   
   return (
     <MainLayout>
-      <div className="container mx-auto max-w-screen-xl py-6 px-4 sm:px-6">
+      {/* Background Tiles */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute inset-0 bg-white"></div>
+        <Tiles 
+          rows={30} 
+          cols={12}
+          tileSize="md"
+          tileClassName="opacity-40 border-primary/20"
+        />
+      </div>
+      
+      <div className="container relative z-10 mx-auto max-w-screen-xl py-6 px-4 sm:px-6">
         {/* Header with back button and actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -290,7 +302,7 @@ export default function EventBuilder() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Tabs */}
           <div className="col-span-2">
-            <Card className="border border-gray-200 shadow-sm">
+            <Card className="border border-gray-200 shadow-sm bg-white/80 backdrop-blur-sm">
               <CardContent className="p-0">
                 <Tabs 
                   defaultValue="what" 
@@ -301,19 +313,19 @@ export default function EventBuilder() {
                   <TabsList className="w-full grid grid-cols-3 bg-transparent p-0 border-b border-gray-200">
                     <TabsTrigger 
                       value="what" 
-                      className={`py-3 rounded-none ${activeTab === 'what' ? 'border-b-2 border-black' : ''}`}
+                      className={`py-3 rounded-none ${activeTab === 'what' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       What
                     </TabsTrigger>
                     <TabsTrigger 
                       value="when" 
-                      className={`py-3 rounded-none ${activeTab === 'when' ? 'border-b-2 border-black' : ''}`}
+                      className={`py-3 rounded-none ${activeTab === 'when' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       When
                     </TabsTrigger>
                     <TabsTrigger 
                       value="advanced" 
-                      className={`py-3 rounded-none ${activeTab === 'advanced' ? 'border-b-2 border-black' : ''}`}
+                      className={`py-3 rounded-none ${activeTab === 'advanced' ? 'border-b-2 border-black font-medium' : ''}`}
                     >
                       Advanced
                     </TabsTrigger>
