@@ -112,8 +112,8 @@ export default function AuthPage() {
       </div>
       
       {/* Auth Form Column */}
-      <div className="flex-1 flex items-center justify-center md:justify-end p-6 z-10">
-        <Card className="w-full max-w-md md:mr-8 backdrop-blur-sm bg-background/80">
+      <div className="flex-1 flex items-center justify-center p-6 z-10">
+        <Card className="w-full max-w-md backdrop-blur-sm bg-background/80">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Welcome to Tallys</CardTitle>
             <CardDescription>
@@ -293,14 +293,14 @@ export default function AuthPage() {
       </div>
 
       {/* Hero Section Column */}
-      <div className="flex-1 bg-white text-black p-12 md:pl-8 flex flex-col justify-center relative overflow-hidden">
+      <div className="flex-1 bg-white text-black p-12 flex flex-col justify-center relative overflow-hidden">
         {/* Dotted Background for Hero */}
         <div className="absolute inset-0 overflow-hidden" style={{ 
           backgroundImage: 'radial-gradient(#d1d5db 1px, transparent 1px)', 
           backgroundSize: '30px 30px'
         }}></div>
         
-        <div className="max-w-md md:ml-0 z-10">
+        <div className="max-w-md mx-auto z-10">
           <TextShimmer
             as="h1"
             duration={3} 
