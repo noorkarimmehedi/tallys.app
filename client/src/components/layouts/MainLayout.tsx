@@ -45,8 +45,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 relative z-10">
-            <Link href="/" className="text-2xl font-medium font-['Alternate_Gothic', 'sans-serif']">
-              tallys
+            <Link href="/" className="flex items-center">
+              <img src="/logo.png" alt="Logo" className="h-8" />
             </Link>
           </div>
           
@@ -120,7 +120,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation Bar */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
-          <h1 className="text-xl font-medium font-['Alternate_Gothic', 'sans-serif']">tallys</h1>
+          <img src="/logo.png" alt="Logo" className="h-6" />
           <button 
             type="button" 
             className="text-gray-600 hover:text-gray-900"

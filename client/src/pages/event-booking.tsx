@@ -274,10 +274,7 @@ export default function EventBooking() {
       <header className="border-b border-gray-200">
         <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">T</span>
-            </div>
-            <h1 className="text-xl font-medium">Tallys</h1>
+            <img src="/logo.png" alt="Logo" className="h-8" />
           </div>
         </div>
       </header>

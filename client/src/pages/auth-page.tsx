@@ -115,7 +115,10 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-end p-6 md:p-0 z-10">
         <Card className="w-full max-w-md mx-4 md:mx-0 backdrop-blur-sm bg-background/80">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Welcome to Tallys</CardTitle>
+            <div className="flex flex-col items-center mb-4">
+              <img src="/logo.png" alt="Logo" className="h-10 mb-2" />
+              <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
+            </div>
             <CardDescription>
               Sign in to your account or create a new one
             </CardDescription>
