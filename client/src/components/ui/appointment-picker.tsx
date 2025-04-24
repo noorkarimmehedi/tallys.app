@@ -6,57 +6,32 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { useState } from "react";
 
-interface AppointmentPickerProps {
-  onDateTimeSelected?: (date: Date, time: string) => void;
-  availableTimeSlots?: { time: string; available: boolean }[];
-  className?: string;
+export interface TimeSlot {
+  time: string;
+  available: boolean;
 }
 
-export function AppointmentPicker({ 
-  onDateTimeSelected, 
-  availableTimeSlots,
-  className
+interface AppointmentPickerProps {
+  disabled?: ((date: Date) => boolean) | undefined;
+  timeSlots: TimeSlot[];
+  date: Date;
+  onDateChange: (date: Date) => void;
+  time: string | null;
+  onTimeChange: (time: string) => void;
+}
+
+export function AppointmentPicker({
+  disabled,
+  timeSlots,
+  date,
+  onDateChange,
+  time,
+  onTimeChange
 }: AppointmentPickerProps) {
   const today = new Date();
-  const [date, setDate] = useState<Date>(today);
-  const [time, setTime] = useState<string | null>(null);
-
-  const defaultTimeSlots = [
-    { time: "09:00", available: true },
-    { time: "09:30", available: true },
-    { time: "10:00", available: true },
-    { time: "10:30", available: true },
-    { time: "11:00", available: true },
-    { time: "11:30", available: true },
-    { time: "12:00", available: true },
-    { time: "12:30", available: true },
-    { time: "13:00", available: true },
-    { time: "13:30", available: true },
-    { time: "14:00", available: true },
-    { time: "14:30", available: true },
-    { time: "15:00", available: true },
-    { time: "15:30", available: true },
-    { time: "16:00", available: true },
-    { time: "16:30", available: true },
-    { time: "17:00", available: true },
-    { time: "17:30", available: true },
-  ];
-
-  const timeSlots = availableTimeSlots || defaultTimeSlots;
-
-  const handleTimeSelect = (selectedTime: string) => {
-    setTime(selectedTime);
-    
-    if (onDateTimeSelected && date) {
-      const selectedDate = new Date(date);
-      const [hours, minutes] = selectedTime.split(':').map(Number);
-      selectedDate.setHours(hours, minutes);
-      onDateTimeSelected(selectedDate, selectedTime);
-    }
-  };
 
   return (
-    <div className={className}>
+    <div>
       <div className="rounded-lg border border-border">
         <div className="flex max-sm:flex-col">
           <Calendar
@@ -64,13 +39,13 @@ export function AppointmentPicker({
             selected={date}
             onSelect={(newDate) => {
               if (newDate) {
-                setDate(newDate);
-                setTime(null);
+                onDateChange(newDate);
               }
             }}
             className="p-2 sm:pe-5 bg-background"
             disabled={[
               { before: today },
+              ...(disabled ? [disabled] : [])
             ]}
           />
           <div className="relative w-full max-sm:h-48 sm:w-40">
@@ -87,7 +62,7 @@ export function AppointmentPicker({
                         variant={time === timeSlot ? "default" : "outline"}
                         size="sm"
                         className="w-full"
-                        onClick={() => handleTimeSelect(timeSlot)}
+                        onClick={() => onTimeChange(timeSlot)}
                         disabled={!available}
                       >
                         {timeSlot}

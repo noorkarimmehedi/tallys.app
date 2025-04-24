@@ -1,0 +1,194 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+component.tsx
+"use client";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import * as React from "react";
+import { DayPicker } from "react-day-picker";
+
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  components: userComponents,
+  ...props
+}: CalendarProps) {
+  const defaultClassNames = {
+    months: "relative flex flex-col sm:flex-row gap-4",
+    month: "w-full",
+    month_caption: "relative mx-10 mb-1 flex h-9 items-center justify-center z-20",
+    caption_label: "text-sm font-medium",
+    nav: "absolute top-0 flex w-full justify-between z-10",
+    button_previous: cn(
+      buttonVariants({ variant: "ghost" }),
+      "size-9 text-muted-foreground/80 hover:text-foreground p-0",
+    ),
+    button_next: cn(
+      buttonVariants({ variant: "ghost" }),
+      "size-9 text-muted-foreground/80 hover:text-foreground p-0",
+    ),
+    weekday: "size-9 p-0 text-xs font-medium text-muted-foreground/80",
+    day_button:
+      "relative flex size-9 items-center justify-center whitespace-nowrap rounded-lg p-0 text-foreground outline-offset-2 group-[[data-selected]:not(.range-middle)]:[transition-property:color,background-color,border-radius,box-shadow] group-[[data-selected]:not(.range-middle)]:duration-150 focus:outline-none group-data-[disabled]:pointer-events-none focus-visible:z-10 hover:bg-accent group-data-[selected]:bg-primary hover:text-foreground group-data-[selected]:text-primary-foreground group-data-[disabled]:text-foreground/30 group-data-[disabled]:line-through group-data-[outside]:text-foreground/30 group-data-[outside]:group-data-[selected]:text-primary-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 group-[.range-start:not(.range-end)]:rounded-e-none group-[.range-end:not(.range-start)]:rounded-s-none group-[.range-middle]:rounded-none group-data-[selected]:group-[.range-middle]:bg-accent group-data-[selected]:group-[.range-middle]:text-foreground",
+    day: "group size-9 px-0 text-sm",
+    range_start: "range-start",
+    range_end: "range-end",
+    range_middle: "range-middle",
+    today:
+      "*:after:pointer-events-none *:after:absolute *:after:bottom-1 *:after:start-1/2 *:after:z-10 *:after:size-[3px] *:after:-translate-x-1/2 *:after:rounded-full *:after:bg-primary [&[data-selected]:not(.range-middle)>*]:after:bg-background [&[data-disabled]>*]:after:bg-foreground/30 *:after:transition-colors",
+    outside: "text-muted-foreground data-selected:bg-accent/50 data-selected:text-muted-foreground",
+    hidden: "invisible",
+    week_number: "size-9 p-0 text-xs font-medium text-muted-foreground/80",
+  };
+
+  const mergedClassNames: typeof defaultClassNames = Object.keys(defaultClassNames).reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: classNames?.[key as keyof typeof classNames]
+        ? cn(
+            defaultClassNames[key as keyof typeof defaultClassNames],
+            classNames[key as keyof typeof classNames],
+          )
+        : defaultClassNames[key as keyof typeof defaultClassNames],
+    }),
+    {} as typeof defaultClassNames,
+  );
+
+  const defaultComponents = {
+    Chevron: (props: any) => {
+      if (props.orientation === "left") {
+        return <ChevronLeft size={16} strokeWidth={2} {...props} aria-hidden="true" />;
+      }
+      return <ChevronRight size={16} strokeWidth={2} {...props} aria-hidden="true" />;
+    },
+  };
+
+  const mergedComponents = {
+    ...defaultComponents,
+    ...userComponents,
+  };
+
+  return (
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn("w-fit", className)}
+      classNames={mergedClassNames}
+      components={mergedComponents}
+      {...props}
+    />
+  );
+}
+Calendar.displayName = "Calendar";
+
+export { Calendar };
+
+demo.tsx
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
+import { useState } from "react";
+
+function Component() {
+  const today = new Date();
+  const [date, setDate] = useState<Date>(today);
+  const [time, setTime] = useState<string | null>(null);
+
+  const timeSlots = [
+    { time: "09:00", available: false },
+    { time: "09:30", available: false },
+    { time: "10:00", available: true },
+    { time: "10:30", available: true },
+    { time: "11:00", available: true },
+    { time: "11:30", available: true },
+    { time: "12:00", available: false },
+    { time: "12:30", available: true },
+    { time: "13:00", available: true },
+    { time: "13:30", available: true },
+    { time: "14:00", available: true },
+    { time: "14:30", available: false },
+    { time: "15:00", available: false },
+    { time: "15:30", available: true },
+    { time: "16:00", available: true },
+    { time: "16:30", available: true },
+    { time: "17:00", available: true },
+    { time: "17:30", available: true },
+  ];
+
+  return (
+    <div>
+      <div className="rounded-lg border border-border">
+        <div className="flex max-sm:flex-col">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(newDate) => {
+              if (newDate) {
+                setDate(newDate);
+                setTime(null);
+              }
+            }}
+            className="p-2 sm:pe-5 bg-background"
+            disabled={[
+              { before: today },
+            ]}
+          />
+          <div className="relative w-full max-sm:h-48 sm:w-40">
+            <div className="absolute inset-0 border-border py-4 max-sm:border-t">
+              <ScrollArea className="h-full border-border sm:border-s">
+                <div className="space-y-3">
+                  <div className="flex h-5 shrink-0 items-center px-5">
+                    <p className="text-sm font-medium">{format(date, "EEEE, d")}</p>
+                  </div>
+                  <div className="grid gap-1.5 px-5 max-sm:grid-cols-2">
+                    {timeSlots.map(({ time: timeSlot, available }) => (
+                      <Button
+                        key={timeSlot}
+                        variant={time === timeSlot ? "default" : "outline"}
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setTime(timeSlot)}
+                        disabled={!available}
+                      >
+                        {timeSlot}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p
+        className="mt-4 text-center text-xs text-muted-foreground"
+        role="region"
+        aria-live="polite"
+      >
+        Appointment picker -{" "}
+        <a
+          className="underline hover:text-foreground"
+          href="https://daypicker.dev/"
+          target="_blank"
+          rel="noopener nofollow"
+        >
+          React DayPicker
+        </a>
+      </p>
+    </div>
+  );
+}
+
+export { Component };
+
+```

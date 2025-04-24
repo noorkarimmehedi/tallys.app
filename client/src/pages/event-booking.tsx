@@ -6,7 +6,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar-new';
+import { AppointmentPicker, TimeSlot } from '@/components/ui/appointment-picker';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Clock, MapPin, User, Check } from 'lucide-react';
@@ -262,58 +262,21 @@ export default function EventBooking() {
                 <CardDescription>Select a date and time to book your appointment</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Date picker */}
+                {/* Appointment Picker */}
                 <div>
-                  <Label className="block mb-2">Select a date</Label>
-                  <div className="border rounded-md p-3 bg-white">
-                    <Calendar 
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={(date) => {
-                        setSelectedDate(date);
-                        setSelectedTime(null); // Reset time selection when date changes
-                      }}
-                      disabled={[
-                        { before: new Date() }, // Disable past dates
-                        isDateDisabled // Disable dates with no availability
-                      ]}
-                      className="mx-auto"
-                    />
-                  </div>
+                  <Label className="block mb-2">Select a date and time</Label>
+                  <AppointmentPicker
+                    disabled={isDateDisabled}
+                    timeSlots={availableTimeSlots.map(time => ({ time, available: true }))}
+                    date={selectedDate || new Date()}
+                    onDateChange={(date) => {
+                      setSelectedDate(date);
+                      setSelectedTime(null); // Reset time selection when date changes
+                    }}
+                    time={selectedTime}
+                    onTimeChange={(time) => setSelectedTime(time)}
+                  />
                 </div>
-                
-                {/* Time slots */}
-                {selectedDate && (
-                  <div>
-                    <Label className="block mb-2">
-                      Select a time on {format(selectedDate, 'EEEE, MMMM d')}
-                    </Label>
-                    {availableTimeSlots.length === 0 ? (
-                      <p className="text-sm text-gray-500 p-4 text-center border rounded-md">
-                        No available times on this day.
-                      </p>
-                    ) : (
-                      <div className="border rounded-md p-4 bg-white max-h-48">
-                        <ScrollArea className="h-full pr-4">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {availableTimeSlots.map((time) => (
-                              <Button
-                                key={time}
-                                type="button"
-                                variant={selectedTime === time ? "default" : "outline"}
-                                size="sm"
-                                className="w-full"
-                                onClick={() => setSelectedTime(time)}
-                              >
-                                {time}
-                              </Button>
-                            ))}
-                          </div>
-                        </ScrollArea>
-                      </div>
-                    )}
-                  </div>
-                )}
                 
                 {/* Contact information */}
                 <div className="pt-4 space-y-4">
