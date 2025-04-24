@@ -186,8 +186,31 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     }
   };
 
+  // Helper function to get section icon
+  const getSectionIcon = (icon?: string) => {
+    if (!icon) return <User className="size-4 stroke-2 text-muted-foreground" />;
+    
+    switch (icon) {
+      case 'user':
+        return <User className="size-4 stroke-2 text-muted-foreground" />;
+      case 'mail':
+        return <Mail className="size-4 stroke-2 text-muted-foreground" />;
+      case 'map':
+        return <MapPin className="size-4 stroke-2 text-muted-foreground" />;
+      default:
+        return <User className="size-4 stroke-2 text-muted-foreground" />;
+    }
+  };
+
   const isQuestionComplete = (questionId: string) => {
     return answers[questionId] !== undefined && answers[questionId] !== "";
+  };
+  
+  // Check if section is complete (all required questions answered)
+  const isSectionComplete = (sectionQuestions: FormQuestion[]) => {
+    return sectionQuestions.every(q => 
+      !q.required || isQuestionComplete(q.id)
+    );
   };
   
   const handleSubmit = () => {
@@ -211,6 +234,13 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     }
   };
 
+  // Group questions by section
+  const sections = form.sections || [];
+  const questionsBySection = getQuestionsGroupedBySections({ 
+    questions: form.questions, 
+    sections 
+  });
+
   return (
     <div className="flex items-center justify-center min-h-full p-6">
       <div className="max-w-xl w-full">
@@ -222,23 +252,44 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
         <Card className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md mb-6">
           <CardContent className="p-6">
             <Accordion type="single" collapsible className="w-full">
-              {questions.map((question, index) => (
-                <AccordionItem key={question.id} value={question.id}>
+              {questionsBySection.map((section) => (
+                <AccordionItem key={section.sectionId || 'default'} value={section.sectionId || 'default'}>
                   <AccordionTrigger className="group">
                     <div className="flex items-center gap-2">
-                      {getQuestionIcon(question.type)}
-                      <span>{question.title}</span>
-                      {isQuestionComplete(question.id) && (
+                      {getSectionIcon(section.sectionIcon)}
+                      <span>{section.sectionTitle}</span>
+                      {isSectionComplete(section.questions) && (
                         <span className="ml-2 text-sm text-green-500">✓</span>
                       )}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="py-2">
-                      {question.description && (
-                        <p className="text-gray-600 mb-4">{question.description}</p>
+                      {section.sectionDescription && (
+                        <p className="text-gray-600 mb-4">{section.sectionDescription}</p>
                       )}
-                      {renderField(question)}
+                      <div className="space-y-6">
+                        {section.questions.map((question) => (
+                          <div key={question.id} className="border-b pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h4 className="text-md font-medium mb-1 flex items-center gap-2">
+                                  {getQuestionIcon(question.type)}
+                                  {question.title}
+                                  {question.required && <span className="text-red-500">*</span>}
+                                </h4>
+                                {question.description && (
+                                  <p className="text-sm text-gray-500 mb-2">{question.description}</p>
+                                )}
+                              </div>
+                              {isQuestionComplete(question.id) && (
+                                <span className="text-sm text-green-500">✓</span>
+                              )}
+                            </div>
+                            {renderField(question)}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

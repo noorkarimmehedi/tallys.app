@@ -18,6 +18,7 @@ export const forms = pgTable("forms", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   questions: json("questions").$type<FormQuestion[]>().notNull(),
+  sections: json("sections").$type<FormSection[]>().default([]).notNull(),
   theme: json("theme").$type<FormTheme>().notNull(),
 });
 
@@ -42,6 +43,13 @@ export type FieldType =
   | "date" 
   | "number";
 
+export interface FormSection {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: string;
+}
+
 export interface FormQuestion {
   id: string;
   type: FieldType;
@@ -51,6 +59,7 @@ export interface FormQuestion {
   options?: string[];
   maxRating?: number;
   variableName?: string;
+  sectionId?: string; // Reference to parent section
 }
 
 export interface FormTheme {

@@ -1,13 +1,13 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { nanoid } from "nanoid";
-import { FormQuestion, FieldType } from "@shared/schema";
+import { FormQuestion, FieldType, FormSection } from "@shared/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function createQuestion(type: FieldType, title: string = ''): FormQuestion {
+export function createQuestion(type: FieldType, title: string = '', sectionId?: string): FormQuestion {
   return {
     id: nanoid(),
     type,
@@ -15,6 +15,16 @@ export function createQuestion(type: FieldType, title: string = ''): FormQuestio
     required: false,
     options: type === 'multipleChoice' ? ['Option 1', 'Option 2', 'Option 3'] : undefined,
     maxRating: type === 'rating' ? 5 : undefined,
+    sectionId
+  }
+}
+
+export function createSection(title: string = '', description: string = ''): FormSection {
+  return {
+    id: nanoid(),
+    title: title || 'New Section',
+    description,
+    icon: 'section'
   }
 }
 
@@ -65,4 +75,55 @@ export function getFieldLabel(type: FieldType): string {
   };
   
   return labels[type] || "Unknown Field";
+}
+
+// Group questions by sections
+export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): {
+  sectionId: string | null;
+  sectionTitle: string;
+  sectionDescription?: string;
+  sectionIcon?: string;
+  questions: FormQuestion[];
+}[] {
+  const { questions, sections = [] } = form;
+  
+  // Create default group for questions without a section
+  const result = [
+    {
+      sectionId: null,
+      sectionTitle: "General Questions",
+      questions: [] as FormQuestion[]
+    }
+  ];
+  
+  // Add groups for each section
+  sections.forEach(section => {
+    result.push({
+      sectionId: section.id,
+      sectionTitle: section.title,
+      sectionDescription: section.description,
+      sectionIcon: section.icon,
+      questions: []
+    });
+  });
+  
+  // Place questions in their respective groups
+  questions.forEach(question => {
+    const sectionId = question.sectionId;
+    if (sectionId) {
+      const section = result.find(s => s.sectionId === sectionId);
+      if (section) {
+        section.questions.push(question);
+      } else {
+        // If section doesn't exist, add to default group
+        result[0].questions.push(question);
+      }
+    } else {
+      // If no sectionId, add to default group
+      result[0].questions.push(question);
+    }
+  });
+  
+  // Remove empty sections
+  return result.filter(section => section.questions.length > 0);
 }
