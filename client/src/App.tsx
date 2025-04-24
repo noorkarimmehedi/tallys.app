@@ -12,47 +12,72 @@ import Settings from "@/pages/settings";
 import Calendar from "@/pages/calendar";
 import DemoAccordion from "@/pages/demo-accordion";
 import MainLayout from "@/components/layouts/MainLayout";
+import AuthPage from "@/pages/auth-page";
+import { ProtectedRoute } from "@/components/protected-route";
+import { AuthProvider } from "@/hooks/use-auth";
+
+// Wrapper for protected routes with MainLayout
+const ProtectedPage = ({ component: Component }: { component: React.ComponentType }) => {
+  return (
+    <MainLayout>
+      <Component />
+    </MainLayout>
+  );
+};
 
 function Router() {
   return (
     <Switch>
-      <Route path="/">
+      {/* Protected Routes */}
+      <ProtectedRoute path="/" component={() => (
         <MainLayout>
           <Dashboard />
         </MainLayout>
-      </Route>
-      <Route path="/form-builder/:id?">
+      )} />
+      
+      <ProtectedRoute path="/form-builder/:id?" component={() => (
         <MainLayout>
           <FormBuilder />
         </MainLayout>
-      </Route>
-      <Route path="/preview/:id">
+      )} />
+      
+      <ProtectedRoute path="/preview/:id" component={() => (
         <MainLayout>
           <FormPreview />
         </MainLayout>
-      </Route>
-
-      <Route path="/inbox">
+      )} />
+      
+      <ProtectedRoute path="/inbox" component={() => (
         <MainLayout>
           <Inbox />
         </MainLayout>
-      </Route>
-      <Route path="/settings">
+      )} />
+      
+      <ProtectedRoute path="/settings" component={() => (
         <MainLayout>
           <Settings />
         </MainLayout>
-      </Route>
-      <Route path="/calendar">
+      )} />
+      
+      <ProtectedRoute path="/calendar" component={() => (
         <MainLayout>
           <Calendar />
         </MainLayout>
+      )} />
+      
+      {/* Public Routes */}
+      <Route path="/auth">
+        <AuthPage />
       </Route>
+      
       <Route path="/f/:shortId">
         <FormPreview />
       </Route>
+      
       <Route path="/demo-accordion">
         <DemoAccordion />
       </Route>
+      
       <Route>
         <MainLayout>
           <NotFound />
@@ -65,10 +90,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Router />
-        <Toaster />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Router />
+          <Toaster />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

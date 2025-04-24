@@ -27,13 +27,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(forms);
   });
 
-  app.get("/api/forms/:id", async (req, res) => {
+  app.get("/api/forms/:id", isAuthenticated, async (req, res) => {
     // Special case for 'new' form ID
     if (req.params.id === 'new') {
+      const userId = req.user!.id;
       // Return a template for a new form
       return res.json({
         id: 0,
-        userId: 1,
+        userId: userId,
         title: "New Form",
         shortId: "",
         description: "",
@@ -69,13 +70,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(404).json({ message: "Form not found" });
     }
     
+    // Check if the form belongs to the authenticated user
+    if (form.userId !== req.user!.id) {
+      return res.status(403).json({ message: "You do not have permission to access this form" });
+    }
+    
     res.json(form);
   });
 
-  app.post("/api/forms", async (req, res) => {
+  app.post("/api/forms", isAuthenticated, async (req, res) => {
     try {
-      // In a real app, we'd get the user ID from the session
-      const userId = 1; // Demo user
+      const userId = req.user!.id;
       
       console.log("POST /api/forms - Request body:", JSON.stringify(req.body, null, 2));
       
@@ -101,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/forms/:id", async (req, res) => {
+  app.patch("/api/forms/:id", isAuthenticated, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid form ID" });
@@ -113,6 +118,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Form not found" });
       }
       
+      // Check if the form belongs to the authenticated user
+      if (form.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You do not have permission to modify this form" });
+      }
+      
       const updatedForm = await storage.updateForm(id, req.body);
       res.json(updatedForm);
     } catch (error) {
@@ -120,10 +130,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/forms/:id", async (req, res) => {
+  app.delete("/api/forms/:id", isAuthenticated, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid form ID" });
+    }
+    
+    // Check if the form exists and belongs to the user
+    const form = await storage.getForm(id);
+    if (!form) {
+      return res.status(404).json({ message: "Form not found" });
+    }
+    
+    if (form.userId !== req.user!.id) {
+      return res.status(403).json({ message: "You do not have permission to delete this form" });
     }
     
     const success = await storage.deleteForm(id);
@@ -152,7 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Form responses
-  app.get("/api/forms/:id/responses", async (req, res) => {
+  app.get("/api/forms/:id/responses", isAuthenticated, async (req, res) => {
     // Special case for 'new' form ID
     if (req.params.id === 'new') {
       return res.json([]);
@@ -166,6 +186,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const form = await storage.getForm(id);
     if (!form) {
       return res.status(404).json({ message: "Form not found" });
+    }
+    
+    // Check if the form belongs to the authenticated user
+    if (form.userId !== req.user!.id) {
+      return res.status(403).json({ message: "You do not have permission to access this form's responses" });
     }
     
     const responses = await storage.getFormResponses(id);
