@@ -305,12 +305,12 @@ export default function EventBooking() {
             </div>
           </div>
           
-          {/* Using FormSectionAccordion exactly as provided */}
+          {/* Using FormSectionAccordion component exactly as in the template */}
           <Accordion
-            type="single" 
-            collapsible 
+            type="single"
+            collapsible
+            className="w-full max-w-[400px] mx-auto"
             value={activeAccordion}
-            className="w-full max-w-[600px] mx-auto border rounded-lg divide-y"
           >
             <AccordionItem value="event-details">
               <AccordionTrigger className="group">
@@ -323,29 +323,29 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <p className="text-gray-600">
                     {event.description || "No description provided."}
                   </p>
                   
-                  <div className="space-y-4">
+                  <div className="mt-2 space-y-2">
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Clock className="h-5 w-5 text-gray-500 mr-4" />
+                        <Clock className="h-5 w-5 text-gray-500 mr-2" />
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">Duration</h3>
-                        <p className="text-gray-600">{event.duration} minutes</p>
+                        <h3 className="font-medium">Duration</h3>
+                        <p className="text-sm text-gray-600">{event.duration} minutes</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Video className="h-5 w-5 text-gray-500 mr-4" />
+                        <Video className="h-5 w-5 text-gray-500 mr-2" />
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">Video call</h3>
-                        <p className="text-gray-600">
+                        <h3 className="font-medium">Video call</h3>
+                        <p className="text-sm text-gray-600">
                           A video call will be added to this event
                         </p>
                       </div>
@@ -353,21 +353,21 @@ export default function EventBooking() {
                     
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Globe className="h-5 w-5 text-gray-500 mr-4" />
+                        <Globe className="h-5 w-5 text-gray-500 mr-2" />
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">Time zone</h3>
-                        <p className="text-gray-600">
+                        <h3 className="font-medium">Time zone</h3>
+                        <p className="text-sm text-gray-600">
                           {Intl.DateTimeFormat().resolvedOptions().timeZone}
                         </p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="mt-2">
+                  <div className="mt-4">
                     <Button 
                       onClick={() => setActiveAccordion("date-time")}
-                      className="w-full md:w-auto"
+                      className="w-full"
                     >
                       Continue to Date & Time
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -388,34 +388,32 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="flex flex-col gap-4">
-                  <div className="mb-2">
-                    <AppointmentPicker
-                      initialDate={selectedDate || undefined}
-                      initialTime={selectedTime}
-                      timeSlots={availableTimeSlots.map((time: string) => ({
-                        time,
-                        available: true
-                      }))}
-                      onDateChange={(date) => {
-                        console.log("Date selected:", date);
-                        setSelectedDate(date);
-                      }}
-                      onTimeChange={(time: string | null) => {
-                        console.log("Time selected:", time);
-                        setSelectedTime(time);
-                      }}
-                      disabledDates={[
-                        { before: today }
-                      ]}
-                    />
-                  </div>
+                <div className="flex flex-col gap-2">
+                  <AppointmentPicker
+                    initialDate={selectedDate || undefined}
+                    initialTime={selectedTime}
+                    timeSlots={availableTimeSlots.map((time: string) => ({
+                      time,
+                      available: true
+                    }))}
+                    onDateChange={(date) => {
+                      console.log("Date selected:", date);
+                      setSelectedDate(date);
+                    }}
+                    onTimeChange={(time: string | null) => {
+                      console.log("Time selected:", time);
+                      setSelectedTime(time);
+                    }}
+                    disabledDates={[
+                      { before: today }
+                    ]}
+                  />
                   
                   {selectedDate && selectedTime && (
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <Button 
                         onClick={() => setActiveAccordion("your-info")}
-                        className="w-full md:w-auto"
+                        className="w-full"
                       >
                         Continue to Your Info
                         <ChevronRight className="ml-2 h-4 w-4" />
@@ -437,13 +435,13 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   {selectedDate && selectedTime && (
-                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 mb-2">
                       <h3 className="font-medium text-gray-900">
                         {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                       </h3>
-                      <p className="text-gray-600">
+                      <p className="text-sm text-gray-600">
                         {formatTimeSlot(selectedTime)}
                       </p>
                     </div>
@@ -455,7 +453,7 @@ export default function EventBooking() {
                     </Label>
                     <Input 
                       id="name" 
-                      className={`mt-2 w-full ${!name.trim() && 'border-red-500'}`}
+                      className={`mt-1 w-full ${!name.trim() && 'border-red-500'}`}
                       value={name} 
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
@@ -464,20 +462,20 @@ export default function EventBooking() {
                       aria-describedby="name-error"
                     />
                     {!name.trim() && (
-                      <p id="name-error" className="text-sm text-red-500 mt-1">
+                      <p id="name-error" className="text-xs text-red-500 mt-1">
                         Your name is required
                       </p>
                     )}
                   </div>
                   
-                  <div>
+                  <div className="mt-2">
                     <Label htmlFor="email" className="font-medium">
                       Email address
                     </Label>
                     <Input 
                       id="email" 
                       type="email"
-                      className={`mt-2 w-full ${(email.trim() === '' || (email.trim() && !email.includes('@'))) && 'border-red-500'}`}
+                      className={`mt-1 w-full ${(email.trim() === '' || (email.trim() && !email.includes('@'))) && 'border-red-500'}`}
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
@@ -486,13 +484,13 @@ export default function EventBooking() {
                       aria-describedby="email-error"
                     />
                     {(email.trim() === '' || (email.trim() && !email.includes('@'))) && (
-                      <p id="email-error" className="text-sm text-red-500 mt-1">
+                      <p id="email-error" className="text-xs text-red-500 mt-1">
                         {!email.trim() ? "Email address is required" : "Please enter a valid email address"}
                       </p>
                     )}
                   </div>
                   
-                  <div className="pt-4">
+                  <div className="mt-4">
                     <Button 
                       onClick={handleBooking}
                       disabled={!name || !email || bookingMutation.isPending || !selectedDate || !selectedTime}
