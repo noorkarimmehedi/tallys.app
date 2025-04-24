@@ -3,13 +3,19 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Plus, X } from 'lucide-react';
 
 interface MultipleChoiceProps {
   value: string;
   onChange: (value: string) => void;
   options: string[];
   onOptionsChange?: (options: string[]) => void;
+  label?: string;
+  description?: string;
+  required?: boolean;
   preview?: boolean;
+  id?: string;
+  question?: any;
 }
 
 export default function MultipleChoice({ 
@@ -17,7 +23,11 @@ export default function MultipleChoice({
   onChange, 
   options, 
   onOptionsChange,
-  preview = false 
+  label = "Select an option",
+  description = "",
+  required = false,
+  preview = false,
+  id
 }: MultipleChoiceProps) {
   const [newOption, setNewOption] = useState("");
   

@@ -144,11 +144,11 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
         />
       </div>
       
-      <div className="max-w-[600px] w-full p-6">
-        <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-8">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
-            <p className="text-gray-600 mb-6">Please complete all the sections below</p>
+      <div className="w-full max-w-[600px] px-3 sm:px-6 py-4 sm:py-6">
+        <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
+          <div className="text-center mb-6 sm:mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Please complete all the sections below</p>
           </div>
           
           {questions.length === 0 ? (
