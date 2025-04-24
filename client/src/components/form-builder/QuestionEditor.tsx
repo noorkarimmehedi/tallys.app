@@ -21,7 +21,7 @@ interface QuestionEditorProps {
   sections?: FormSection[];
 }
 
-export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorProps) {
+export function QuestionEditor({ question, onChange, onDelete, sections = [] }: QuestionEditorProps) {
   const handleChange = (key: keyof FormQuestion, value: any) => {
     onChange(question.id, { [key]: value });
   };
@@ -84,13 +84,37 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
         <CardContent className="p-6">
           {renderFieldEditor()}
           
-          <div className="mt-6 flex items-center gap-2">
-            <Checkbox 
-              id="required" 
-              checked={question.required} 
-              onCheckedChange={(checked) => handleChange('required', checked)}
-            />
-            <Label htmlFor="required">Required question</Label>
+          <div className="mt-6 flex flex-col gap-4">
+            {/* Section selector */}
+            <div>
+              <Label htmlFor="section" className="mb-1 block">Section</Label>
+              <Select 
+                value={question.sectionId || ""}
+                onValueChange={(value) => handleChange('sectionId', value)}
+              >
+                <SelectTrigger id="section" className="w-full">
+                  <SelectValue placeholder="Select a section" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No section</SelectItem>
+                  {sections.map((section) => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Required checkbox */}
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="required" 
+                checked={question.required} 
+                onCheckedChange={(checked) => handleChange('required', checked)}
+              />
+              <Label htmlFor="required">Required question</Label>
+            </div>
           </div>
           
           {question.type === "shortText" || question.type === "paragraph" || question.type === "number" ? (

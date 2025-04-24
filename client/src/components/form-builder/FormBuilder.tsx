@@ -24,8 +24,11 @@ export function FormBuilder({ id }: FormBuilderProps) {
   const [sections, setSections] = useState<FormSection[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+  const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
   const [formUrl, setFormUrl] = useState("");
   const [loading, setLoading] = useState(true);
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [newSectionDescription, setNewSectionDescription] = useState("");
   
   // Fetch form if id is provided
   const { data: form, isLoading: isLoadingForm } = useQuery({
@@ -144,6 +147,41 @@ export function FormBuilder({ id }: FormBuilderProps) {
     }
   };
   
+  const addSection = () => {
+    if (!newSectionTitle.trim()) return;
+    
+    const newSection = createSection(newSectionTitle, newSectionDescription);
+    setSections([...sections, newSection]);
+    
+    // Reset form fields
+    setNewSectionTitle('');
+    setNewSectionDescription('');
+    setSectionDialogOpen(false);
+    
+    toast({
+      title: "Section added",
+      description: "New section has been added to the form",
+    });
+  };
+  
+  const deleteSection = (sectionId: string) => {
+    // Remove section
+    const newSections = sections.filter(s => s.id !== sectionId);
+    
+    // Update questions that were in this section
+    const updatedQuestions = questions.map(q => 
+      q.sectionId === sectionId ? { ...q, sectionId: undefined } : q
+    );
+    
+    setSections(newSections);
+    setQuestions(updatedQuestions);
+    
+    toast({
+      title: "Section deleted",
+      description: "Section has been removed from the form",
+    });
+  };
+  
   const navigateQuestion = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -235,6 +273,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
                   question={currentQuestion} 
                   onChange={updateQuestion}
                   onDelete={() => deleteQuestion(currentQuestion.id)}
+                  sections={sections}
                 />
               )}
             </div>
@@ -264,6 +303,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </Button>
             </div>
             <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSectionDialogOpen(true)}
+                className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+              >
+                Manage Sections
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -330,6 +377,89 @@ export function FormBuilder({ id }: FormBuilderProps) {
               }}
             >
               Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Section Management Dialog */}
+      <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-xl">Manage Sections</DialogTitle>
+            <DialogDescription>
+              Organize your form into sections to group related questions together.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Current Sections */}
+          {sections.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Current Sections</h4>
+              <div className="space-y-2">
+                {sections.map((section) => (
+                  <div key={section.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                    <div>
+                      <h5 className="font-medium">{section.title}</h5>
+                      {section.description && (
+                        <p className="text-sm text-gray-500">{section.description}</p>
+                      )}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => deleteSection(section.id)}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      <i className="ri-delete-bin-line"></i>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Add New Section */}
+          <div className="mt-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Add New Section</h4>
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="section-title">Section Title</Label>
+                <Input
+                  id="section-title"
+                  value={newSectionTitle}
+                  onChange={(e) => setNewSectionTitle(e.target.value)}
+                  placeholder="e.g. Personal Information"
+                  className="w-full mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="section-description">Description (optional)</Label>
+                <Textarea
+                  id="section-description"
+                  value={newSectionDescription}
+                  onChange={(e) => setNewSectionDescription(e.target.value)}
+                  placeholder="e.g. Please provide your contact details"
+                  className="w-full mt-1"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button 
+              variant="outline" 
+              className="sm:w-full"
+              onClick={() => setSectionDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={addSection}
+              disabled={!newSectionTitle.trim()}
+              className="sm:w-full bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+            >
+              Add Section
             </Button>
           </DialogFooter>
         </DialogContent>
