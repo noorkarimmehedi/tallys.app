@@ -20,7 +20,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <div 
       className="flex h-screen overflow-hidden" 
       style={{
-        backgroundImage: `url("/attached_assets/Image 4-24-25 at 7.53 PM.jpeg")`,
+        backgroundImage: `url("/images/background.jpeg")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed"
