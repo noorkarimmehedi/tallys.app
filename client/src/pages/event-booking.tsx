@@ -31,7 +31,7 @@ export default function EventBooking() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookingComplete, setBookingComplete] = useState(false);
-  const [activeAccordion, setActiveAccordion] = useState<string>("date-time");
+  const [activeAccordion, setActiveAccordion] = useState<string>("event-details");
   
   // Fetch event details
   const { data: event, isLoading, error } = useQuery({
@@ -51,10 +51,8 @@ export default function EventBooking() {
       setActiveAccordion("your-info");
     } else if (selectedDate) {
       setActiveAccordion("date-time");
-    } else {
-      // Keep the initial selection of "date-time" on first load
-      setActiveAccordion("date-time");
     }
+    // No else case - this allows the initial "event-details" to remain on first load
   }, [selectedDate, selectedTime]);
   
   // Get available time slots for selected date
