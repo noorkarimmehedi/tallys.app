@@ -37,6 +37,7 @@ function FieldRenderer({
 }) {
   switch (question.type) {
     case "shortText":
+    case "name":  // Handle "name" type using the same ShortText component
       return (
         <ShortText
           value={value as string}
@@ -80,8 +81,36 @@ function FieldRenderer({
           maxRating={question.maxRating || 5}
         />
       );
+    case "number":
+      return (
+        <ShortText
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "phone":
+      return (
+        <ShortText
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "address":
+      return (
+        <Paragraph
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "date":
+      return (
+        <ShortText
+          value={value as string}
+          onChange={onChange}
+        />
+      );
     default:
-      return <div>Unsupported question type</div>;
+      return <div className="p-2 border border-red-300 rounded bg-red-50 text-red-600">Unsupported question type: {question.type}</div>;
   }
 }
 import { SectionGroup, getQuestionsGroupedBySections } from '@/lib/utils';
