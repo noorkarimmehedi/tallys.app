@@ -51,6 +51,9 @@ export default function EventBooking() {
       setActiveAccordion("your-info");
     } else if (selectedDate) {
       setActiveAccordion("date-time");
+    } else {
+      // Keep the initial selection of "date-time" on first load
+      setActiveAccordion("date-time");
     }
   }, [selectedDate, selectedTime]);
   
@@ -311,6 +314,7 @@ export default function EventBooking() {
             collapsible
             className="w-full max-w-[400px] mx-auto"
             value={activeAccordion}
+            onValueChange={setActiveAccordion}
           >
             <AccordionItem value="event-details">
               <AccordionTrigger className="group">
