@@ -10,6 +10,7 @@ import FormPreview from "@/pages/form-preview";
 import Inbox from "@/pages/inbox";
 import Settings from "@/pages/settings";
 import Calendar from "@/pages/calendar";
+import DemoAccordion from "@/pages/demo-accordion";
 import MainLayout from "@/components/layouts/MainLayout";
 
 function Router() {
@@ -48,6 +49,9 @@ function Router() {
       </Route>
       <Route path="/f/:shortId">
         <FormPreview />
+      </Route>
+      <Route path="/demo-accordion">
+        <DemoAccordion />
       </Route>
       <Route>
         <MainLayout>
