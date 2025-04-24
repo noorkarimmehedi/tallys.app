@@ -212,7 +212,7 @@ export default function EventBooking() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen relative flex items-center justify-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
@@ -230,7 +230,7 @@ export default function EventBooking() {
   
   if (error || !event) {
     return (
-      <div className="min-h-screen relative flex items-center justify-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
@@ -239,7 +239,7 @@ export default function EventBooking() {
             tileClassName="opacity-40 border-primary/20"
           />
         </div>
-        <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
+        <Card className="w-full max-w-md relative z-10 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-xl">Event Not Found</CardTitle>
             <CardDescription>The event you're looking for doesn't exist or has been removed.</CardDescription>
@@ -254,7 +254,7 @@ export default function EventBooking() {
   
   if (bookingComplete) {
     return (
-      <div className="min-h-screen relative flex items-center justify-center bg-white p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
@@ -263,7 +263,7 @@ export default function EventBooking() {
             tileClassName="opacity-40 border-primary/20"
           />
         </div>
-        <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
+        <Card className="w-full max-w-md relative z-10 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
               <Check className="h-6 w-6 text-green-600" />
@@ -332,8 +332,8 @@ export default function EventBooking() {
       </header>
       
       {/* Main content */}
-      <main className="container relative z-10 max-w-4xl mx-auto px-4 py-6 md:py-12">
-        <div className="flex flex-col space-y-8">
+      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative z-10 px-4">
+        <div className="flex flex-col space-y-8 w-full max-w-lg">
           {/* Event Title */}
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
@@ -347,7 +347,7 @@ export default function EventBooking() {
           <Accordion
             type="single"
             collapsible
-            className="w-full max-w-[400px] mx-auto bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm"
+            className="w-full max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm"
             value={activeAccordion}
             onValueChange={setActiveAccordion}
           >
