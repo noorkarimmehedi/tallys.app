@@ -32,7 +32,10 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const registerSchema = loginSchema.extend({
+const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
@@ -59,6 +62,7 @@ export default function AuthPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       confirmPassword: "",
     },
@@ -120,10 +124,10 @@ export default function AuthPage() {
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username</FormLabel>
+                          <FormLabel>Username or Email</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Enter your username" 
+                              placeholder="Enter your username or email" 
                               {...field} 
                               disabled={loginMutation.isPending}
                             />
@@ -180,6 +184,24 @@ export default function AuthPage() {
                           <FormControl>
                             <Input 
                               placeholder="Choose a username" 
+                              {...field} 
+                              disabled={registerMutation.isPending}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter your email address" 
+                              type="email"
                               {...field} 
                               disabled={registerMutation.isPending}
                             />
