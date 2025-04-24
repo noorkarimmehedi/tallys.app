@@ -218,16 +218,14 @@ export default function EventBuilder() {
   
   if (isLoading) {
     return (
-      <MainLayout>
-        <div className="flex justify-center items-center h-full">
-          <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
-        </div>
-      </MainLayout>
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+      </div>
     );
   }
   
   return (
-    <MainLayout>
+    <>
       {/* Background Tiles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute inset-0 bg-gray-50"></div>
@@ -239,7 +237,7 @@ export default function EventBuilder() {
         />
       </div>
       
-      <div className="container relative z-10 mx-auto max-w-5xl pt-8 pb-16 px-4 sm:px-6">
+      <div className="relative z-10 max-w-5xl pt-8 pb-16 px-2 sm:px-6 mx-auto">
         {/* Header with back button and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center">
@@ -595,6 +593,6 @@ export default function EventBuilder() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 }
