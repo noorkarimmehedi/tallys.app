@@ -45,8 +45,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 relative z-10">
-            <Link href="/">
-              <a className="text-2xl font-medium font-['Alternate_Gothic', 'sans-serif']">tallys</a>
+            <Link href="/" className="text-2xl font-medium font-['Alternate_Gothic', 'sans-serif']">
+              tallys
             </Link>
           </div>
           
@@ -54,48 +54,53 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             <div className="px-3 space-y-0.5">
               {/* Home Navigation Item */}
-              <Link href="/">
-                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Home className={`mr-2 h-4 w-4 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Home</span>
-                </a>
+              <Link 
+                href="/" 
+                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
+              >
+                <Home className={`mr-2 h-4 w-4 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
+                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Home</span>
               </Link>
               
               {/* Inbox Navigation Item */}
-              <Link href="/inbox">
-                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/inbox" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Inbox className={`mr-2 h-4 w-4 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Inbox</span>
-                </a>
+              <Link 
+                href="/inbox" 
+                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/inbox" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
+              >
+                <Inbox className={`mr-2 h-4 w-4 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
+                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Inbox</span>
               </Link>
               
               {/* Calendar Navigation Item */}
-              <Link href="/calendar">
-                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/calendar" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <CalendarDays className={`mr-2 h-4 w-4 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
-                </a>
+              <Link 
+                href="/calendar" 
+                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/calendar" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
+              >
+                <CalendarDays className={`mr-2 h-4 w-4 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
+                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
               </Link>
               
               {/* Form Demo Navigation Item */}
-              <Link href="/form-demo">
-                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/form-demo" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <LayoutGrid className={`mr-2 h-4 w-4 ${location === "/form-demo" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Form Demo</span>
-                </a>
+              <Link 
+                href="/form-demo" 
+                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/form-demo" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
+              >
+                <LayoutGrid className={`mr-2 h-4 w-4 ${location === "/form-demo" ? "text-gray-800" : "text-gray-600"}`} />
+                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Form Demo</span>
               </Link>
 
               {/* Settings Navigation Item */}
-              <Link href="/settings">
-                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/settings" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Settings className={`mr-2 h-4 w-4 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
-                </a>
+              <Link 
+                href="/settings" 
+                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/settings" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
+              >
+                <Settings className={`mr-2 h-4 w-4 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
+                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
               </Link>
             </div>
             

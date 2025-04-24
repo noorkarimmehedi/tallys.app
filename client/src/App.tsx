@@ -16,15 +16,49 @@ import MainLayout from "@/components/layouts/MainLayout";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/form-builder/:id?" component={FormBuilder} />
-      <Route path="/preview/:id" component={FormPreview} />
-      <Route path="/form-demo" component={FormDemo} />
-      <Route path="/inbox" component={Inbox} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/calendar" component={Calendar} />
-      <Route path="/f/:shortId" component={FormPreview} />
-      <Route component={NotFound} />
+      <Route path="/">
+        <MainLayout>
+          <Dashboard />
+        </MainLayout>
+      </Route>
+      <Route path="/form-builder/:id?">
+        <MainLayout>
+          <FormBuilder />
+        </MainLayout>
+      </Route>
+      <Route path="/preview/:id">
+        <MainLayout>
+          <FormPreview />
+        </MainLayout>
+      </Route>
+      <Route path="/form-demo">
+        <MainLayout>
+          <FormDemo />
+        </MainLayout>
+      </Route>
+      <Route path="/inbox">
+        <MainLayout>
+          <Inbox />
+        </MainLayout>
+      </Route>
+      <Route path="/settings">
+        <MainLayout>
+          <Settings />
+        </MainLayout>
+      </Route>
+      <Route path="/calendar">
+        <MainLayout>
+          <Calendar />
+        </MainLayout>
+      </Route>
+      <Route path="/f/:shortId">
+        <FormPreview />
+      </Route>
+      <Route>
+        <MainLayout>
+          <NotFound />
+        </MainLayout>
+      </Route>
     </Switch>
   );
 }
@@ -33,9 +67,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <MainLayout>
-          <Router />
-        </MainLayout>
+        <Router />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
