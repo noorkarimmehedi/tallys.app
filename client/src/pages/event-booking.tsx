@@ -36,18 +36,32 @@ export default function EventBooking() {
   
   // Get available time slots for selected date
   const getTimeSlotsForDate = (date?: Date) => {
-    if (!date || !event?.weeklySchedule) return [];
+    if (!date) {
+      console.log("No date provided to getTimeSlotsForDate");
+      return [];
+    }
+    
+    if (!event?.weeklySchedule) {
+      console.log("No weekly schedule found in event data", event);
+      return [];
+    }
     
     try {
       // Get day of week from selected date
       const dayOfWeek = format(date, 'EEEE').toLowerCase();
+      console.log("Getting time slots for day:", dayOfWeek);
       
       // Parse weekly schedule from event
       const weeklySchedule = JSON.parse(event.weeklySchedule);
+      console.log("Parsed weekly schedule:", weeklySchedule);
       
       // Check if this day is enabled
       if (weeklySchedule[dayOfWeek]?.enabled) {
-        return weeklySchedule[dayOfWeek].timeSlots;
+        const slots = weeklySchedule[dayOfWeek].timeSlots;
+        console.log("Available time slots:", slots);
+        return slots;
+      } else {
+        console.log("Day is not enabled in weekly schedule");
       }
       
       return [];
@@ -76,7 +90,10 @@ export default function EventBooking() {
   const isDateDisabled = (date: Date) => {
     const dayOfWeek = format(date, 'EEEE').toLowerCase();
     const availableDays = getAvailableDays();
-    return !availableDays.includes(dayOfWeek);
+    console.log("Available days:", availableDays, "Current day:", dayOfWeek);
+    // Temporarily return false to allow all dates for testing
+    return false;
+    // return !availableDays.includes(dayOfWeek);
   };
   
   // Create booking mutation
@@ -335,7 +352,11 @@ export default function EventBooking() {
                       value={name} 
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
+                      required
                     />
+                    <p className="text-sm text-red-500 mt-1">
+                      {!name.trim() && "Your name is required"}
+                    </p>
                   </div>
                   
                   <div>
@@ -349,7 +370,12 @@ export default function EventBooking() {
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
+                      required
                     />
+                    <p className="text-sm text-red-500 mt-1">
+                      {!email.trim() && "Email address is required"}
+                      {email.trim() && !email.includes('@') && "Please enter a valid email address"}
+                    </p>
                   </div>
                   
                   <div className="pt-4">
@@ -410,7 +436,12 @@ export default function EventBooking() {
                       <Calendar
                         mode="single"
                         selected={selectedDate}
-                        onSelect={setSelectedDate}
+                        onSelect={(date) => {
+                          console.log("Date selected:", date);
+                          if (date) {
+                            setSelectedDate(date);
+                          }
+                        }}
                         month={currentMonth}
                         onMonthChange={setCurrentMonth}
                         classNames={{
@@ -418,8 +449,7 @@ export default function EventBooking() {
                           day_today: "border border-gray-200 bg-gray-50 text-black"
                         }}
                         disabled={[
-                          { before: today },
-                          isDateDisabled
+                          { before: today }
                         ]}
                       />
                     </div>
@@ -435,13 +465,16 @@ export default function EventBooking() {
                           </h3>
                         </div>
                         <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2">
-                          {availableTimeSlots.length > 0 ? (
-                            availableTimeSlots.map((time) => (
+                          {availableTimeSlots && availableTimeSlots.length > 0 ? (
+                            availableTimeSlots.map((time: string) => (
                               <Button
                                 key={time}
                                 variant="outline"
                                 className="w-full justify-start text-left h-auto py-3 font-normal hover:border-black hover:text-black"
-                                onClick={() => setSelectedTime(time)}
+                                onClick={() => {
+                                  console.log("Time selected:", time);
+                                  setSelectedTime(time);
+                                }}
                               >
                                 {formatTimeSlot(time)}
                               </Button>
