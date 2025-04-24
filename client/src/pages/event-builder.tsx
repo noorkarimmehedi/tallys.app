@@ -13,7 +13,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TimeSlot, EventAvailability } from '@shared/schema';
 import MainLayout from '@/components/layouts/MainLayout';
-import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings } from 'lucide-react';
+import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings, Eye, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export default function EventBuilder() {
@@ -28,6 +28,7 @@ export default function EventBuilder() {
   const [isPublished, setIsPublished] = useState(false);
   const [availableTimes, setAvailableTimes] = useState<EventAvailability[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery({
@@ -48,6 +49,7 @@ export default function EventBuilder() {
   
   // Handle date selection in AppointmentPicker
   const handleDateTimeSelected = (date: Date, time: string) => {
+    console.log("Selected date and time:", date, time);
     const dateString = date.toISOString().split('T')[0];
     const newAvailableTimes = [...availableTimes];
     
@@ -77,6 +79,7 @@ export default function EventBuilder() {
       });
     }
     
+    console.log("Updated available times:", newAvailableTimes);
     setAvailableTimes(newAvailableTimes);
   };
   
@@ -325,14 +328,79 @@ export default function EventBuilder() {
                   </div>
                 </div>
                 
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => window.open(`/e/${event.shortId}`, '_blank')}
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  View Booking Page
-                </Button>
+                <div className="flex flex-col space-y-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => window.open(`/e/${event.shortId}`, '_blank')}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    View Booking Page
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowPreview(!showPreview)}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    {showPreview ? "Hide Preview" : "Show Preview"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Event preview section */}
+          {showPreview && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Event Preview</CardTitle>
+                <CardDescription>This is how your event booking page will appear to users</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg border overflow-hidden">
+                  <div className="p-6 bg-white">
+                    <div className="flex items-center mb-6">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
+                        <User className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Your Name</h4>
+                        <p className="text-sm text-muted-foreground">Tallys Calendar</p>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2">{title || "Event Title"}</h3>
+                    <div className="flex items-center text-sm text-muted-foreground mb-4">
+                      <Clock className="mr-2 h-4 w-4" />
+                      <span>{duration} minutes</span>
+                      {location && (
+                        <>
+                          <MapPin className="ml-4 mr-2 h-4 w-4" />
+                          <span>{location}</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-6">
+                      {description || "No description provided"}
+                    </p>
+                    
+                    <div className="mt-6">
+                      <AppointmentPicker 
+                        availableTimeSlots={
+                          availableTimes.length > 0 
+                            ? availableTimes[0].timeSlots.map(slot => ({
+                                ...slot,
+                                available: slot.available
+                              }))
+                            : []
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}

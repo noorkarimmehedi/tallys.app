@@ -51,6 +51,7 @@ export function AppointmentPicker({
       const selectedDate = new Date(date);
       const [hours, minutes] = selectedTime.split(':').map(Number);
       selectedDate.setHours(hours, minutes);
+      console.log("Sending to parent:", selectedDate, selectedTime);
       onDateTimeSelected(selectedDate, selectedTime);
     }
   };
