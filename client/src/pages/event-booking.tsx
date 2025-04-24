@@ -31,7 +31,7 @@ export default function EventBooking() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookingComplete, setBookingComplete] = useState(false);
-  const [activeAccordion, setActiveAccordion] = useState<string>("event-details");
+  const [activeAccordion, setActiveAccordion] = useState<string>("date-time");
   
   // Fetch event details
   const { data: event, isLoading, error } = useQuery({
@@ -403,23 +403,16 @@ export default function EventBooking() {
                     onTimeChange={(time: string | null) => {
                       console.log("Time selected:", time);
                       setSelectedTime(time);
+                      if (time && selectedDate) {
+                        // Automatically open the Your Information section when both date and time are selected
+                        setActiveAccordion("your-info");
+                      }
                     }}
                     disabledDates={[
                       { before: today }
                     ]}
                   />
-                  
-                  {selectedDate && selectedTime && (
-                    <div className="mt-4">
-                      <Button 
-                        onClick={() => setActiveAccordion("your-info")}
-                        className="w-full"
-                      >
-                        Continue to Your Info
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
+                  {/* Button removed as the section now opens automatically */}
                 </div>
               </AccordionContent>
             </AccordionItem>
