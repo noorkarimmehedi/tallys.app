@@ -123,21 +123,6 @@ function AppointmentPicker({
           </div>
         </div>
       </div>
-      <p
-        className="mt-4 text-center text-xs text-muted-foreground"
-        role="region"
-        aria-live="polite"
-      >
-        Appointment picker -{" "}
-        <a
-          className="underline hover:text-foreground"
-          href="https://daypicker.dev/"
-          target="_blank"
-          rel="noopener nofollow"
-        >
-          React DayPicker
-        </a>
-      </p>
     </div>
   );
 }
