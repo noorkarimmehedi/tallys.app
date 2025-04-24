@@ -19,15 +19,25 @@ export default function FormPreview() {
   
   const { data: form, isLoading } = useQuery({
     queryKey,
-    onSuccess: (data) => {
+    refetchOnMount: true,
+    select: (data: any) => {
       console.log("Form data from API:", {
         id: data?.id,
         title: data?.title,
         questions: data?.questions,
-        questionCount: data?.questions?.length || 0,
+        questionsValid: Array.isArray(data?.questions),
+        questionCount: Array.isArray(data?.questions) ? data.questions.length : 0,
         sections: data?.sections,
-        sectionCount: data?.sections?.length || 0,
+        sectionsValid: Array.isArray(data?.sections),
+        sectionCount: Array.isArray(data?.sections) ? data.sections.length : 0,
       });
+      
+      // Ensure all necessary properties exist in the form data
+      return {
+        ...data,
+        questions: Array.isArray(data?.questions) ? data.questions : [],
+        sections: Array.isArray(data?.sections) ? data.sections : []
+      };
     }
   });
   

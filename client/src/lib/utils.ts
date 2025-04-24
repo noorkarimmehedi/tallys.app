@@ -87,12 +87,16 @@ export interface SectionGroup {
 }
 
 export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): SectionGroup[] {
-  const { questions, sections = [] } = form;
+  // Ensure questions and sections are arrays
+  const questions = Array.isArray(form?.questions) ? form.questions : [];
+  const sections = Array.isArray(form?.sections) ? form.sections : [];
   
   // Add debug logging
   console.log("getQuestionsGroupedBySections input:", {
     questionCount: questions.length,
     sectionCount: sections.length,
+    questionsValid: Array.isArray(form?.questions),
+    sectionsValid: Array.isArray(form?.sections),
     questionsData: questions,
     sectionsData: sections
   });
