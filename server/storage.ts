@@ -45,6 +45,97 @@ export class MemStorage implements IStorage {
     this.createUser({
       username: "demo",
       password: "password"
+    }).then(user => {
+      // Create a demo form with sections
+      this.createForm({
+        userId: user.id,
+        title: "Customer Information Form",
+        published: true,
+        shortId: "demo-form",
+        questions: [
+          {
+            id: "q1",
+            type: "shortText",
+            title: "First Name",
+            required: true,
+            sectionId: "personal"
+          },
+          {
+            id: "q2",
+            type: "shortText",
+            title: "Last Name",
+            required: true,
+            sectionId: "personal"
+          },
+          {
+            id: "q3",
+            type: "email",
+            title: "Email Address",
+            required: true,
+            sectionId: "contact"
+          },
+          {
+            id: "q4",
+            type: "shortText",
+            title: "Phone Number",
+            required: false,
+            sectionId: "contact"
+          },
+          {
+            id: "q5",
+            type: "shortText",
+            title: "Street Address",
+            required: true,
+            sectionId: "address"
+          },
+          {
+            id: "q6",
+            type: "shortText",
+            title: "City",
+            required: true,
+            sectionId: "address"
+          },
+          {
+            id: "q7",
+            type: "shortText",
+            title: "Zip/Postal Code",
+            required: true,
+            sectionId: "address"
+          },
+          {
+            id: "q8",
+            type: "paragraph",
+            title: "Additional Comments",
+            required: false
+          }
+        ],
+        sections: [
+          {
+            id: "personal",
+            title: "Personal Information",
+            description: "Please provide your name",
+            icon: "user"
+          },
+          {
+            id: "contact",
+            title: "Contact Information",
+            description: "How can we reach you?",
+            icon: "mail"
+          },
+          {
+            id: "address",
+            title: "Address Information",
+            description: "Where do you live?",
+            icon: "map"
+          }
+        ],
+        theme: {
+          backgroundColor: "#ffffff",
+          textColor: "#000000",
+          primaryColor: "#000000",
+          fontFamily: "Alternate Gothic"
+        }
+      });
     });
   }
 
@@ -85,12 +176,13 @@ export class MemStorage implements IStorage {
 
   async createForm(insertForm: InsertForm): Promise<Form> {
     const id = this.formIdCounter++;
-    const shortId = nanoid(10);
+    const shortId = insertForm.shortId || nanoid(10);
     const form: Form = { 
       ...insertForm, 
       id, 
       shortId,
       views: 0,
+      published: insertForm.published || false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -115,7 +207,7 @@ export class MemStorage implements IStorage {
     const form = this.forms.get(id);
     if (!form) return false;
     
-    form.views += 1;
+    form.views = (form.views || 0) + 1;
     this.forms.set(id, form);
     return true;
   }

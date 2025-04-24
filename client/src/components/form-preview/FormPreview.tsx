@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormQuestion, FormResponse } from "@shared/schema";
+import { Form, FormQuestion, FormResponse, FormSection } from "@shared/schema";
 import ShortText from "@/components/ui/form-fields/ShortText";
 import Paragraph from "@/components/ui/form-fields/Paragraph";
 import MultipleChoice from "@/components/ui/form-fields/MultipleChoice";
@@ -19,6 +19,7 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Mail, MapPin, User, FileText, Star, CheckCircle } from "lucide-react";
+import { getQuestionsGroupedBySections } from "@/lib/utils";
 
 interface FormPreviewProps {
   form: Form;
@@ -239,7 +240,13 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   const questionsBySection = getQuestionsGroupedBySections({ 
     questions: form.questions, 
     sections 
-  });
+  }) as {
+    sectionId: string | undefined;
+    sectionTitle: string;
+    sectionDescription?: string;
+    sectionIcon?: string;
+    questions: FormQuestion[];
+  }[];
 
   return (
     <div className="flex items-center justify-center min-h-full p-6">

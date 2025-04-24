@@ -24,7 +24,7 @@ export function createSection(title: string = '', description: string = ''): For
     id: nanoid(),
     title: title || 'New Section',
     description,
-    icon: 'section'
+    icon: 'user'
   }
 }
 
@@ -78,19 +78,21 @@ export function getFieldLabel(type: FieldType): string {
 }
 
 // Group questions by sections
-export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): {
-  sectionId: string | null;
+export interface SectionGroup {
+  sectionId?: string;
   sectionTitle: string;
   sectionDescription?: string;
   sectionIcon?: string;
   questions: FormQuestion[];
-}[] {
+}
+
+export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): SectionGroup[] {
   const { questions, sections = [] } = form;
   
   // Create default group for questions without a section
   const result = [
     {
-      sectionId: null,
+      sectionId: undefined,
       sectionTitle: "General Questions",
       questions: [] as FormQuestion[]
     }
@@ -103,7 +105,7 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
       sectionTitle: section.title,
       sectionDescription: section.description,
       sectionIcon: section.icon,
-      questions: []
+      questions: [] as FormQuestion[]
     });
   });
   
