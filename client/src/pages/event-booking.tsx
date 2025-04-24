@@ -305,7 +305,7 @@ export default function EventBooking() {
             </div>
           </div>
           
-          {/* Booking Process - Accordion with Numbered Style */}
+          {/* Using FormSectionAccordion style */}
           <Accordion
             type="single"
             collapsible
@@ -314,16 +314,17 @@ export default function EventBooking() {
           >
             {/* 1. Event Details */}
             <AccordionItem value="event-details" className="px-4 py-2">
-              <AccordionTrigger className="py-4 flex items-center">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                    <span className="text-primary font-medium">1</span>
-                  </div>
-                  <span className="font-medium text-lg">Event Details</span>
+              <AccordionTrigger className="group">
+                <div className="flex items-center gap-2">
+                  <Clock className="size-4 stroke-2 text-muted-foreground" />
+                  <span>Event Details</span>
+                  {activeAccordion !== "event-details" && (
+                    <span className="ml-2 text-sm text-green-500">✓</span>
+                  )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pb-4">
-                <div className="pl-11 space-y-4">
+              <AccordionContent>
+                <div className="space-y-4">
                   <p className="text-gray-600">
                     {event.description || "No description provided."}
                   </p>
@@ -379,23 +380,17 @@ export default function EventBooking() {
             
             {/* 2. Date & Time Selection */}
             <AccordionItem value="date-time" className="px-4 py-2">
-              <AccordionTrigger className="py-4 flex items-center">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                    <span className="text-primary font-medium">2</span>
-                  </div>
-                  <span className="font-medium text-lg">
-                    Date & Time
-                    {selectedDate && selectedTime && (
-                      <span className="ml-2 text-sm font-normal text-gray-500">
-                        {format(selectedDate, 'MMM d, yyyy')} at {formatTimeSlot(selectedTime)}
-                      </span>
-                    )}
-                  </span>
+              <AccordionTrigger className="group">
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="size-4 stroke-2 text-muted-foreground" />
+                  <span>Date & Time</span>
+                  {selectedDate && selectedTime && (
+                    <span className="ml-2 text-sm text-green-500">✓</span>
+                  )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pb-4">
-                <div className="pl-11">
+              <AccordionContent>
+                <div className="space-y-4">
                   <div className="mb-6">
                     <AppointmentPicker
                       initialDate={selectedDate || undefined}
@@ -435,23 +430,17 @@ export default function EventBooking() {
             
             {/* 3. Your Information */}
             <AccordionItem value="your-info" className="px-4 py-2">
-              <AccordionTrigger className="py-4 flex items-center">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                    <span className="text-primary font-medium">3</span>
-                  </div>
-                  <span className="font-medium text-lg">
-                    Your Information
-                    {name && email && (
-                      <span className="ml-2 text-sm font-normal text-gray-500">
-                        {name} ({email})
-                      </span>
-                    )}
-                  </span>
+              <AccordionTrigger className="group">
+                <div className="flex items-center gap-2">
+                  <User className="size-4 stroke-2 text-muted-foreground" />
+                  <span>Your Information</span>
+                  {name && email && (
+                    <span className="ml-2 text-sm text-green-500">✓</span>
+                  )}
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pb-4">
-                <div className="pl-11 space-y-6">
+              <AccordionContent>
+                <div className="space-y-6">
                   {selectedDate && selectedTime && (
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-900">
