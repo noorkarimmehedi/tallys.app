@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { Tiles } from "@/components/ui/tiles";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,15 +18,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }
 
   return (
-    <div 
-      className="flex h-screen overflow-hidden" 
-      style={{
-        backgroundImage: `url("/images/background.jpeg")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed"
-      }}
-    >
+    <div className="flex h-screen overflow-hidden relative">
+      {/* Grid Tiles Background */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        <Tiles 
+          rows={50} 
+          cols={15}
+          tileSize="md"
+          tileClassName="opacity-50 dark:opacity-30"
+        />
+      </div>
+    
       {/* Sidebar */}
       <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex md:flex-shrink-0 fixed inset-0 z-50 md:relative md:z-auto`}>
         <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-full">
