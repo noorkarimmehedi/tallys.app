@@ -248,60 +248,64 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     questions: FormQuestion[];
   }[];
 
+  // Map our form data to the structure expected by FormSectionAccordion
+  const formSections = questionsBySection.map(section => ({
+    id: section.sectionId || 'default',
+    title: section.sectionTitle,
+    icon: getSectionIcon(section.sectionIcon),
+    isComplete: isSectionComplete(section.questions),
+    children: (
+      <div className="flex flex-col gap-4">
+        {section.sectionDescription && (
+          <p className="text-gray-600">{section.sectionDescription}</p>
+        )}
+        {section.questions.map((question) => (
+          <div key={question.id} className="flex flex-col gap-2">
+            <div className="flex flex-col">
+              <h4 className="text-md font-medium flex items-center gap-2">
+                {getQuestionIcon(question.type)}
+                {question.title}
+                {question.required && <span className="text-red-500">*</span>}
+              </h4>
+              {question.description && (
+                <p className="text-sm text-gray-500">{question.description}</p>
+              )}
+            </div>
+            {renderField(question)}
+          </div>
+        ))}
+      </div>
+    ),
+  }));
+
   return (
     <div className="flex flex-col items-center justify-center min-h-full p-6">
-      <div className="max-w-[400px] w-full text-center">
-        <div className="mb-8">
+      <div className="max-w-[400px] w-full">
+        <div className="text-center mb-8">
           <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
           <p className="text-gray-600 mb-6">Please complete all the sections below</p>
         </div>
         
         <Accordion type="single" collapsible className="w-full">
-          {questionsBySection.map((section) => (
-            <AccordionItem key={section.sectionId || 'default'} value={section.sectionId || 'default'}>
+          {formSections.map((section) => (
+            <AccordionItem key={section.id} value={section.id}>
               <AccordionTrigger className="group">
                 <div className="flex items-center gap-2">
-                  {getSectionIcon(section.sectionIcon)}
-                  <span>{section.sectionTitle}</span>
-                  {isSectionComplete(section.questions) && (
+                  {section.icon}
+                  <span>{section.title}</span>
+                  {section.isComplete && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
                   )}
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="text-center">
-                  {section.sectionDescription && (
-                    <p className="text-gray-600 mb-4">{section.sectionDescription}</p>
-                  )}
-                  <div className="space-y-4">
-                    {section.questions.map((question) => (
-                      <div key={question.id} className="flex flex-col items-center">
-                        <div className="flex flex-col items-center mb-2 w-full">
-                          <h4 className="text-md font-medium mb-1 flex items-center gap-2">
-                            {getQuestionIcon(question.type)}
-                            {question.title}
-                            {question.required && <span className="text-red-500">*</span>}
-                          </h4>
-                          {question.description && (
-                            <p className="text-sm text-gray-500 mb-2">{question.description}</p>
-                          )}
-                          {isQuestionComplete(question.id) && (
-                            <span className="text-sm text-green-500">✓</span>
-                          )}
-                        </div>
-                        <div className="w-full">
-                          {renderField(question)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {section.children}
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
         
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-end mt-6">
           <Button 
             onClick={handleSubmit}
             disabled={submitResponseMutation.isPending}
