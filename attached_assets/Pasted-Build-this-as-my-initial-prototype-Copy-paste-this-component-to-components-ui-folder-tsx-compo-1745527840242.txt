@@ -1,3 +1,8 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+component.tsx
 "use client"
 
 import * as React from "react"
@@ -65,6 +70,29 @@ function Calendar({
     />
   )
 }
-Calendar.displayName = "Calendar";
+Calendar.displayName = "Calendar"
 
-export { Calendar };
+export { Calendar }
+
+
+demo.tsx
+"use client"
+
+import * as React from "react"
+
+import { Calendar } from "@/components/ui/calendar"
+
+export function CalendarDemo() {
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
+
+  return (
+    <Calendar
+      mode="single"
+      selected={date}
+      onSelect={setDate}
+      className="rounded-md border"
+    />
+  )
+}
+
+```
