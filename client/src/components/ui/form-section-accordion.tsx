@@ -76,7 +76,7 @@ function DefaultFormSectionAccordion() {
     <Accordion 
       type="single" 
       collapsible 
-      defaultValue="1"
+      defaultValue={undefined}
       className="w-full max-w-full"
     >
       {sections.map((section) => (
@@ -180,31 +180,11 @@ function FormSectionAccordion({
     return questions.every(q => !q.required || isFieldComplete(q.id));
   };
 
-  // Get the Personal Information section's ID, or if not found, use the first non-unsectioned section
-  const getInitialOpenSection = () => {
-    // Try to find the Personal Information section
-    const personalInfoSection = groupedQuestions.find(section => 
-      section.sectionTitle.toLowerCase().includes('personal information'));
-    
-    if (personalInfoSection) {
-      return personalInfoSection.sectionId || `section-${groupedQuestions.indexOf(personalInfoSection)}`;
-    }
-    
-    // If no Personal Information section, find first section that's not "unsectioned"
-    const firstNonGenericSection = groupedQuestions.find(section => section.sectionId !== "unsectioned");
-    if (firstNonGenericSection) {
-      return firstNonGenericSection.sectionId || `section-${groupedQuestions.indexOf(firstNonGenericSection)}`;
-    }
-    
-    // If no suitable section found, don't open any by default
-    return undefined;
-  };
-
   return (
     <Accordion 
       type="single" 
       collapsible
-      defaultValue={getInitialOpenSection()}
+      defaultValue={undefined} // No section is opened by default
       className="w-full max-w-full"
     >
       {groupedQuestions.map((section, index) => (
