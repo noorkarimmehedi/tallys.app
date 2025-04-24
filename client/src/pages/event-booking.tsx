@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams } from 'wouter';
-import { format } from 'date-fns';
+import { format, addDays, isSameDay } from 'date-fns';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AppointmentPicker, TimeSlot } from '@/components/ui/appointment-picker';
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Clock, MapPin, User, Check } from 'lucide-react';
+import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export default function EventBooking() {
@@ -213,113 +213,261 @@ export default function EventBooking() {
   // Get available time slots for the selected date
   const availableTimeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
   
+  // Current date for calendar
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const today = new Date();
+  
+  // Format time slot for display
+  const formatTimeSlot = (timeString: string) => {
+    try {
+      // Parse the time string (assuming format like "10:00" or "14:30")
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0);
+      
+      // Format using 12-hour clock with am/pm
+      return format(date, 'h:mma').toLowerCase();
+    } catch (e) {
+      return timeString; // Return the original if parsing fails
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left column - Event details */}
-          <div>
-            <div className="sticky top-8">
-              <div className="flex items-center mb-6">
-                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-4">
-                  <User className="h-5 w-5 text-gray-600" />
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200">
+        <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">T</span>
+            </div>
+            <h1 className="text-xl font-medium">Tallys</h1>
+          </div>
+        </div>
+      </header>
+      
+      {/* Main content */}
+      <main className="container max-w-6xl mx-auto px-4 py-6 md:py-12">
+        <div className="flex flex-col md:flex-row md:space-x-8">
+          {/* Left Column: Event Info */}
+          <div className="w-full md:w-1/3 mb-8 md:mb-0">
+            <h2 className="text-2xl font-semibold mb-2">{event.title}</h2>
+            <div className="flex items-center text-gray-600 mb-6">
+              <Clock className="h-4 w-4 mr-2" />
+              <span>{event.duration} min</span>
+            </div>
+            
+            <div className="border-t border-gray-200 pt-6">
+              <p className="text-gray-600 mb-6">
+                {event.description || "No description provided."}
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="mt-1">
+                    <Clock className="h-5 w-5 text-gray-500 mr-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Duration</h3>
+                    <p className="text-gray-600">{event.duration} minutes</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">Host Name</h3>
-                  <p className="text-sm text-gray-500">Tallys Calendar</p>
+                
+                <div className="flex items-start">
+                  <div className="mt-1">
+                    <Video className="h-5 w-5 text-gray-500 mr-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Video call</h3>
+                    <p className="text-gray-600">
+                      A video call will be added to this event
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="mt-1">
+                    <Globe className="h-5 w-5 text-gray-500 mr-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Time zone</h3>
+                    <p className="text-gray-600">
+                      {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                    </p>
+                  </div>
                 </div>
               </div>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">{event.title}</CardTitle>
-                  <div className="flex items-center text-sm text-gray-500 mt-2">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>{event.duration} minutes</span>
-                    {event.location && (
-                      <>
-                        <div className="mx-2 w-1 h-1 rounded-full bg-gray-300"></div>
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span>{event.location}</span>
-                      </>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700">
-                    {event.description || "No description provided."}
-                  </p>
-                </CardContent>
-              </Card>
             </div>
           </div>
           
-          {/* Right column - Booking form */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Book your appointment</CardTitle>
-                <CardDescription>Select a date and time to book your appointment</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Appointment Picker */}
-                <div>
-                  <Label className="block mb-2">Select a date and time</Label>
-                  <AppointmentPicker
-                    disabled={isDateDisabled}
-                    timeSlots={availableTimeSlots.map(time => ({ time, available: true }))}
-                    date={selectedDate || new Date()}
-                    onDateChange={(date) => {
-                      setSelectedDate(date);
-                      setSelectedTime(null); // Reset time selection when date changes
-                    }}
-                    time={selectedTime}
-                    onTimeChange={(time) => setSelectedTime(time)}
-                  />
+          {/* Right Column: Calendar and Form */}
+          <div className="w-full md:w-2/3">
+            {selectedTime && selectedDate ? (
+              /* Step 2: Contact Form */
+              <div>
+                <div className="mb-8">
+                  <button 
+                    className="inline-flex items-center text-blue-600 hover:text-blue-800"
+                    onClick={() => setSelectedTime(null)}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </button>
+                  
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 className="font-medium text-gray-900">
+                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </h3>
+                    <p className="text-gray-600">
+                      {formatTimeSlot(selectedTime)}
+                    </p>
+                  </div>
                 </div>
                 
-                {/* Contact information */}
-                <div className="pt-4 space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="name" className="block mb-1">Name</Label>
+                    <Label htmlFor="name" className="font-medium">
+                      Your name
+                    </Label>
                     <Input 
                       id="name" 
+                      className="mt-2 w-full"
                       value={name} 
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
-                      required
+                      placeholder="John Doe"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="email" className="block mb-1">Email</Label>
+                    <Label htmlFor="email" className="font-medium">
+                      Email address
+                    </Label>
                     <Input 
                       id="email" 
                       type="email"
+                      className="mt-2 w-full"
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      required
                     />
                   </div>
+                  
+                  <div className="pt-4">
+                    <Button 
+                      onClick={handleBooking}
+                      disabled={!name || !email || bookingMutation.isPending}
+                      className="w-full bg-black hover:bg-gray-800 text-white py-3"
+                    >
+                      {bookingMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      Confirm
+                    </Button>
+                  </div>
                 </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button 
-                  onClick={handleBooking}
-                  disabled={!selectedDate || !selectedTime || !name || !email || bookingMutation.isPending}
-                  className="w-full sm:w-auto"
-                >
-                  {bookingMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  Confirm Booking
-                </Button>
-              </CardFooter>
-            </Card>
+              </div>
+            ) : (
+              /* Step 1: Date & Time Selection */
+              <div>
+                {/* Calendar Navigation */}
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-medium">Select a date and time</h2>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => {
+                        const prevMonth = new Date(currentMonth);
+                        prevMonth.setMonth(prevMonth.getMonth() - 1);
+                        setCurrentMonth(prevMonth);
+                      }}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => {
+                        const nextMonth = new Date(currentMonth);
+                        nextMonth.setMonth(nextMonth.getMonth() + 1);
+                        setCurrentMonth(nextMonth);
+                      }}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col md:flex-row md:space-x-6 mb-8">
+                  {/* Calendar */}
+                  <div className="w-full md:w-2/3 mb-6 md:mb-0">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-center mb-4">
+                        <h3 className="font-medium">
+                          {format(currentMonth, 'MMMM yyyy')}
+                        </h3>
+                      </div>
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        month={currentMonth}
+                        onMonthChange={setCurrentMonth}
+                        classNames={{
+                          day_selected: "bg-black text-white hover:bg-black hover:text-white",
+                          day_today: "border border-gray-200 bg-gray-50 text-black"
+                        }}
+                        disabled={[
+                          { before: today },
+                          isDateDisabled
+                        ]}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Time Slots */}
+                  <div className="w-full md:w-1/3">
+                    {selectedDate ? (
+                      <>
+                        <div className="mb-4">
+                          <h3 className="font-medium text-gray-900">
+                            {format(selectedDate, 'EEEE, MMMM d')}
+                          </h3>
+                        </div>
+                        <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2">
+                          {availableTimeSlots.length > 0 ? (
+                            availableTimeSlots.map((time) => (
+                              <Button
+                                key={time}
+                                variant="outline"
+                                className="w-full justify-start text-left h-auto py-3 font-normal hover:border-black hover:text-black"
+                                onClick={() => setSelectedTime(time)}
+                              >
+                                {formatTimeSlot(time)}
+                              </Button>
+                            ))
+                          ) : (
+                            <div className="text-center p-4 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+                              No available time slots for this day
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center p-6 text-gray-500 border border-dashed border-gray-300 rounded-lg h-full flex items-center justify-center">
+                        <div>
+                          <CalendarIcon className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                          <p>Select a date to view available times</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
