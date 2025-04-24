@@ -146,8 +146,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </div>
         
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-8 bg-white">
-          {children}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="bg-white/80 backdrop-blur-md rounded-lg shadow-sm p-6">
+            {children}
+          </div>
         </div>
       </div>
     </div>
