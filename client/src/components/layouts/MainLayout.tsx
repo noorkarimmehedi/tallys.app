@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
 import { Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, BarChart } from "lucide-react";
+import logoImage from "@/assets/logo.png";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -46,7 +47,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 relative z-10">
             <Link href="/" className="flex items-center">
-              <img src="/logo.png" alt="Logo" className="h-8" />
+              <img src={logoImage} alt="Logo" className="h-8" />
             </Link>
           </div>
           
@@ -120,7 +121,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation Bar */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
-          <img src="/logo.png" alt="Logo" className="h-6" />
+          <img src={logoImage} alt="Logo" className="h-6" />
           <button 
             type="button" 
             className="text-gray-600 hover:text-gray-900"

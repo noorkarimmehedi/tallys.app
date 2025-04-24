@@ -28,6 +28,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
 import { TextShimmer } from "@/components/ui/text-shimmer";
+import logoImage from "@/assets/logo.png";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -116,7 +117,7 @@ export default function AuthPage() {
         <Card className="w-full max-w-md mx-4 md:mx-0 backdrop-blur-sm bg-background/80">
           <CardHeader>
             <div className="flex flex-col items-center mb-4">
-              <img src="/logo.png" alt="Logo" className="h-10 mb-2" />
+              <img src={logoImage} alt="Logo" className="h-10 mb-2" />
               <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
             </div>
             <CardDescription>
