@@ -10,7 +10,13 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { TimeSlot, EventAvailability } from '@shared/schema';
+import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema';
+
+// Extended Event type with our custom properties
+interface Event extends EventType {
+  weeklySchedule?: string;
+  availableTimes: EventAvailability[];
+}
 import MainLayout from '@/components/layouts/MainLayout';
 import { Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, Globe, Eye } from 'lucide-react';
 import { Tiles } from '@/components/ui/tiles';
@@ -60,9 +66,10 @@ export default function EventBuilder() {
   ];
   
   // Fetch event data if editing an existing event
-  const { data: event, isLoading } = useQuery({
+  const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
-    queryFn: eventId === 'new' ? undefined : undefined
+    queryFn: eventId === 'new' ? undefined : undefined,
+    // @ts-ignore - Using undefined for queryFn is valid when we don't want to fetch in certain conditions
   });
   
   useEffect(() => {
@@ -550,51 +557,57 @@ export default function EventBuilder() {
           
           {/* Right Column - Preview */}
           <div className="col-span-1">
-            <Card className="border border-gray-200 shadow-sm sticky top-6">
+            <Card className="border border-gray-200 shadow-sm sticky top-6 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Booking Preview</CardTitle>
                 <CardDescription>How your booking page will appear</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="border rounded-md overflow-hidden">
-                  <div className="p-4 bg-gray-50 border-b">
+                <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                  <div className="p-4 bg-white/90 backdrop-blur-sm border-b">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-gray-600" />
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-primary" />
                       </div>
                       <div className="ml-3">
                         <p className="text-sm font-medium">Your Name</p>
-                        <p className="text-xs text-gray-500">Tallys</p>
+                        <div className="flex items-center">
+                          <img 
+                            src="/lgoooo.png" 
+                            alt="Logo" 
+                            className="h-4 mr-1" 
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="p-4 bg-white">
-                    <h3 className="text-lg font-semibold mb-1">{title || "30 Minute Meeting"}</h3>
-                    <div className="flex items-center text-gray-500 text-xs mb-3">
-                      <Clock className="h-3 w-3 mr-1" />
+                    <h3 className="text-xl font-semibold mb-2">{title || "30 Minute Meeting"}</h3>
+                    <div className="flex items-center text-gray-600 text-sm mb-3">
+                      <Clock className="h-4 w-4 mr-1.5 text-gray-500" />
                       <span>{duration} minutes</span>
                       <div className="mx-2 w-1 h-1 rounded-full bg-gray-300"></div>
-                      <MapPin className="h-3 w-3 mr-1" />
+                      <MapPin className="h-4 w-4 mr-1.5 text-gray-500" />
                       <span>{location || "Google Meet"}</span>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-sm text-gray-600 mb-4">
                       {description || "No description provided"}
                     </p>
                     
-                    <div className="border rounded-md mt-3 p-2">
-                      <div className="text-center mb-2">
-                        <Calendar className="h-5 w-5 mx-auto mb-1 text-gray-400" />
-                        <p className="text-xs text-gray-500">Select a date</p>
+                    <div className="rounded-lg border border-gray-200 bg-white/80 backdrop-blur-sm p-4 mt-4">
+                      <div className="text-center mb-4">
+                        <Calendar className="h-6 w-6 mx-auto mb-2 text-primary/70" />
+                        <p className="text-sm text-gray-600 font-medium">Select a date</p>
                       </div>
                       
-                      <div className="text-center mt-4 mb-2 border-t pt-2">
-                        <Clock className="h-5 w-5 mx-auto mb-1 text-gray-400" />
-                        <p className="text-xs text-gray-500">Available times will show here</p>
+                      <div className="text-center mt-5 mb-4 border-t pt-4">
+                        <Clock className="h-6 w-6 mx-auto mb-2 text-primary/70" />
+                        <p className="text-sm text-gray-600 font-medium">Available times will show here</p>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-1 mt-2">
+                      <div className="grid grid-cols-3 gap-2 mt-3">
                         {Object.values(weeklySchedule)
                           .filter(day => day.enabled)
                           .slice(0, 1)
@@ -603,7 +616,7 @@ export default function EventBuilder() {
                           .map((time, i) => (
                             <div 
                               key={i} 
-                              className="h-6 bg-gray-100 rounded text-xs flex items-center justify-center text-gray-500"
+                              className="py-1.5 px-1 bg-white rounded-md border border-gray-200 text-sm flex items-center justify-center text-gray-700 hover:border-primary/50 transition-colors"
                             >
                               {time}
                             </div>
