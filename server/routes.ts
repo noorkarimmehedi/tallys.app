@@ -17,6 +17,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/forms/:id", async (req, res) => {
+    // Special case for 'new' form ID
+    if (req.params.id === 'new') {
+      // Return a template for a new form
+      return res.json({
+        id: 0,
+        userId: 1,
+        title: "New Form",
+        shortId: "",
+        description: "",
+        questions: [
+          {
+            id: "q1",
+            type: "shortText",
+            title: "What's your name?",
+            required: true,
+            options: []
+          }
+        ],
+        theme: {
+          backgroundColor: "#ffffff",
+          textColor: "#000000",
+          primaryColor: "#0070f3",
+          fontFamily: "Alternate Gothic, sans-serif"
+        },
+        published: false,
+        views: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+    
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid form ID" });
@@ -102,6 +133,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Form responses
   app.get("/api/forms/:id/responses", async (req, res) => {
+    // Special case for 'new' form ID
+    if (req.params.id === 'new') {
+      return res.json([]);
+    }
+    
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid form ID" });
@@ -117,6 +153,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/forms/:id/responses", async (req, res) => {
+    // Special case for 'new' form ID - just return a mock success response
+    if (req.params.id === 'new') {
+      return res.status(201).json({
+        id: 0,
+        formId: 0,
+        answers: req.body.answers,
+        createdAt: new Date().toISOString()
+      });
+    }
+    
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid form ID" });
