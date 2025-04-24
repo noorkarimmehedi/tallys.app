@@ -80,6 +80,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 </a>
               </Link>
               
+              {/* Form Demo Navigation Item */}
+              <Link href="/form-demo">
+                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
+                  ${location === "/form-demo" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
+                  <LayoutGrid className={`mr-2 h-4 w-4 ${location === "/form-demo" ? "text-gray-800" : "text-gray-600"}`} />
+                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Form Demo</span>
+                </a>
+              </Link>
+
               {/* Settings Navigation Item */}
               <Link href="/settings">
                 <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
