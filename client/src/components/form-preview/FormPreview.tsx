@@ -249,9 +249,9 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   }[];
 
   return (
-    <div className="flex items-center justify-center min-h-full p-6">
-      <div className="max-w-[400px] w-full">
-        <div className="text-center mb-8">
+    <div className="flex flex-col items-center justify-center min-h-full p-6">
+      <div className="max-w-[400px] w-full text-center">
+        <div className="mb-8">
           <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
           <p className="text-gray-600 mb-6">Please complete all the sections below</p>
         </div>
@@ -269,29 +269,29 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div>
+                <div className="text-center">
                   {section.sectionDescription && (
                     <p className="text-gray-600 mb-4">{section.sectionDescription}</p>
                   )}
                   <div className="space-y-4">
                     {section.questions.map((question) => (
-                      <div key={question.id}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="text-md font-medium mb-1 flex items-center gap-2">
-                              {getQuestionIcon(question.type)}
-                              {question.title}
-                              {question.required && <span className="text-red-500">*</span>}
-                            </h4>
-                            {question.description && (
-                              <p className="text-sm text-gray-500 mb-2">{question.description}</p>
-                            )}
-                          </div>
+                      <div key={question.id} className="flex flex-col items-center">
+                        <div className="flex flex-col items-center mb-2 w-full">
+                          <h4 className="text-md font-medium mb-1 flex items-center gap-2">
+                            {getQuestionIcon(question.type)}
+                            {question.title}
+                            {question.required && <span className="text-red-500">*</span>}
+                          </h4>
+                          {question.description && (
+                            <p className="text-sm text-gray-500 mb-2">{question.description}</p>
+                          )}
                           {isQuestionComplete(question.id) && (
                             <span className="text-sm text-green-500">✓</span>
                           )}
                         </div>
-                        {renderField(question)}
+                        <div className="w-full">
+                          {renderField(question)}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -301,7 +301,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
           ))}
         </Accordion>
         
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-center mt-6">
           <Button 
             onClick={handleSubmit}
             disabled={submitResponseMutation.isPending}
