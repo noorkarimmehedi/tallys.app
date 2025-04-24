@@ -307,7 +307,7 @@ export default function AuthPage() {
             spread={3}
             className="text-4xl font-bold mb-6 [--base-color:#3b82f6] [--base-gradient-color:#60a5fa]"
           >
-            Build beautiful forms in minutes
+            Hi there, nice to meet you!
           </TextShimmer>
           <p className="text-lg mb-8 text-gray-700">
             Tallys lets you create professional forms with our intuitive builder. 
