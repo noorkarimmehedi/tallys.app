@@ -35,8 +35,19 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   });
   
   // Ensure form has questions and sections arrays
-  const questions = form.questions || [];
-  const sections = form.sections || [];
+  const questions = Array.isArray(form.questions) ? form.questions : [];
+  const sections = Array.isArray(form.sections) ? form.sections : [];
+  
+  console.log("Processed form data:", {
+    questionsValid: Array.isArray(form.questions),
+    sectionsValid: Array.isArray(form.sections),
+    rawQuestions: form.questions,
+    rawQuestionsType: form.questions ? typeof form.questions : 'undefined',
+    rawSections: form.sections,
+    rawSectionsType: form.sections ? typeof form.sections : 'undefined',
+    processedQuestions: questions,
+    processedSections: sections
+  });
   
   const submitResponseMutation = useMutation({
     mutationFn: async (responseData: { answers: FormResponse }) => {
