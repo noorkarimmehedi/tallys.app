@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import { Mail, MapPin, User, FileText, Star, CheckCircle } from "lucide-react";
 import { getQuestionsGroupedBySections } from "@/lib/utils";
+import { Tiles } from "@/components/ui/tiles";
 
 interface FormPreviewProps {
   form: Form;
@@ -143,28 +144,40 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   
   if (completed) {
     return (
-      <div className="flex items-center justify-center min-h-full p-6">
-        <Card className="max-w-xl w-full">
-          <CardContent className="p-6 text-center">
-            <div className="text-5xl text-green-500 mb-4">
-              <i className="ri-check-line"></i>
-            </div>
-            <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">Thank You!</h3>
-            <p className="text-gray-600 mb-6">Your response has been recorded.</p>
-            {preview && (
-              <Button 
-                className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
-                onClick={() => {
-                  setAnswers({});
-                  setCurrentQuestionIndex(0);
-                  setCompleted(false);
-                }}
-              >
-                Start Over
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen relative">
+        {/* Tiles Background */}
+        <div className="absolute inset-0 -z-10 opacity-30">
+          <Tiles 
+            rows={50} 
+            cols={8}
+            tileSize="md"
+            tileClassName="border-gray-200"
+          />
+        </div>
+        
+        <div className="max-w-xl w-full p-6">
+          <Card className="bg-white/90 backdrop-blur-md shadow-sm">
+            <CardContent className="p-8 text-center">
+              <div className="text-5xl text-green-500 mb-4">
+                <CheckCircle className="w-16 h-16 mx-auto stroke-1" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">Thank You!</h3>
+              <p className="text-gray-600 mb-6">Your response has been recorded.</p>
+              {preview && (
+                <Button 
+                  className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+                  onClick={() => {
+                    setAnswers({});
+                    setCurrentQuestionIndex(0);
+                    setCompleted(false);
+                  }}
+                >
+                  Start Over
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -279,44 +292,56 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   }));
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="max-w-[400px] w-full">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
-          <p className="text-gray-600 mb-6">Please complete all the sections below</p>
-        </div>
-        
-        <Accordion type="single" collapsible className="w-full">
-          {formSections.map((section) => (
-            <AccordionItem key={section.id} value={section.id}>
-              <AccordionTrigger className="group">
-                <div className="flex items-center gap-2">
-                  {section.icon}
-                  <span>{section.title}</span>
-                  {section.isComplete && (
-                    <span className="ml-2 text-sm text-green-500">✓</span>
-                  )}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                {section.children}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        
-        <div className="flex justify-end mt-6">
-          <Button 
-            onClick={handleSubmit}
-            disabled={submitResponseMutation.isPending}
-            className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
-          >
-            {submitResponseMutation.isPending ? (
-              <span className="animate-spin mr-2">●</span>
-            ) : (
-              "Submit Form"
-            )}
-          </Button>
+    <div className="flex items-center justify-center min-h-screen relative">
+      {/* Tiles Background */}
+      <div className="absolute inset-0 -z-10 opacity-30">
+        <Tiles 
+          rows={50} 
+          cols={8}
+          tileSize="md"
+          tileClassName="border-gray-200"
+        />
+      </div>
+      
+      <div className="max-w-[500px] w-full p-6">
+        <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-8">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
+            <p className="text-gray-600 mb-6">Please complete all the sections below</p>
+          </div>
+          
+          <Accordion type="single" collapsible className="w-full">
+            {formSections.map((section) => (
+              <AccordionItem key={section.id} value={section.id}>
+                <AccordionTrigger className="group">
+                  <div className="flex items-center gap-2">
+                    {section.icon}
+                    <span>{section.title}</span>
+                    {section.isComplete && (
+                      <span className="ml-2 text-sm text-green-500">✓</span>
+                    )}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  {section.children}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          
+          <div className="flex justify-end mt-6">
+            <Button 
+              onClick={handleSubmit}
+              disabled={submitResponseMutation.isPending}
+              className="bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+            >
+              {submitResponseMutation.isPending ? (
+                <span className="animate-spin mr-2">●</span>
+              ) : (
+                "Submit Form"
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
