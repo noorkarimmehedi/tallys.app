@@ -20,8 +20,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <div 
       className="flex h-screen overflow-hidden" 
       style={{
-        backgroundImage: "radial-gradient(#F8F8F8 1px, transparent 0)",
-        backgroundSize: "20px 20px"
+        backgroundImage: `url("/attached_assets/Image 4-24-25 at 7.53 PM.jpeg")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed"
       }}
     >
       {/* Sidebar */}
