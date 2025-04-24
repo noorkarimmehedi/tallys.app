@@ -193,13 +193,25 @@ export function FormBuilder({ id }: FormBuilderProps) {
   };
   
   const saveForm = (publish = false) => {
+    // Generate a unique shortId if creating a new form
+    const shortId = id ? undefined : `form-${Date.now().toString(36)}`;
+    
     const formData: Partial<Form> = {
       title,
       questions,
       sections,
       theme: getDefaultFormTheme(),
-      published: publish
+      published: publish,
+      shortId
     };
+    
+    console.log("Saving form with data:", {
+      id: id || 'new',
+      titleLength: title.length,
+      questionsCount: questions.length,
+      sectionsCount: sections.length,
+      shortId
+    });
     
     if (id) {
       updateFormMutation.mutate(formData);
