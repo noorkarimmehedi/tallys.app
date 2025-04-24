@@ -12,15 +12,10 @@ import Rating from "@/components/ui/form-fields/Rating";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from "@/components/ui/accordion";
-import { Mail, MapPin, User, FileText, Star, CheckCircle } from "lucide-react";
+import { CheckCircle, User, Mail, FileText, Star, MapPin } from "lucide-react";
 import { getQuestionsGroupedBySections } from "@/lib/utils";
 import { Tiles } from "@/components/ui/tiles";
+import { FormSectionAccordion } from "@/components/ui/form-section-accordion";
 
 interface FormPreviewProps {
   form: Form;
@@ -248,48 +243,8 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     }
   };
 
-  // Group questions by section
-  const sections = form.sections || [];
-  const questionsBySection = getQuestionsGroupedBySections({ 
-    questions: form.questions, 
-    sections 
-  }) as {
-    sectionId: string | undefined;
-    sectionTitle: string;
-    sectionDescription?: string;
-    sectionIcon?: string;
-    questions: FormQuestion[];
-  }[];
-
-  // Map our form data to the structure expected by FormSectionAccordion
-  const formSections = questionsBySection.map(section => ({
-    id: section.sectionId || 'default',
-    title: section.sectionTitle,
-    icon: getSectionIcon(section.sectionIcon),
-    isComplete: isSectionComplete(section.questions),
-    children: (
-      <div className="flex flex-col gap-4">
-        {section.sectionDescription && (
-          <p className="text-gray-600">{section.sectionDescription}</p>
-        )}
-        {section.questions.map((question) => (
-          <div key={question.id} className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <h4 className="text-md font-medium flex items-center gap-2">
-                {getQuestionIcon(question.type)}
-                {question.title}
-                {question.required && <span className="text-red-500">*</span>}
-              </h4>
-              {question.description && (
-                <p className="text-sm text-gray-500">{question.description}</p>
-              )}
-            </div>
-            {renderField(question)}
-          </div>
-        ))}
-      </div>
-    ),
-  }));
+  // We don't need this mapping anymore with our new FormSectionAccordion component
+  // The component will handle grouping and rendering internally
 
   return (
     <div className="flex items-center justify-center min-h-screen relative">
@@ -310,24 +265,13 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
             <p className="text-gray-600 mb-6">Please complete all the sections below</p>
           </div>
           
-          <Accordion type="single" collapsible className="w-full">
-            {formSections.map((section) => (
-              <AccordionItem key={section.id} value={section.id}>
-                <AccordionTrigger className="group">
-                  <div className="flex items-center gap-2">
-                    {section.icon}
-                    <span>{section.title}</span>
-                    {section.isComplete && (
-                      <span className="ml-2 text-sm text-green-500">✓</span>
-                    )}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  {section.children}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <FormSectionAccordion 
+            questions={form.questions}
+            sections={form.sections}
+            onAnswerChange={handleAnswer}
+            formResponses={answers}
+            preview={preview}
+          />
           
           <div className="flex justify-end mt-6">
             <Button 
