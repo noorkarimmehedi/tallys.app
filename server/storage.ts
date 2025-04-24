@@ -17,6 +17,8 @@ export interface IStorage {
   // User
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByIdentifier(identifier: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
   // Form
@@ -58,6 +60,7 @@ export class DatabaseStorage implements IStorage {
       // Create demo user
       const [demoUser] = await db.insert(users).values({
         username: "demo",
+        email: "demo@example.com",
         password: "password"
       }).returning();
       
@@ -166,6 +169,22 @@ export class DatabaseStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.username, username));
     return user;
+  }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+  
+  async getUserByIdentifier(identifier: string): Promise<User | undefined> {
+    // Check if the identifier is an email (contains @)
+    const isEmail = identifier.includes('@');
+    
+    if (isEmail) {
+      return this.getUserByEmail(identifier);
+    } else {
+      return this.getUserByUsername(identifier);
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
