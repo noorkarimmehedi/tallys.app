@@ -19,9 +19,9 @@ function Calendar({
   const defaultClassNames = {
     months: "relative flex flex-col sm:flex-row gap-4",
     month: "w-full",
-    month_caption: "relative mx-10 mb-1 flex h-9 items-center justify-center z-20",
-    caption_label: "text-sm font-medium",
-    nav: "absolute top-0 flex w-full justify-between z-10",
+    month_caption: "relative mb-1 flex h-9 items-center justify-center",
+    caption_label: "text-sm font-medium bg-background/90 px-3 py-1 rounded",
+    nav: "absolute top-0 flex w-full justify-between",
     button_previous: cn(
       buttonVariants({ variant: "ghost" }),
       "size-9 text-muted-foreground/80 hover:text-foreground p-0",
