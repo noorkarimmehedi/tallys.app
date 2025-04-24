@@ -305,15 +305,14 @@ export default function EventBooking() {
             </div>
           </div>
           
-          {/* Using FormSectionAccordion style */}
+          {/* Using FormSectionAccordion exactly as provided */}
           <Accordion
-            type="single"
-            collapsible
+            type="single" 
+            collapsible 
             value={activeAccordion}
-            className="w-full border rounded-lg divide-y"
+            className="w-full max-w-[600px] mx-auto border rounded-lg divide-y"
           >
-            {/* 1. Event Details */}
-            <AccordionItem value="event-details" className="px-4 py-2">
+            <AccordionItem value="event-details">
               <AccordionTrigger className="group">
                 <div className="flex items-center gap-2">
                   <Clock className="size-4 stroke-2 text-muted-foreground" />
@@ -324,12 +323,12 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4">
+                <div className="flex flex-col gap-4">
                   <p className="text-gray-600">
                     {event.description || "No description provided."}
                   </p>
                   
-                  <div className="space-y-4 mt-4">
+                  <div className="space-y-4">
                     <div className="flex items-start">
                       <div className="mt-1">
                         <Clock className="h-5 w-5 text-gray-500 mr-4" />
@@ -365,7 +364,7 @@ export default function EventBooking() {
                     </div>
                   </div>
                   
-                  <div className="mt-6">
+                  <div className="mt-2">
                     <Button 
                       onClick={() => setActiveAccordion("date-time")}
                       className="w-full md:w-auto"
@@ -378,8 +377,7 @@ export default function EventBooking() {
               </AccordionContent>
             </AccordionItem>
             
-            {/* 2. Date & Time Selection */}
-            <AccordionItem value="date-time" className="px-4 py-2">
+            <AccordionItem value="date-time">
               <AccordionTrigger className="group">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="size-4 stroke-2 text-muted-foreground" />
@@ -390,8 +388,8 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4">
-                  <div className="mb-6">
+                <div className="flex flex-col gap-4">
+                  <div className="mb-2">
                     <AppointmentPicker
                       initialDate={selectedDate || undefined}
                       initialTime={selectedTime}
@@ -414,7 +412,7 @@ export default function EventBooking() {
                   </div>
                   
                   {selectedDate && selectedTime && (
-                    <div className="mt-6">
+                    <div className="mt-2">
                       <Button 
                         onClick={() => setActiveAccordion("your-info")}
                         className="w-full md:w-auto"
@@ -428,8 +426,7 @@ export default function EventBooking() {
               </AccordionContent>
             </AccordionItem>
             
-            {/* 3. Your Information */}
-            <AccordionItem value="your-info" className="px-4 py-2">
+            <AccordionItem value="your-info">
               <AccordionTrigger className="group">
                 <div className="flex items-center gap-2">
                   <User className="size-4 stroke-2 text-muted-foreground" />
@@ -440,7 +437,7 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-6">
+                <div className="flex flex-col gap-4">
                   {selectedDate && selectedTime && (
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-900">
