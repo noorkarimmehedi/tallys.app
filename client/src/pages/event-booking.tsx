@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { format, addDays, isSameDay } from 'date-fns';
@@ -10,7 +10,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { AppointmentPicker } from '@/components/ui/appointment-picker';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video } from 'lucide-react';
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
+import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export default function EventBooking() {
@@ -24,6 +30,7 @@ export default function EventBooking() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [activeAccordion, setActiveAccordion] = useState<string>("event-details");
   
   // Fetch event details
   const { data: event, isLoading, error } = useQuery({
@@ -36,6 +43,15 @@ export default function EventBooking() {
       return response.json();
     }
   });
+  
+  // Update accordion when steps change
+  useEffect(() => {
+    if (selectedDate && selectedTime) {
+      setActiveAccordion("your-info");
+    } else if (selectedDate) {
+      setActiveAccordion("date-time");
+    }
+  }, [selectedDate, selectedTime]);
   
   // Get available time slots for selected date
   const getTimeSlotsForDate = (date?: Date) => {
@@ -250,9 +266,6 @@ export default function EventBooking() {
   // Get available time slots for the selected date
   const availableTimeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
   
-  // This section is now handled at the top level
-  // No need to duplicate today variable
-  
   // Format time slot for display
   const formatTimeSlot = (timeString: string) => {
     try {
@@ -280,84 +293,175 @@ export default function EventBooking() {
       </header>
       
       {/* Main content */}
-      <main className="container max-w-6xl mx-auto px-4 py-6 md:py-12">
-        <div className="flex flex-col md:flex-row md:space-x-8">
-          {/* Left Column: Event Info */}
-          <div className="w-full md:w-1/3 mb-8 md:mb-0">
-            <h2 className="text-2xl font-semibold mb-2">{event.title}</h2>
-            <div className="flex items-center text-gray-600 mb-6">
+      <main className="container max-w-4xl mx-auto px-4 py-6 md:py-12">
+        <div className="flex flex-col space-y-8">
+          {/* Event Title */}
+          <div className="text-center">
+            <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+            <div className="flex items-center justify-center text-gray-600">
               <Clock className="h-4 w-4 mr-2" />
               <span>{event.duration} min</span>
             </div>
-            
-            <div className="border-t border-gray-200 pt-6">
-              <p className="text-gray-600 mb-6">
-                {event.description || "No description provided."}
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="mt-1">
-                    <Clock className="h-5 w-5 text-gray-500 mr-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Duration</h3>
-                    <p className="text-gray-600">{event.duration} minutes</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="mt-1">
-                    <Video className="h-5 w-5 text-gray-500 mr-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Video call</h3>
-                    <p className="text-gray-600">
-                      A video call will be added to this event
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="mt-1">
-                    <Globe className="h-5 w-5 text-gray-500 mr-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Time zone</h3>
-                    <p className="text-gray-600">
-                      {Intl.DateTimeFormat().resolvedOptions().timeZone}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           
-          {/* Right Column: Calendar and Form */}
-          <div className="w-full md:w-2/3">
-            {selectedTime && selectedDate ? (
-              /* Step 2: Contact Form */
-              <div>
-                <div className="mb-8">
-                  <button 
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800"
-                    onClick={() => setSelectedTime(null)}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back
-                  </button>
+          {/* Booking Process - Accordion Style */}
+          <Accordion
+            type="single"
+            collapsible
+            value={activeAccordion}
+            className="w-full border rounded-lg divide-y"
+          >
+            {/* 1. Event Details */}
+            <AccordionItem value="event-details" className="px-4 py-2">
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">1</span>
+                  </div>
+                  <span className="font-medium text-lg">Event Details</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="pl-11 space-y-4">
+                  <p className="text-gray-600">
+                    {event.description || "No description provided."}
+                  </p>
                   
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <h3 className="font-medium text-gray-900">
-                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                    </h3>
-                    <p className="text-gray-600">
-                      {formatTimeSlot(selectedTime)}
-                    </p>
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-start">
+                      <div className="mt-1">
+                        <Clock className="h-5 w-5 text-gray-500 mr-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Duration</h3>
+                        <p className="text-gray-600">{event.duration} minutes</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <div className="mt-1">
+                        <Video className="h-5 w-5 text-gray-500 mr-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Video call</h3>
+                        <p className="text-gray-600">
+                          A video call will be added to this event
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <div className="mt-1">
+                        <Globe className="h-5 w-5 text-gray-500 mr-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Time zone</h3>
+                        <p className="text-gray-600">
+                          {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <Button 
+                      onClick={() => setActiveAccordion("date-time")}
+                      className="w-full md:w-auto"
+                    >
+                      Continue to Date & Time
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="space-y-6">
+              </AccordionContent>
+            </AccordionItem>
+            
+            {/* 2. Date & Time Selection */}
+            <AccordionItem value="date-time" className="px-4 py-2">
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">2</span>
+                  </div>
+                  <span className="font-medium text-lg">
+                    Date & Time
+                    {selectedDate && selectedTime && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        {format(selectedDate, 'MMM d, yyyy')} at {formatTimeSlot(selectedTime)}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="pl-11">
+                  <div className="mb-6">
+                    <AppointmentPicker
+                      initialDate={selectedDate || undefined}
+                      initialTime={selectedTime}
+                      timeSlots={availableTimeSlots.map((time: string) => ({
+                        time,
+                        available: true
+                      }))}
+                      onDateChange={(date) => {
+                        console.log("Date selected:", date);
+                        setSelectedDate(date);
+                      }}
+                      onTimeChange={(time: string | null) => {
+                        console.log("Time selected:", time);
+                        setSelectedTime(time);
+                      }}
+                      disabledDates={[
+                        { before: today }
+                      ]}
+                    />
+                  </div>
+                  
+                  {selectedDate && selectedTime && (
+                    <div className="mt-6">
+                      <Button 
+                        onClick={() => setActiveAccordion("your-info")}
+                        className="w-full md:w-auto"
+                      >
+                        Continue to Your Info
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            {/* 3. Your Information */}
+            <AccordionItem value="your-info" className="px-4 py-2">
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">3</span>
+                  </div>
+                  <span className="font-medium text-lg">
+                    Your Information
+                    {name && email && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        {name} ({email})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="pl-11 space-y-6">
+                  {selectedDate && selectedTime && (
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <h3 className="font-medium text-gray-900">
+                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                      </h3>
+                      <p className="text-gray-600">
+                        {formatTimeSlot(selectedTime)}
+                      </p>
+                    </div>
+                  )}
+                  
                   <div>
                     <Label htmlFor="name" className="font-medium">
                       Your name
@@ -404,76 +508,19 @@ export default function EventBooking() {
                   <div className="pt-4">
                     <Button 
                       onClick={handleBooking}
-                      disabled={!name || !email || bookingMutation.isPending}
-                      className="w-full bg-black hover:bg-gray-800 text-white py-3"
+                      disabled={!name || !email || bookingMutation.isPending || !selectedDate || !selectedTime}
+                      className="w-full"
                     >
                       {bookingMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Confirm
+                      Confirm Booking
                     </Button>
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* Step 1: Date & Time Selection */
-              <div>
-                {/* Calendar Navigation */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-medium">Select a date and time</h2>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => {
-                        const prevMonth = new Date(currentMonth);
-                        prevMonth.setMonth(prevMonth.getMonth() - 1);
-                        setCurrentMonth(prevMonth);
-                      }}
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => {
-                        const nextMonth = new Date(currentMonth);
-                        nextMonth.setMonth(nextMonth.getMonth() + 1);
-                        setCurrentMonth(nextMonth);
-                      }}
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="mb-8">
-                  {/* New AppointmentPicker Component */}
-                  <div className="max-w-full">
-                    <AppointmentPicker
-                      initialDate={selectedDate || undefined}
-                      initialTime={selectedTime}
-                      timeSlots={availableTimeSlots.map((time: string) => ({
-                        time,
-                        available: true
-                      }))}
-                      onDateChange={(date) => {
-                        console.log("Date selected:", date);
-                        setSelectedDate(date);
-                      }}
-                      onTimeChange={(time: string | null) => {
-                        console.log("Time selected:", time);
-                        setSelectedTime(time);
-                      }}
-                      disabledDates={[
-                        { before: today }
-                      ]}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </main>
     </div>
