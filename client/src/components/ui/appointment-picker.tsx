@@ -87,29 +87,32 @@ function AppointmentPicker({
 
   return (
     <div>
-      <div className="rounded-lg border border-border">
+      <div className="rounded-lg border border-border shadow-sm">
         <div className="flex max-sm:flex-col">
           <Calendar
             mode="single"
             selected={date}
             onSelect={handleDateSelect}
-            className="p-2 sm:pe-5 bg-background"
+            className="p-2 sm:pe-4 bg-background/80 sm:rounded-l-lg"
             disabled={disabledDates}
+            initialFocus
           />
-          <div className="relative w-full max-sm:h-48 sm:w-40">
-            <div className="absolute inset-0 border-border py-4 max-sm:border-t">
-              <ScrollArea className="h-full border-border sm:border-s">
+          <div className="relative w-full max-sm:h-52 sm:w-48">
+            <div className="absolute inset-0 border-border py-4 max-sm:border-t sm:border-l">
+              <ScrollArea className="h-full">
                 <div className="space-y-3">
-                  <div className="flex h-5 shrink-0 items-center px-5">
-                    <p className="text-sm font-medium">{date ? format(date, "EEEE, d") : "Select a date"}</p>
+                  <div className="flex h-6 shrink-0 items-center px-4">
+                    <p className="text-sm font-medium text-foreground/80">
+                      {date ? format(date, "EEEE, MMMM d") : "Select a date"}
+                    </p>
                   </div>
-                  <div className="grid gap-1.5 px-5 max-sm:grid-cols-2">
+                  <div className="grid gap-2 px-4 max-sm:grid-cols-3 sm:grid-cols-1">
                     {defaultTimeSlots.map(({ time: timeSlot, available }) => (
                       <Button
                         key={timeSlot}
                         variant={time === timeSlot ? "default" : "outline"}
                         size="sm"
-                        className="w-full"
+                        className={`w-full text-sm transition-all ${time === timeSlot ? 'shadow-sm scale-[1.02]' : ''}`}
                         onClick={() => handleTimeSelect(timeSlot)}
                         disabled={!available}
                       >

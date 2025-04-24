@@ -428,29 +428,32 @@ export default function EventBooking() {
               </AccordionTrigger>
               <AccordionContent className="px-3 sm:px-4">
                 <div className="flex flex-col gap-2 py-2">
-                  <AppointmentPicker
-                    initialDate={selectedDate || undefined}
-                    initialTime={selectedTime}
-                    timeSlots={availableTimeSlots.map((time: string) => ({
-                      time,
-                      available: true
-                    }))}
-                    onDateChange={(date) => {
-                      console.log("Date selected:", date);
-                      setSelectedDate(date);
-                    }}
-                    onTimeChange={(time: string | null) => {
-                      console.log("Time selected:", time);
-                      setSelectedTime(time);
-                      if (time && selectedDate) {
-                        // Automatically open the Your Information section when both date and time are selected
-                        setActiveAccordion("your-info");
-                      }
-                    }}
-                    disabledDates={[
-                      { before: today }
-                    ]}
-                  />
+                  <div className="rounded-md overflow-hidden">
+                    <AppointmentPicker
+                      initialDate={selectedDate || undefined}
+                      initialTime={selectedTime}
+                      timeSlots={availableTimeSlots.map((time: string) => ({
+                        time,
+                        available: true
+                      }))}
+                      onDateChange={(date) => {
+                        setSelectedDate(date);
+                      }}
+                      onTimeChange={(time: string | null) => {
+                        setSelectedTime(time);
+                        if (time && selectedDate) {
+                          // Automatically open the Your Information section when both date and time are selected
+                          setActiveAccordion("your-info");
+                        }
+                      }}
+                      disabledDates={[
+                        { before: today }
+                      ]}
+                    />
+                  </div>
+                  <div className="mt-2 text-center">
+                    <p className="text-xs text-muted-foreground">Select a date and time for your appointment</p>
+                  </div>
                   {/* Button removed as the section now opens automatically */}
                 </div>
               </AccordionContent>
@@ -469,13 +472,18 @@ export default function EventBooking() {
               <AccordionContent className="px-3 sm:px-4">
                 <div className="flex flex-col gap-2 py-2">
                   {selectedDate && selectedTime && (
-                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 mb-2">
-                      <h3 className="font-medium text-gray-900">
-                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {formatTimeSlot(selectedTime)}
-                      </p>
+                    <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 mb-3">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4 text-primary" />
+                        <div>
+                          <h3 className="font-medium text-gray-900 text-sm sm:text-base">
+                            {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-gray-600">
+                            {formatTimeSlot(selectedTime)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   
