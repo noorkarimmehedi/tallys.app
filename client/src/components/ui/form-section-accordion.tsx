@@ -1,104 +1,188 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import { FormQuestion, FormSection as FormSectionType } from "@shared/schema"
-import { SectionGroup, getQuestionsGroupedBySections } from "@/lib/utils"
-import { Clipboard, Mail, MapPin, User, FileText, Star, Phone, Calendar, Hash } from "lucide-react"
-import React from "react"
+import React from 'react';
+import { FormQuestion, FormSection } from '@shared/schema';
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
+import { 
+  CheckCircle,
+  User,
+  Mail,
+  FileText,
+  Star,
+  MapPin
+} from 'lucide-react';
+// We'll temporarily create a local version of the FieldRenderer
+// since the import is failing
+import ShortText from '@/components/ui/form-fields/ShortText';
+import Paragraph from '@/components/ui/form-fields/Paragraph';
+import Email from '@/components/ui/form-fields/Email';
+import MultipleChoice from '@/components/ui/form-fields/MultipleChoice';
+import FileUpload from '@/components/ui/form-fields/FileUpload';
+import Rating from '@/components/ui/form-fields/Rating';
 
-// Component to render specific field types
-const FieldRenderer = React.lazy(() => import("@/components/form-preview/FieldRenderer"));
+// Simplified inline FieldRenderer component
+function FieldRenderer({ 
+  question, 
+  value, 
+  onChange, 
+  preview = false 
+}: {
+  question: FormQuestion;
+  value: any;
+  onChange: (value: any) => void;
+  preview?: boolean;
+}) {
+  switch (question.type) {
+    case "shortText":
+      return (
+        <ShortText
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "paragraph":
+      return (
+        <Paragraph
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "email":
+      return (
+        <Email
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "multipleChoice":
+      return (
+        <MultipleChoice
+          value={value as string}
+          onChange={onChange}
+          options={question.options || []}
+        />
+      );
+    case "fileUpload":
+      return (
+        <FileUpload
+          value={value as string}
+          onChange={onChange}
+        />
+      );
+    case "rating":
+      return (
+        <Rating
+          value={Number(value) || 0}
+          onChange={onChange}
+          maxRating={question.maxRating || 5}
+        />
+      );
+    default:
+      return <div>Unsupported question type</div>;
+  }
+}
+import { SectionGroup, getQuestionsGroupedBySections } from '@/lib/utils';
 
 interface FormSectionAccordionProps {
   questions: FormQuestion[];
-  sections?: FormSectionType[];
+  sections?: FormSection[];
   onAnswerChange?: (questionId: string, value: any) => void;
   formResponses?: Record<string, any>;
   preview?: boolean;
 }
 
-// Get icon based on section or first question type
+// Helper function to get section icon
 function getSectionIcon(section: SectionGroup): React.ReactNode {
-  const firstQuestionType = section.questions[0]?.type;
+  if (!section.sectionIcon) {
+    return <User className="size-4 stroke-2 text-muted-foreground" />;
+  }
   
-  switch (firstQuestionType) {
-    case "shortText":
-    case "name":
+  switch (section.sectionIcon) {
+    case 'user':
       return <User className="size-4 stroke-2 text-muted-foreground" />;
-    case "email":
+    case 'mail':
       return <Mail className="size-4 stroke-2 text-muted-foreground" />;
-    case "address":
-      return <MapPin className="size-4 stroke-2 text-muted-foreground" />;
-    case "phone":
-      return <Phone className="size-4 stroke-2 text-muted-foreground" />;
-    case "paragraph":
+    case 'file':
       return <FileText className="size-4 stroke-2 text-muted-foreground" />;
-    case "rating":
+    case 'star':
       return <Star className="size-4 stroke-2 text-muted-foreground" />;
-    case "date":
-      return <Calendar className="size-4 stroke-2 text-muted-foreground" />;
-    case "number":
-      return <Hash className="size-4 stroke-2 text-muted-foreground" />;
+    case 'map':
+      return <MapPin className="size-4 stroke-2 text-muted-foreground" />;
     default:
-      return <Clipboard className="size-4 stroke-2 text-muted-foreground" />;
+      return <User className="size-4 stroke-2 text-muted-foreground" />;
   }
 }
 
-function FormSectionAccordion({ 
+export function FormSectionAccordion({ 
   questions, 
-  sections = [], 
-  onAnswerChange, 
-  formResponses = {}, 
-  preview = false 
+  sections = [],
+  onAnswerChange,
+  formResponses = {},
+  preview = false
 }: FormSectionAccordionProps) {
   // Group questions by sections
-  const sectionGroups = getQuestionsGroupedBySections({ questions, sections });
+  const sectionsGroups = getQuestionsGroupedBySections({ questions, sections });
   
-  // Check if a section is complete
-  const isSectionComplete = (group: SectionGroup) => {
-    if (!formResponses || Object.keys(formResponses).length === 0) return false;
-    
-    return group.questions.every(question => {
-      return !question.required || !!formResponses[question.id];
-    });
+  // Helper function to check if question is complete
+  const isQuestionComplete = (questionId: string) => {
+    return formResponses[questionId] !== undefined && formResponses[questionId] !== "";
   };
   
+  // Check if section is complete (all required questions answered)
+  const isSectionComplete = (group: SectionGroup) => {
+    return group.questions.every(q => 
+      !q.required || isQuestionComplete(q.id)
+    );
+  };
+
   return (
     <Accordion 
       type="single" 
       collapsible 
-      className="w-full max-w-[650px] mx-auto bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-6"
+      defaultValue={sectionsGroups.length > 0 ? sectionsGroups[0].sectionId : undefined} 
+      className="w-full"
     >
-      {sectionGroups.map((group) => (
-        <AccordionItem key={group.sectionId || 'default'} value={group.sectionId || 'default'}>
+      {sectionsGroups.map((group) => (
+        <AccordionItem 
+          key={group.sectionId || 'unsectioned'} 
+          value={group.sectionId || 'unsectioned'}
+        >
           <AccordionTrigger className="group">
             <div className="flex items-center gap-2">
               {getSectionIcon(group)}
-              <span className="font-medium">{group.sectionTitle}</span>
+              <span>{group.sectionTitle}</span>
               {isSectionComplete(group) && (
                 <span className="ml-2 text-sm text-green-500">✓</span>
               )}
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="flex flex-col gap-6 py-4">
+            <div className="space-y-6 py-2">
               {group.questions.map((question) => (
-                <div key={question.id} className="flex flex-col gap-2">
-                  <h3 className="text-base font-medium">{question.title}</h3>
-                  {question.description && (
-                    <p className="text-sm text-gray-500 mb-2">{question.description}</p>
-                  )}
-                  <React.Suspense fallback={<div>Loading...</div>}>
-                    <FieldRenderer
-                      question={question}
-                      value={formResponses[question.id] || ""}
-                      onChange={(value) => onAnswerChange?.(question.id, value)}
-                      preview={preview}
-                    />
-                  </React.Suspense>
+                <div key={question.id} className="animate-fadeIn">
+                  <div className="mb-2">
+                    <h4 className="text-base font-medium mb-1">
+                      {question.title}
+                      {question.required && <span className="text-red-500 ml-1">*</span>}
+                    </h4>
+                    {question.description && (
+                      <p className="text-sm text-gray-500">{question.description}</p>
+                    )}
+                  </div>
+                  
+                  <div className="mt-2">
+                    {onAnswerChange && (
+                      <FieldRenderer
+                        question={question}
+                        value={formResponses[question.id] || ""}
+                        onChange={(value: any) => onAnswerChange(question.id, value)}
+                        preview={preview}
+                      />
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -108,5 +192,3 @@ function FormSectionAccordion({
     </Accordion>
   );
 }
-
-export { FormSectionAccordion }

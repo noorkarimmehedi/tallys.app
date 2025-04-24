@@ -14,68 +14,58 @@ interface FieldRendererProps {
   preview?: boolean;
 }
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ 
+export function FieldRenderer({ 
   question, 
   value, 
-  onChange,
+  onChange, 
   preview = false 
-}) => {
+}: FieldRendererProps) {
   switch (question.type) {
-    case 'shortText':
+    case "shortText":
       return (
         <ShortText
-          value={value}
+          value={value as string}
           onChange={onChange}
-          preview={preview}
         />
       );
-    case 'paragraph':
+    case "paragraph":
       return (
         <Paragraph
-          value={value}
+          value={value as string}
           onChange={onChange}
-          preview={preview}
         />
       );
-    case 'email':
+    case "email":
       return (
         <Email
-          value={value}
+          value={value as string}
           onChange={onChange}
-          preview={preview}
         />
       );
-    case 'multipleChoice':
+    case "multipleChoice":
       return (
         <MultipleChoice
-          value={value}
-          options={question.options || []}
+          value={value as string}
           onChange={onChange}
-          onOptionsChange={() => {}}
-          preview={preview}
+          options={question.options || []}
         />
       );
-    case 'fileUpload':
+    case "fileUpload":
       return (
         <FileUpload
-          value={value}
+          value={value as string}
           onChange={onChange}
-          preview={preview}
         />
       );
-    case 'rating':
+    case "rating":
       return (
         <Rating
-          value={value || 0}
-          maxRating={question.maxRating || 5}
+          value={Number(value) || 0}
           onChange={onChange}
-          onMaxRatingChange={() => {}}
-          preview={preview}
+          maxRating={question.maxRating || 5}
         />
       );
     default:
-      return <div>Unsupported field type: {question.type}</div>;
+      return <div>Unsupported question type</div>;
   }
-};
-
-export default FieldRenderer;
+}

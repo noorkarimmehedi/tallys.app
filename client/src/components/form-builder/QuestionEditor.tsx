@@ -23,7 +23,12 @@ interface QuestionEditorProps {
 
 export function QuestionEditor({ question, onChange, onDelete, sections = [] }: QuestionEditorProps) {
   const handleChange = (key: keyof FormQuestion, value: any) => {
-    onChange(question.id, { [key]: value });
+    // Convert "no_section" value to undefined for sectionId 
+    if (key === 'sectionId' && value === 'no_section') {
+      onChange(question.id, { [key]: undefined });
+    } else {
+      onChange(question.id, { [key]: value });
+    }
   };
   
   const renderFieldEditor = () => {
@@ -89,14 +94,14 @@ export function QuestionEditor({ question, onChange, onDelete, sections = [] }: 
             <div>
               <Label htmlFor="section" className="mb-1 block">Section</Label>
               <Select 
-                value={question.sectionId || ""}
+                value={question.sectionId || "no_section"}
                 onValueChange={(value) => handleChange('sectionId', value)}
               >
                 <SelectTrigger id="section" className="w-full">
                   <SelectValue placeholder="Select a section" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No section</SelectItem>
+                  <SelectItem value="no_section">No section</SelectItem>
                   {sections.map((section) => (
                     <SelectItem key={section.id} value={section.id}>
                       {section.title}
