@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "wouter";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CalendarDays, FileText } from "lucide-react";
@@ -7,6 +7,19 @@ import FormsGrid from "@/components/dashboard/FormsGrid";
 import EventsGrid from "@/components/dashboard/EventsGrid";
 
 export default function Dashboard() {
+  const [location] = useLocation();
+  const [activeTab, setActiveTab] = useState("forms");
+  
+  // Get tab from URL query parameter if exists
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get("tab");
+    
+    if (tabParam === "events" || tabParam === "forms") {
+      setActiveTab(tabParam);
+    }
+  }, [location]);
+  
   return (
     <div className="flex-1 overflow-y-auto p-6">
       {/* Dashboard Header */}
@@ -36,7 +49,7 @@ export default function Dashboard() {
       </div>
       
       {/* Content Tabs */}
-      <Tabs defaultValue="forms" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="forms" className="flex items-center gap-1">
             <FileText className="h-4 w-4" />
@@ -52,7 +65,7 @@ export default function Dashboard() {
           <FormsGrid />
         </TabsContent>
         
-        <TabsContent value="events" className="focus:outline-none">
+        <TabsContent value="events" className="focus:outline-none" id="events-section">
           <EventsGrid />
         </TabsContent>
       </Tabs>

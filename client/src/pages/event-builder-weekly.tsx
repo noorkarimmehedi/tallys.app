@@ -188,7 +188,7 @@ export default function EventBuilder() {
       
       // Navigate to the dashboard events section after creating/updating
       setTimeout(() => {
-        navigate('/#events-section');
+        navigate('/dashboard?tab=events');
       }, 1000);
     },
     onError: () => {
@@ -245,7 +245,7 @@ export default function EventBuilder() {
               variant="ghost" 
               size="sm" 
               className="mr-2"
-              onClick={() => navigate('/#events-section')}
+              onClick={() => navigate('/dashboard?tab=events')}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -285,7 +285,7 @@ export default function EventBuilder() {
               variant="outline"
               size="sm"
               className="text-gray-700"
-              onClick={() => navigate('/#events-section')}
+              onClick={() => navigate('/dashboard?tab=events')}
             >
               Cancel
             </Button>
