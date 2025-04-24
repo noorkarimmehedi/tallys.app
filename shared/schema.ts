@@ -30,6 +30,31 @@ export const responses = pgTable("responses", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  shortId: text("short_id").notNull().unique(),
+  duration: integer("duration").notNull(), // Duration in minutes
+  location: text("location"),
+  published: boolean("published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  availableTimes: json("available_times").$type<EventAvailability[]>().default([]).notNull(),
+});
+
+export const bookings = pgTable("bookings", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  date: timestamp("date").notNull(),
+  time: text("time").notNull(),
+  status: text("status").default("confirmed").notNull(), // confirmed, canceled, rescheduled
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Form Types
 export type FieldType = 
   | "shortText" 
@@ -74,6 +99,16 @@ export interface FormResponse {
   [questionId: string]: string | string[] | number | null;
 }
 
+export interface TimeSlot {
+  time: string;
+  available: boolean;
+}
+
+export interface EventAvailability {
+  date: string; // ISO date string
+  timeSlots: TimeSlot[];
+}
+
 // Insert Schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -93,6 +128,17 @@ export const insertResponseSchema = createInsertSchema(responses).omit({
   createdAt: true,
 });
 
+export const insertEventSchema = createInsertSchema(events).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBookingSchema = createInsertSchema(bookings).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -102,3 +148,9 @@ export type Form = typeof forms.$inferSelect;
 
 export type InsertResponse = z.infer<typeof insertResponseSchema>;
 export type Response = typeof responses.$inferSelect;
+
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type Event = typeof events.$inferSelect;
+
+export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type Booking = typeof bookings.$inferSelect;
