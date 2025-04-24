@@ -51,50 +51,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Link>
           </div>
           
-          {/* Navigation */}
-          <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
-            <div className="px-3 space-y-0.5">
-              {/* Home Navigation Item */}
-              <Link 
-                href="/" 
-                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Home className={`mr-2 h-4 w-4 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Home</span>
-              </Link>
-              
-              {/* Inbox Navigation Item */}
-              <Link 
-                href="/inbox" 
-                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/inbox" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Inbox className={`mr-2 h-4 w-4 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Inbox</span>
-              </Link>
-              
-              {/* Calendar Navigation Item */}
-              <Link 
-                href="/calendar" 
-                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/calendar" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <CalendarDays className={`mr-2 h-4 w-4 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
-              </Link>
-              
-              {/* Settings Navigation Item */}
-              <Link 
-                href="/settings" 
-                className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
-                  ${location === "/settings" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Settings className={`mr-2 h-4 w-4 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
-              </Link>
-            </div>
-          </nav>
+          {/* Navigation - Hidden */}
+          <div className="flex-1"></div>
           
           {/* User Profile */}
           <div className="flex items-center px-4 py-2 border-t border-gray-200 relative z-10">
