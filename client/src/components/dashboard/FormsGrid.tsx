@@ -7,8 +7,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShineBorder } from "@/components/ui/shine-border";
-import CreateFormButton from "./CreateFormButton";
-import CreateEventButton from "./CreateEventButton";
 
 export default function FormsGrid() {
   const { data: forms = [], isLoading } = useQuery<Form[]>({
@@ -59,19 +57,24 @@ export default function FormsGrid() {
 
   if (!forms || forms.length === 0) {
     return (
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2 mt-4">
-        <CreateFormButton />
-        <CreateEventButton />
+      <div className="flex flex-col items-center justify-center py-16 px-4">
+        <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-6">
+          <i className="ri-file-list-3-line text-2xl text-black/70"></i>
+        </div>
+        <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">No forms yet</h3>
+        <p className="text-gray-500 mb-8 text-sm max-w-md text-center">Create your first form and start collecting responses</p>
+        <Link href="/form-builder">
+          <Button className="bg-black hover:bg-gray-800 px-6 py-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
+            <i className="ri-add-line mr-2"></i>
+            Create Form
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {/* Create buttons */}
-      <CreateFormButton />
-      <CreateEventButton />
-      
       {/* Forms */}
       {forms.map((form: Form) => (
         <Link href={`/form-builder/${form.id}`} key={form.id} className="block">
