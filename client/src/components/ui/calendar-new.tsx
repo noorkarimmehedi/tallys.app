@@ -19,8 +19,8 @@ function Calendar({
   const defaultClassNames = {
     months: "relative flex flex-col sm:flex-row gap-4",
     month: "w-full",
-    month_caption: "relative mb-1 flex h-9 items-center justify-center",
-    caption_label: "text-sm font-medium bg-background/90 px-3 py-1 rounded absolute left-1/2 transform -translate-x-1/2 z-20",
+    month_caption: "relative flex h-9 items-center justify-center mt-2 mb-4",
+    caption_label: "text-sm font-semibold bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 absolute left-1/2 transform -translate-x-1/2",
     nav: "absolute top-0 flex w-full justify-between",
     button_previous: cn(
       buttonVariants({ variant: "ghost" }),
@@ -30,7 +30,7 @@ function Calendar({
       buttonVariants({ variant: "ghost" }),
       "size-9 text-muted-foreground/80 hover:text-foreground p-0",
     ),
-    weekday: "size-9 p-0 text-xs font-medium text-muted-foreground/80",
+    weekday: "size-9 p-0 text-xs font-medium text-muted-foreground/80 mt-4",
     day_button:
       "relative flex size-9 items-center justify-center whitespace-nowrap rounded-lg p-0 text-foreground outline-offset-2 group-[[data-selected]:not(.range-middle)]:[transition-property:color,background-color,border-radius,box-shadow] group-[[data-selected]:not(.range-middle)]:duration-150 focus:outline-none group-data-[disabled]:pointer-events-none focus-visible:z-10 hover:bg-accent group-data-[selected]:bg-primary hover:text-foreground group-data-[selected]:text-primary-foreground",
     day: "group size-9 px-0 text-sm",
