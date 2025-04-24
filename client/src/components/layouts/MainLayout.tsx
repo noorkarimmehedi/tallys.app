@@ -32,7 +32,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     
       {/* Sidebar */}
       <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex md:flex-shrink-0 fixed inset-0 z-50 md:relative md:z-auto`}>
-        <div className="flex flex-col w-64 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden">
+        <div className="flex flex-col w-52 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden">
           {/* Grid Tiles Background for sidebar */}
           <div className="absolute inset-0 overflow-hidden z-0">
             <Tiles 
@@ -51,55 +51,55 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
           
           {/* Navigation */}
-          <nav className="flex-1 pt-4 pb-4 overflow-y-auto relative z-10">
-            <div className="px-4 space-y-1">
+          <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
+            <div className="px-3 space-y-0.5">
               {/* Home Navigation Item */}
               <Link href="/">
-                <a className={`flex items-center px-4 py-3 text-sm font-medium rounded-md group
+                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
                   ${location === "/" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Home className={`mr-3 h-5 w-5 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-base">Home</span>
+                  <Home className={`mr-2 h-4 w-4 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
+                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Home</span>
                 </a>
               </Link>
               
               {/* Inbox Navigation Item */}
               <Link href="/inbox">
-                <a className={`flex items-center px-4 py-3 text-sm font-medium rounded-md group
+                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
                   ${location === "/inbox" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Inbox className={`mr-3 h-5 w-5 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-base">Inbox</span>
+                  <Inbox className={`mr-2 h-4 w-4 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
+                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Inbox</span>
                 </a>
               </Link>
               
               {/* Calendar Navigation Item */}
               <Link href="/calendar">
-                <a className={`flex items-center px-4 py-3 text-sm font-medium rounded-md group
+                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
                   ${location === "/calendar" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <CalendarDays className={`mr-3 h-5 w-5 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-base">Calendar</span>
+                  <CalendarDays className={`mr-2 h-4 w-4 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
+                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
                 </a>
               </Link>
               
               {/* Settings Navigation Item */}
               <Link href="/settings">
-                <a className={`flex items-center px-4 py-3 text-sm font-medium rounded-md group
+                <a className={`flex items-center px-3 py-2 text-xs font-medium rounded-md group
                   ${location === "/settings" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}>
-                  <Settings className={`mr-3 h-5 w-5 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
-                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-base">Settings</span>
+                  <Settings className={`mr-2 h-4 w-4 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
+                  <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
                 </a>
               </Link>
             </div>
             
             {/* Workspace Section */}
-            <div className="mt-8 relative z-10">
-              <h3 className="px-8 text-xs font-semibold text-gray-500 uppercase tracking-wider">Workspaces</h3>
-              <div className="mt-2 px-4 space-y-1">
-                <a href="#personal" className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
-                  <span className="w-2 h-2 mr-3 bg-blue-500 rounded-full"></span>
+            <div className="mt-5 relative z-10">
+              <h3 className="px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Workspaces</h3>
+              <div className="mt-1 px-3 space-y-0.5">
+                <a href="#personal" className="flex items-center px-3 py-2 text-xs font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
+                  <span className="w-2 h-2 mr-2 bg-blue-500 rounded-full"></span>
                   <span>Personal</span>
                 </a>
-                <a href="#work" className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
-                  <span className="w-2 h-2 mr-3 bg-green-500 rounded-full"></span>
+                <a href="#work" className="flex items-center px-3 py-2 text-xs font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
+                  <span className="w-2 h-2 mr-2 bg-green-500 rounded-full"></span>
                   <span>Work</span>
                 </a>
               </div>
@@ -107,15 +107,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </nav>
           
           {/* User Profile */}
-          <div className="flex items-center px-6 py-3 border-t border-gray-200 relative z-10">
+          <div className="flex items-center px-4 py-2 border-t border-gray-200 relative z-10">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="h-4 w-4 text-gray-600" />
+              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
+                <User className="h-3 w-3 text-gray-600" />
               </div>
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-800">Demo User</p>
-              <p className="text-xs text-gray-500">Pro Plan</p>
+            <div className="ml-2">
+              <p className="text-xs font-medium text-gray-800">Demo User</p>
+              <p className="text-[10px] text-gray-500">Pro Plan</p>
             </div>
           </div>
         </div>
