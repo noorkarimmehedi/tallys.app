@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
-import { Mail, MapPin, User, FileText, Star, Calendar } from "lucide-react"
+import { Mail, MapPin, User, FileText, Star, Calendar, Phone as PhoneIcon } from "lucide-react"
 import { FormQuestion, FormSection as FormSectionType, FieldType } from "@shared/schema"
 import ShortText from "@/components/ui/form-fields/ShortText";
 import Paragraph from "@/components/ui/form-fields/Paragraph";
@@ -14,6 +14,7 @@ import MultipleChoice from "@/components/ui/form-fields/MultipleChoice";
 import Rating from "@/components/ui/form-fields/Rating";
 import FileUpload from "@/components/ui/form-fields/FileUpload";
 import DateField from "@/components/ui/form-fields/DateField";
+import Phone from "@/components/ui/form-fields/Phone";
 import { getQuestionsGroupedBySections } from "@/lib/utils";
 
 interface FormSection {
@@ -139,6 +140,8 @@ function FormSectionAccordion({
         return <Paragraph {...fieldProps} />;
       case "email":
         return <Email {...fieldProps} />;
+      case "phone":
+        return <Phone {...fieldProps} />;
       case "multipleChoice":
         return <MultipleChoice {...fieldProps} options={question.options || []} />;
       case "rating":
@@ -170,6 +173,8 @@ function FormSectionAccordion({
       return <FileText className="size-4 stroke-2 text-muted-foreground" />;
     } else if (firstQuestionType === 'date') {
       return <Calendar className="size-4 stroke-2 text-muted-foreground" />;
+    } else if (firstQuestionType === 'phone') {
+      return <PhoneIcon className="size-4 stroke-2 text-muted-foreground" />;
     } else {
       return <FileText className="size-4 stroke-2 text-muted-foreground" />;
     }
