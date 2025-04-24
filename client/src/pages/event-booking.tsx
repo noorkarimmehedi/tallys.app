@@ -43,7 +43,8 @@ export default function EventBooking() {
     
     if (!event?.weeklySchedule) {
       console.log("No weekly schedule found in event data", event);
-      return [];
+      // Default time slots for demonstration when no schedule exists
+      return ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"];
     }
     
     try {
@@ -52,8 +53,14 @@ export default function EventBooking() {
       console.log("Getting time slots for day:", dayOfWeek);
       
       // Parse weekly schedule from event
-      const weeklySchedule = JSON.parse(event.weeklySchedule);
-      console.log("Parsed weekly schedule:", weeklySchedule);
+      let weeklySchedule;
+      try {
+        weeklySchedule = JSON.parse(event.weeklySchedule);
+      } catch (e) {
+        console.log("Failed to parse weekly schedule:", e);
+        // If parsing fails, provide default time slots
+        return ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"];
+      }
       
       // Check if this day is enabled
       console.log("Is day enabled?", dayOfWeek, weeklySchedule[dayOfWeek]?.enabled);
@@ -62,21 +69,22 @@ export default function EventBooking() {
         const slots = weeklySchedule[dayOfWeek].timeSlots;
         console.log("Available time slots:", slots);
         
-        // If slots array exists but is empty, show a message
-        if (slots && slots.length === 0) {
-          console.log("Time slots array is empty");
+        // If slots array exists but is empty, provide default slots
+        if (!slots || slots.length === 0) {
+          console.log("Time slots array is empty, using defaults");
+          return ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"];
         }
         
-        return slots || [];
+        return slots;
       } else {
         console.log("Day is not enabled in weekly schedule");
         
-        // For testing, let's provide some default slots
-        return ["09:00", "10:00", "11:00", "13:00", "14:00"];
+        // For testing, provide default slots for all days
+        return ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"];
       }
     } catch (err) {
       console.error("Error getting time slots:", err);
-      return [];
+      return ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"];
     }
   };
   
@@ -357,15 +365,19 @@ export default function EventBooking() {
                     </Label>
                     <Input 
                       id="name" 
-                      className="mt-2 w-full"
+                      className={`mt-2 w-full ${!name.trim() && 'border-red-500'}`}
                       value={name} 
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
                       required
+                      aria-invalid={!name.trim()}
+                      aria-describedby="name-error"
                     />
-                    <p className="text-sm text-red-500 mt-1">
-                      {!name.trim() && "Your name is required"}
-                    </p>
+                    {!name.trim() && (
+                      <p id="name-error" className="text-sm text-red-500 mt-1">
+                        Your name is required
+                      </p>
+                    )}
                   </div>
                   
                   <div>
@@ -375,16 +387,19 @@ export default function EventBooking() {
                     <Input 
                       id="email" 
                       type="email"
-                      className="mt-2 w-full"
+                      className={`mt-2 w-full ${(email.trim() === '' || (email.trim() && !email.includes('@'))) && 'border-red-500'}`}
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
+                      aria-invalid={email.trim() === '' || (email.trim() && !email.includes('@'))}
+                      aria-describedby="email-error"
                     />
-                    <p className="text-sm text-red-500 mt-1">
-                      {!email.trim() && "Email address is required"}
-                      {email.trim() && !email.includes('@') && "Please enter a valid email address"}
-                    </p>
+                    {(email.trim() === '' || (email.trim() && !email.includes('@'))) && (
+                      <p id="email-error" className="text-sm text-red-500 mt-1">
+                        {!email.trim() ? "Email address is required" : "Please enter a valid email address"}
+                      </p>
+                    )}
                   </div>
                   
                   <div className="pt-4">
@@ -449,23 +464,30 @@ export default function EventBooking() {
                           console.log("Date selected:", date);
                           if (date) {
                             setSelectedDate(date);
+                            // Automatically scroll to time slots
+                            setTimeout(() => {
+                              document.getElementById('time-slots')?.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
                           }
                         }}
                         month={currentMonth}
                         onMonthChange={setCurrentMonth}
                         classNames={{
-                          day_selected: "bg-black text-white hover:bg-black hover:text-white",
-                          day_today: "border border-gray-200 bg-gray-50 text-black"
+                          day_selected: "bg-black text-white hover:bg-black hover:text-white focus:bg-black focus:text-white",
+                          day_today: "border border-gray-200 bg-gray-50 text-black",
+                          day: "focus:bg-gray-100 focus:text-black hover:bg-gray-100 hover:text-black"
                         }}
                         disabled={[
                           { before: today }
                         ]}
+                        fromMonth={today}
+                        toMonth={new Date(today.getFullYear(), today.getMonth() + 3, 0)}
                       />
                     </div>
                   </div>
                   
                   {/* Time Slots */}
-                  <div className="w-full md:w-1/3">
+                  <div className="w-full md:w-1/3" id="time-slots">
                     {selectedDate ? (
                       <>
                         <div className="mb-4">
