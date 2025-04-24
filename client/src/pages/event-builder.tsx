@@ -167,7 +167,7 @@ export default function EventBuilder() {
             <div className="flex gap-3">
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/')}
               >
                 Cancel
               </Button>
