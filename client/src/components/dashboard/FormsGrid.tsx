@@ -25,17 +25,17 @@ export default function FormsGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
           <ShineBorder 
             key={i}
             borderRadius={12}
-            borderWidth={1}
+            borderWidth={2}
             duration={10}
             color="#444444"
-            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent"
+            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent h-full"
           >
-            <Card className="relative overflow-hidden border-none shadow-sm h-full bg-white/50 backdrop-blur-sm">
+            <Card className="relative overflow-hidden border-none shadow-md h-full bg-white backdrop-blur-sm rounded-[10px]">
               <CardContent className="p-5">
                 <Skeleton className="h-4 w-6 mb-5" />
                 <Skeleton className="h-6 w-3/4 mb-2" />
@@ -71,17 +71,17 @@ export default function FormsGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {forms.map((form: Form) => (
         <Link href={`/form-builder/${form.id}`} key={form.id}>
           <ShineBorder 
             borderRadius={12}
-            borderWidth={1}
+            borderWidth={2}
             duration={10}
             color={form.published ? ["#A07CFE", "#FE8FB5", "#FFBE7B"] : "#444444"}
-            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent"
+            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent h-full"
           >
-            <Card className="relative group overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300 h-full bg-white/50 backdrop-blur-sm">
+            <Card className="relative group overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 h-full bg-white backdrop-blur-sm rounded-[10px]">
               <CardContent className="p-5">
                 {/* Status indicator */}
                 <div className="absolute top-3 right-3">
