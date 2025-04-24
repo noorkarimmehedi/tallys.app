@@ -27,26 +27,32 @@ export default function FormsGrid() {
     return (
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <ShineBorder 
-            key={i}
-            borderRadius={12}
-            borderWidth={2}
-            duration={10}
-            color="#444444"
-            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent h-full"
-          >
-            <Card className="relative overflow-hidden border-none shadow-md h-full bg-white backdrop-blur-sm rounded-[10px]">
-              <CardContent className="p-5">
-                <Skeleton className="h-4 w-6 mb-5" />
-                <Skeleton className="h-6 w-3/4 mb-2" />
-                <Skeleton className="h-3 w-24 mb-6" />
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-6 w-6 rounded-full" />
+          <div key={i} className="block relative">
+            <div className="relative group border-2 border-gray-200 hover:shadow-lg transition-all duration-300 h-full bg-white rounded-xl overflow-hidden">
+              {/* Animated border overlay */}
+              <div 
+                className="absolute inset-0 z-0 opacity-50"
+                style={{
+                  background: 'linear-gradient(90deg, #444, #888, #444, #888)',
+                  backgroundSize: '300% 100%',
+                  animation: 'shimmer 6s linear infinite',
+                }}
+              />
+              
+              {/* Card content */}
+              <div className="absolute inset-[3px] bg-white rounded-[9px] z-10">
+                <div className="p-5">
+                  <Skeleton className="h-4 w-6 mb-5" />
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-3 w-24 mb-6" />
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </ShineBorder>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -73,22 +79,27 @@ export default function FormsGrid() {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {forms.map((form: Form) => (
-        <Link href={`/form-builder/${form.id}`} key={form.id}>
-          <ShineBorder 
-            borderRadius={12}
-            borderWidth={2}
-            duration={10}
-            color={form.published ? ["#A07CFE", "#FE8FB5", "#FFBE7B"] : "#444444"}
-            className="relative w-full min-w-0 min-h-0 p-0 bg-transparent h-full"
-          >
-            <Card className="relative group overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 h-full bg-white backdrop-blur-sm rounded-[10px]">
-              <CardContent className="p-5">
+        <Link href={`/form-builder/${form.id}`} key={form.id} className="block relative">
+          <div className="relative group border-2 border-gray-200 hover:shadow-lg transition-all duration-300 h-full bg-white rounded-xl overflow-hidden">
+            {/* Animated border overlay */}
+            <div 
+              className="absolute inset-0 z-0 opacity-70"
+              style={{
+                background: `linear-gradient(90deg, ${form.published ? '#A07CFE, #FE8FB5, #FFBE7B, #A07CFE' : '#444, #888, #444, #888'})`,
+                backgroundSize: '300% 100%',
+                animation: 'shimmer 6s linear infinite',
+              }}
+            />
+            
+            {/* Card content */}
+            <div className="absolute inset-[3px] bg-white rounded-[9px] z-10">
+              <div className="p-5">
                 {/* Status indicator */}
                 <div className="absolute top-3 right-3">
                   <span className={`inline-flex h-2 w-2 rounded-full ${
                     form.published 
                       ? "bg-green-500" 
-                      : "bg-gray-300"
+                      : "bg-gray-400"
                   }`}></span>
                 </div>
                 
@@ -136,9 +147,9 @@ export default function FormsGrid() {
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </ShineBorder>
+              </div>
+            </div>
+          </div>
         </Link>
       ))}
     </div>
