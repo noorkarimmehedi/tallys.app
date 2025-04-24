@@ -170,14 +170,18 @@ export default function EventBuilder() {
       }
     },
     onSuccess: (data) => {
+      console.log("Event saved successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-      if (eventId === 'new') {
-        navigate(`/event-builder/${data.id}`);
-      }
+      
       toast({
         title: 'Success',
         description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
       });
+      
+      // Navigate to the dashboard after creating/updating
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
     },
     onError: () => {
       toast({
