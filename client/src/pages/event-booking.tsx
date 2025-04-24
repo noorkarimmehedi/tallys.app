@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
+import { AppointmentPicker } from '@/components/ui/appointment-picker';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video } from 'lucide-react';
@@ -15,7 +16,9 @@ import { toast } from '@/hooks/use-toast';
 export default function EventBooking() {
   const params = useParams();
   const shortId = params.shortId;
+  const today = new Date();
   
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -247,9 +250,8 @@ export default function EventBooking() {
   // Get available time slots for the selected date
   const availableTimeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
   
-  // Current date for calendar
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const today = new Date();
+  // This section is now handled at the top level
+  // No need to duplicate today variable
   
   // Format time slot for display
   const formatTimeSlot = (timeString: string) => {
@@ -370,7 +372,7 @@ export default function EventBooking() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
                       required
-                      aria-invalid={!name.trim()}
+                      aria-invalid={!name.trim() ? "true" : undefined}
                       aria-describedby="name-error"
                     />
                     {!name.trim() && (
@@ -392,7 +394,7 @@ export default function EventBooking() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
-                      aria-invalid={email.trim() === '' || (email.trim() && !email.includes('@'))}
+                      aria-invalid={(email.trim() === '' || (email.trim() && !email.includes('@'))) ? "true" : undefined}
                       aria-describedby="email-error"
                     />
                     {(email.trim() === '' || (email.trim() && !email.includes('@'))) && (
@@ -448,83 +450,28 @@ export default function EventBooking() {
                   </div>
                 </div>
                 
-                <div className="flex flex-col md:flex-row md:space-x-6 mb-8">
-                  {/* Calendar */}
-                  <div className="w-full md:w-2/3 mb-6 md:mb-0">
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <div className="text-center mb-4">
-                        <h3 className="font-medium">
-                          {format(currentMonth, 'MMMM yyyy')}
-                        </h3>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          console.log("Date selected:", date);
-                          if (date) {
-                            setSelectedDate(date);
-                            // Automatically scroll to time slots
-                            setTimeout(() => {
-                              document.getElementById('time-slots')?.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
-                          }
-                        }}
-                        month={currentMonth}
-                        onMonthChange={setCurrentMonth}
-                        classNames={{
-                          day_selected: "bg-black text-white hover:bg-black hover:text-white focus:bg-black focus:text-white",
-                          day_today: "border border-gray-200 bg-gray-50 text-black",
-                          day: "focus:bg-gray-100 focus:text-black hover:bg-gray-100 hover:text-black"
-                        }}
-                        disabled={[
-                          { before: today }
-                        ]}
-                        fromMonth={today}
-                        toMonth={new Date(today.getFullYear(), today.getMonth() + 3, 0)}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Time Slots */}
-                  <div className="w-full md:w-1/3" id="time-slots">
-                    {selectedDate ? (
-                      <>
-                        <div className="mb-4">
-                          <h3 className="font-medium text-gray-900">
-                            {format(selectedDate, 'EEEE, MMMM d')}
-                          </h3>
-                        </div>
-                        <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2">
-                          {availableTimeSlots && availableTimeSlots.length > 0 ? (
-                            availableTimeSlots.map((time: string) => (
-                              <Button
-                                key={time}
-                                variant="outline"
-                                className="w-full justify-start text-left h-auto py-3 font-normal hover:border-black hover:text-black"
-                                onClick={() => {
-                                  console.log("Time selected:", time);
-                                  setSelectedTime(time);
-                                }}
-                              >
-                                {formatTimeSlot(time)}
-                              </Button>
-                            ))
-                          ) : (
-                            <div className="text-center p-4 text-gray-500 border border-dashed border-gray-300 rounded-lg">
-                              No available time slots for this day
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center p-6 text-gray-500 border border-dashed border-gray-300 rounded-lg h-full flex items-center justify-center">
-                        <div>
-                          <CalendarIcon className="h-10 w-10 mx-auto text-gray-400 mb-2" />
-                          <p>Select a date to view available times</p>
-                        </div>
-                      </div>
-                    )}
+                <div className="mb-8">
+                  {/* New AppointmentPicker Component */}
+                  <div className="max-w-full">
+                    <AppointmentPicker
+                      initialDate={selectedDate || undefined}
+                      initialTime={selectedTime}
+                      timeSlots={availableTimeSlots.map((time: string) => ({
+                        time,
+                        available: true
+                      }))}
+                      onDateChange={(date) => {
+                        console.log("Date selected:", date);
+                        setSelectedDate(date);
+                      }}
+                      onTimeChange={(time: string | null) => {
+                        console.log("Time selected:", time);
+                        setSelectedTime(time);
+                      }}
+                      disabledDates={[
+                        { before: today }
+                      ]}
+                    />
                   </div>
                 </div>
               </div>
