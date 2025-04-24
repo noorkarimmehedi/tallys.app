@@ -27,6 +27,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -292,42 +293,48 @@ export default function AuthPage() {
       </div>
 
       {/* Hero Section Column */}
-      <div className="flex-1 bg-primary/90 text-white p-12 flex flex-col justify-center relative overflow-hidden">
-        {/* Tiled Background for Hero */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="w-full h-full">
-            <Tiles rows={30} cols={6} tileSize="lg" tileClassName="border-white/20" />
-          </div>
-        </div>
+      <div className="flex-1 bg-white text-black p-12 flex flex-col justify-center relative overflow-hidden">
+        {/* Dotted Background for Hero */}
+        <div className="absolute inset-0 overflow-hidden" style={{ 
+          backgroundImage: 'radial-gradient(#d1d5db 1px, transparent 1px)', 
+          backgroundSize: '30px 30px'
+        }}></div>
         
         <div className="max-w-md mx-auto z-10">
-          <h1 className="text-4xl font-bold mb-6">Build beautiful forms in minutes</h1>
-          <p className="text-lg mb-8">
+          <TextShimmer
+            as="h1"
+            duration={3} 
+            spread={3}
+            className="text-4xl font-bold mb-6 [--base-color:#3b82f6] [--base-gradient-color:#60a5fa]"
+          >
+            Build beautiful forms in minutes
+          </TextShimmer>
+          <p className="text-lg mb-8 text-gray-700">
             Tallys lets you create professional forms with our intuitive builder. 
             Collect responses, analyze data, and grow your business.
           </p>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
-              <h3 className="font-medium mb-2">Easy Form Building</h3>
-              <p className="text-sm text-white/80">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-medium mb-2 text-gray-800">Easy Form Building</h3>
+              <p className="text-sm text-gray-600">
                 Create forms with our drag-and-drop interface.
               </p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
-              <h3 className="font-medium mb-2">Real-time Responses</h3>
-              <p className="text-sm text-white/80">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-medium mb-2 text-gray-800">Real-time Responses</h3>
+              <p className="text-sm text-gray-600">
                 View submissions as they happen.
               </p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
-              <h3 className="font-medium mb-2">Beautiful Forms</h3>
-              <p className="text-sm text-white/80">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-medium mb-2 text-gray-800">Beautiful Forms</h3>
+              <p className="text-sm text-gray-600">
                 Customizable themes and layouts.
               </p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10 shadow-lg">
-              <h3 className="font-medium mb-2">Organized Sections</h3>
-              <p className="text-sm text-white/80">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-medium mb-2 text-gray-800">Organized Sections</h3>
+              <p className="text-sm text-gray-600">
                 Group questions by topic or theme.
               </p>
             </div>
