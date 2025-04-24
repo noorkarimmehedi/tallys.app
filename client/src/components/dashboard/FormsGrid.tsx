@@ -27,35 +27,28 @@ export default function FormsGrid() {
     return (
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="block relative">
-            <div className="relative group border-2 border-gray-200 shadow-lg transition-all duration-300 h-full rounded-xl overflow-hidden">
-              {/* Solid background to ensure visibility */}
-              <div className="absolute inset-0 bg-white"></div>
-              
-              {/* Animated border overlay */}
-              <div 
-                className="absolute inset-0 z-10"
-                style={{
-                  background: 'linear-gradient(90deg, #444, #888, #444, #888)',
-                  backgroundSize: '300% 100%',
-                  animation: 'shimmer 6s linear infinite',
-                  opacity: 1,
-                }}
-              ></div>
-              
-              {/* Card content */}
-              <div className="absolute inset-[3px] bg-white rounded-[9px] z-20 shadow-md">
-                <div className="p-5">
-                  <Skeleton className="h-4 w-6 mb-5" />
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-3 w-24 mb-6" />
-                  <div className="flex justify-between items-center">
-                    <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-6 w-6 rounded-full" />
-                  </div>
+          <div key={i} className="block">
+            <Card className="relative h-full bg-white shadow-md">
+              <CardContent className="p-5">
+                {/* Simple loading bar at top */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gray-300" />
+                
+                {/* Status badge skeleton */}
+                <div className="absolute top-3 right-3">
+                  <Skeleton className="h-3 w-3 rounded-full" />
                 </div>
-              </div>
-            </div>
+                
+                {/* Content skeletons */}
+                <Skeleton className="h-5 w-6 mb-3" />
+                <Skeleton className="h-6 w-3/4 mb-3" />
+                <Skeleton className="h-4 w-24 mb-6" />
+                
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-8 w-16 rounded" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         ))}
       </div>
@@ -83,81 +76,79 @@ export default function FormsGrid() {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {forms.map((form: Form) => (
-        <Link href={`/form-builder/${form.id}`} key={form.id} className="block relative">
-          <div className="relative group border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 h-full rounded-xl overflow-hidden">
-            {/* Solid background to ensure visibility */}
-            <div className="absolute inset-0 bg-white"></div>
-            
-            {/* Animated border overlay */}
-            <div 
-              className="absolute inset-0 z-10"
-              style={{
-                background: `linear-gradient(90deg, ${form.published ? '#A07CFE, #FE8FB5, #FFBE7B, #A07CFE' : '#444, #888, #444, #888'})`,
-                backgroundSize: '300% 100%',
-                animation: 'shimmer 6s linear infinite',
-                opacity: 1,
-              }}
-            ></div>
-            
-            {/* Card content */}
-            <div className="absolute inset-[3px] bg-white rounded-[9px] z-20 shadow-md">
-              <div className="p-5">
-                {/* Status indicator */}
-                <div className="absolute top-3 right-3">
-                  <span className={`inline-flex h-3 w-3 rounded-full ${
+        <Link href={`/form-builder/${form.id}`} key={form.id} className="block">
+          <Card className="relative h-full group bg-white shadow-md hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-5">
+              {/* Status badge */}
+              <div className="absolute top-3 right-3">
+                <div 
+                  className={`rounded-full h-3 w-3 ${
                     form.published 
                       ? "bg-green-500" 
                       : "bg-gray-400"
-                  }`}></span>
-                </div>
+                  }`}
+                />
+              </div>
+              
+              {/* Border overlay - simple colored top bar instead of full border */}
+              <div 
+                className="absolute top-0 left-0 right-0 h-1"
+                style={{
+                  background: form.published ? 'linear-gradient(to right, #A07CFE, #FE8FB5, #FFBE7B)' : '#888',
+                }}
+              />
+              
+              {/* Form icon */}
+              <div className="mb-3 text-black font-medium">
+                <i className="ri-file-list-3-line text-lg"></i>
+              </div>
+              
+              {/* Form title */}
+              <h3 className="text-lg font-bold mb-3 text-gray-900 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
+                {form.title}
+              </h3>
+              
+              {/* Stats */}
+              <div className="flex items-center text-xs text-gray-700 mb-6">
+                <i className="ri-eye-line mr-1"></i>
+                <span className="font-medium">{form.views} views</span>
+                {form.published && (
+                  <>
+                    <span className="mx-2">•</span>
+                    <i className="ri-message-3-line mr-1"></i>
+                    <span className="font-medium">0 responses</span>
+                  </>
+                )}
+              </div>
+              
+              {/* Bottom section with status and actions */}
+              <div className="flex justify-between items-center">
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  form.published 
+                    ? "bg-green-100 text-green-800" 
+                    : "bg-gray-200 text-gray-700"
+                }`}>
+                  {form.published ? "Published" : "Draft"}
+                </span>
                 
-                {/* Form icon */}
-                <div className="mb-4 text-black">
-                  <i className="ri-file-list-3-line text-lg"></i>
-                </div>
-                
-                {/* Form title */}
-                <h3 className="text-lg font-medium mb-2 text-gray-900 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
-                  {form.title}
-                </h3>
-                
-                {/* Stats */}
-                <div className="flex items-center text-xs text-gray-500 mb-6">
-                  <i className="ri-eye-line mr-1"></i>
-                  <span>{form.views} views</span>
-                  {form.published && (
-                    <>
-                      <span className="mx-2">•</span>
-                      <i className="ri-message-3-line mr-1"></i>
-                      <span>0 responses</span>
-                    </>
-                  )}
-                </div>
-                
-                {/* Bottom section with status and actions */}
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500 font-medium">
-                    {form.published ? "Published" : "Draft"}
-                  </span>
-                  
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 px-2 text-gray-500 hover:text-red-500"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        deleteFormMutation.mutate(form.id);
-                      }}
-                    >
-                      <i className="ri-delete-bin-line"></i>
-                    </Button>
-                  </div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 px-2 border-red-200 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      deleteFormMutation.mutate(form.id);
+                    }}
+                  >
+                    <i className="ri-delete-bin-line mr-1"></i>
+                    Delete
+                  </Button>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </Link>
       ))}
     </div>
