@@ -313,7 +313,7 @@ export default function AuthPage() {
             Hi there, nice to meet you!
           </TextShimmer>
           <p className="text-lg mb-8 text-gray-700">
-            Tallys lets you create professional forms with our intuitive builder. 
+            Create professional forms with our intuitive builder. 
             Collect responses, analyze data, and grow your business.
           </p>
           <div className="grid grid-cols-2 gap-4">
