@@ -213,12 +213,12 @@ export default function EventBooking() {
   if (isLoading) {
     return (
       <div className="min-h-screen relative flex items-center justify-center bg-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
             cols={12}
             tileSize="md"
-            tileClassName="opacity-70 border-primary/30"
+            tileClassName="opacity-40 border-primary/20"
           />
         </div>
         <div className="relative z-10">
@@ -231,12 +231,12 @@ export default function EventBooking() {
   if (error || !event) {
     return (
       <div className="min-h-screen relative flex items-center justify-center bg-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
             cols={12}
             tileSize="md"
-            tileClassName="opacity-70 border-primary/30"
+            tileClassName="opacity-40 border-primary/20"
           />
         </div>
         <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
@@ -255,12 +255,12 @@ export default function EventBooking() {
   if (bookingComplete) {
     return (
       <div className="min-h-screen relative flex items-center justify-center bg-white p-4">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <Tiles 
             rows={30} 
             cols={12}
             tileSize="md"
-            tileClassName="opacity-70 border-primary/30"
+            tileClassName="opacity-40 border-primary/20"
           />
         </div>
         <Card className="w-full max-w-lg relative z-10 bg-white/80 backdrop-blur-sm">
@@ -313,12 +313,12 @@ export default function EventBooking() {
   return (
     <div className="min-h-screen relative bg-white">
       {/* Interactive Tiles Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <Tiles 
           rows={30} 
           cols={12}
           tileSize="md"
-          tileClassName="opacity-70 border-primary/30"
+          tileClassName="opacity-40 border-primary/20"
         />
       </div>
       
