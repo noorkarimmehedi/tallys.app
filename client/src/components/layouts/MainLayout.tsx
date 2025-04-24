@@ -93,21 +93,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
               </Link>
             </div>
-            
-            {/* Workspace Section */}
-            <div className="mt-5 relative z-10">
-              <h3 className="px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Workspaces</h3>
-              <div className="mt-1 px-3 space-y-0.5">
-                <a href="#personal" className="flex items-center px-3 py-2 text-xs font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
-                  <span className="w-2 h-2 mr-2 bg-blue-500 rounded-full"></span>
-                  <span>Personal</span>
-                </a>
-                <a href="#work" className="flex items-center px-3 py-2 text-xs font-medium text-gray-600 rounded-md hover:bg-gray-100/50 group">
-                  <span className="w-2 h-2 mr-2 bg-green-500 rounded-full"></span>
-                  <span>Work</span>
-                </a>
-              </div>
-            </div>
           </nav>
           
           {/* User Profile */}
