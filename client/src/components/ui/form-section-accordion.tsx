@@ -13,6 +13,7 @@ import Email from "@/components/ui/form-fields/Email";
 import MultipleChoice from "@/components/ui/form-fields/MultipleChoice";
 import Rating from "@/components/ui/form-fields/Rating";
 import FileUpload from "@/components/ui/form-fields/FileUpload";
+import DateField from "@/components/ui/form-fields/DateField";
 import { getQuestionsGroupedBySections } from "@/lib/utils";
 
 interface FormSection {
@@ -144,6 +145,8 @@ function FormSectionAccordion({
         return <Rating {...fieldProps} maxRating={question.maxRating || 5} />;
       case "fileUpload":
         return <FileUpload {...fieldProps} />;
+      case "date":
+        return <DateField {...fieldProps} />;
       default:
         return <ShortText {...fieldProps} />;
     }
