@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/accordion";
 import { Loader2, Clock, MapPin, User, Check, ArrowLeft, ArrowRight, Calendar as CalendarIcon, Globe, Video, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import logoPath from '@assets/lgoooo.png';
 
 export default function EventBooking() {
   const params = useParams();
@@ -287,7 +288,7 @@ export default function EventBooking() {
       <header className="border-b border-gray-200">
         <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src="/logo.png" alt="Logo" className="h-8" />
+            <img src={logoPath} alt="Logo" className="h-8" />
           </div>
         </div>
       </header>
@@ -304,26 +305,25 @@ export default function EventBooking() {
             </div>
           </div>
           
-          {/* Use FormSectionAccordion Component */}
+          {/* Booking Process - Accordion with Numbered Style */}
           <Accordion
             type="single"
             collapsible
             value={activeAccordion}
             className="w-full border rounded-lg divide-y"
           >
-            {/* Event Information */}
+            {/* 1. Event Details */}
             <AccordionItem value="event-details" className="px-4 py-2">
-              <AccordionTrigger className="group">
-                <div className="flex items-center gap-2">
-                  <Clock className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Event Details</span>
-                  {activeAccordion !== "event-details" && (
-                    <span className="ml-2 text-sm text-green-500">✓</span>
-                  )}
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">1</span>
+                  </div>
+                  <span className="font-medium text-lg">Event Details</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-4">
+              <AccordionContent className="pb-4">
+                <div className="pl-11 space-y-4">
                   <p className="text-gray-600">
                     {event.description || "No description provided."}
                   </p>
@@ -377,67 +377,81 @@ export default function EventBooking() {
               </AccordionContent>
             </AccordionItem>
             
-            {/* Date & Time Selection */}
+            {/* 2. Date & Time Selection */}
             <AccordionItem value="date-time" className="px-4 py-2">
-              <AccordionTrigger className="group">
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Date & Time</span>
-                  {selectedDate && selectedTime && (
-                    <span className="ml-2 text-sm text-green-500">✓</span>
-                  )}
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">2</span>
+                  </div>
+                  <span className="font-medium text-lg">
+                    Date & Time
+                    {selectedDate && selectedTime && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        {format(selectedDate, 'MMM d, yyyy')} at {formatTimeSlot(selectedTime)}
+                      </span>
+                    )}
+                  </span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="mb-6">
-                  <AppointmentPicker
-                    initialDate={selectedDate || undefined}
-                    initialTime={selectedTime}
-                    timeSlots={availableTimeSlots.map((time: string) => ({
-                      time,
-                      available: true
-                    }))}
-                    onDateChange={(date) => {
-                      console.log("Date selected:", date);
-                      setSelectedDate(date);
-                    }}
-                    onTimeChange={(time: string | null) => {
-                      console.log("Time selected:", time);
-                      setSelectedTime(time);
-                    }}
-                    disabledDates={[
-                      { before: today }
-                    ]}
-                  />
-                </div>
-                
-                {selectedDate && selectedTime && (
-                  <div className="mt-6">
-                    <Button 
-                      onClick={() => setActiveAccordion("your-info")}
-                      className="w-full md:w-auto"
-                    >
-                      Continue to Your Info
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
+              <AccordionContent className="pb-4">
+                <div className="pl-11">
+                  <div className="mb-6">
+                    <AppointmentPicker
+                      initialDate={selectedDate || undefined}
+                      initialTime={selectedTime}
+                      timeSlots={availableTimeSlots.map((time: string) => ({
+                        time,
+                        available: true
+                      }))}
+                      onDateChange={(date) => {
+                        console.log("Date selected:", date);
+                        setSelectedDate(date);
+                      }}
+                      onTimeChange={(time: string | null) => {
+                        console.log("Time selected:", time);
+                        setSelectedTime(time);
+                      }}
+                      disabledDates={[
+                        { before: today }
+                      ]}
+                    />
                   </div>
-                )}
+                  
+                  {selectedDate && selectedTime && (
+                    <div className="mt-6">
+                      <Button 
+                        onClick={() => setActiveAccordion("your-info")}
+                        className="w-full md:w-auto"
+                      >
+                        Continue to Your Info
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </AccordionContent>
             </AccordionItem>
             
-            {/* Contact Information */}
+            {/* 3. Your Information */}
             <AccordionItem value="your-info" className="px-4 py-2">
-              <AccordionTrigger className="group">
-                <div className="flex items-center gap-2">
-                  <User className="size-4 stroke-2 text-muted-foreground" />
-                  <span>Your Information</span>
-                  {name && email && (
-                    <span className="ml-2 text-sm text-green-500">✓</span>
-                  )}
+              <AccordionTrigger className="py-4 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                    <span className="text-primary font-medium">3</span>
+                  </div>
+                  <span className="font-medium text-lg">
+                    Your Information
+                    {name && email && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        {name} ({email})
+                      </span>
+                    )}
+                  </span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-6">
+              <AccordionContent className="pb-4">
+                <div className="pl-11 space-y-6">
                   {selectedDate && selectedTime && (
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <h3 className="font-medium text-gray-900">
