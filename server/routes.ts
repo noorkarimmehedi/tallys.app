@@ -66,15 +66,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // In a real app, we'd get the user ID from the session
       const userId = 1; // Demo user
       
-      const validatedData = insertFormSchema.parse({
+      console.log("POST /api/forms - Request body:", JSON.stringify(req.body, null, 2));
+      
+      // Add default shortId if missing
+      const formData = {
         ...req.body,
-        userId
-      });
+        userId,
+        shortId: req.body.shortId || `form-${Date.now().toString(36)}`
+      };
+      
+      const validatedData = insertFormSchema.parse(formData);
       
       const form = await storage.createForm(validatedData);
+      console.log("Form created successfully:", form.id);
       res.status(201).json(form);
     } catch (error) {
+      console.error("Error creating form:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid form data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create form" });
