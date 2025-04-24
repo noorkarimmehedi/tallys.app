@@ -3,6 +3,7 @@ import { FormSectionAccordion } from '@/components/ui/form-section-accordion';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { FormQuestion, FormSection, FieldType } from '@shared/schema';
 
 // Define button component
 function NavButton({ 
@@ -29,12 +30,73 @@ function NavButton({
   );
 }
 
+// Define form data outside component to avoid recreation
+const formQuestions: FormQuestion[] = [
+  {
+    id: "q1",
+    type: "shortText" as FieldType,
+    title: "What's your name?",
+    required: true,
+    sectionId: "section1"
+  },
+  {
+    id: "q2",
+    type: "email" as FieldType,
+    title: "What's your email?",
+    required: true,
+    sectionId: "section1"
+  },
+  {
+    id: "q3",
+    type: "paragraph" as FieldType,
+    title: "Tell us about yourself",
+    required: false,
+    sectionId: "section2"
+  },
+  {
+    id: "q4",
+    type: "multipleChoice" as FieldType,
+    title: "How did you hear about us?",
+    required: true,
+    sectionId: "section2",
+    options: ["Social Media", "Friend", "Advertisement", "Other"]
+  },
+  {
+    id: "q5",
+    type: "rating" as FieldType,
+    title: "Rate your experience",
+    required: true,
+    sectionId: "section2",
+    maxRating: 5
+  }
+];
+
+const formSections: FormSection[] = [
+  {
+    id: "section1",
+    title: "Contact Information",
+    description: "Please provide your contact details",
+    icon: "user"
+  },
+  {
+    id: "section2",
+    title: "Additional Information",
+    description: "Tell us more about yourself",
+    icon: "file"
+  }
+];
+
 // Form steps
-const steps = [
+const getSteps = (onAnswerChange: (id: string, value: any) => void, responses: Record<string, any>) => [
   {
     title: "Personal Information",
     description: "Tell us about yourself",
-    component: <FormSectionAccordion />
+    component: <FormSectionAccordion 
+      questions={formQuestions}
+      sections={formSections}
+      onAnswerChange={onAnswerChange}
+      formResponses={responses}
+    />
   },
   {
     title: "Form Settings",
@@ -51,6 +113,18 @@ const steps = [
 export default function FormDemo() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [formResponses, setFormResponses] = useState<Record<string, any>>({});
+  
+  const handleAnswerChange = (questionId: string, value: any) => {
+    setFormResponses(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+    console.log("Updated responses:", { ...formResponses, [questionId]: value });
+  };
+  
+  // Generate steps with the current responses and handler
+  const steps = getSteps(handleAnswerChange, formResponses);
   
   const goToNextStep = () => {
     if (currentStep < steps.length - 1) {
