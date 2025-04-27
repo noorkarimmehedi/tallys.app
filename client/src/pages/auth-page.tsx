@@ -69,7 +69,7 @@ export default function AuthPage() {
                 words={[
                   { text: "Welcome" },
                   { text: "to" },
-                  { text: "Tallys", className: "text-blue-500 dark:text-blue-500" },
+                  { text: "tallys", className: "text-blue-500 dark:text-blue-500" },
                 ]}
                 className="mb-2"
               />
