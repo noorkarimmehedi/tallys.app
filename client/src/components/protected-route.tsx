@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/use-auth";
+import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
 
@@ -11,7 +12,11 @@ export function ProtectedRoute({
   path,
   component: Component,
 }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: isDbLoading } = useAuth();
+  const { currentUser, loading: isFirebaseLoading } = useFirebaseAuth();
+  
+  const isLoading = isDbLoading || isFirebaseLoading;
+  const isAuthenticated = user || currentUser;
 
   if (isLoading) {
     return (
@@ -25,7 +30,7 @@ export function ProtectedRoute({
 
   return (
     <Route path={path}>
-      {user ? <Component /> : <Redirect to="/auth" />}
+      {isAuthenticated ? <Component /> : <Redirect to="/auth" />}
     </Route>
   );
 }
