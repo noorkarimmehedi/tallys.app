@@ -183,7 +183,9 @@ function FormSectionAccordion({
   const getSectionIcon = (sectionGroup: { sectionId?: string; sectionTitle: string; questions: FormQuestion[] }) => {
     const firstQuestionType = sectionGroup.questions[0]?.type;
     
-    if (sectionGroup.sectionTitle.toLowerCase().includes('personal')) {
+    if (sectionGroup.sectionId === 'information') {
+      return <FileText className="size-4 stroke-2 text-blue-500" />;
+    } else if (sectionGroup.sectionTitle.toLowerCase().includes('personal')) {
       return <User className="size-4 stroke-2 text-muted-foreground" />;
     } else if (sectionGroup.sectionTitle.toLowerCase().includes('contact')) {
       return <Mail className="size-4 stroke-2 text-muted-foreground" />;

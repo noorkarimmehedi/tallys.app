@@ -103,6 +103,15 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
   
   // Create default group for questions without a section
   const result: SectionGroup[] = [];
+
+  // Always add the Information section at the top
+  result.push({
+    sectionId: 'information',
+    sectionTitle: "Information",
+    sectionDescription: "This form collects the necessary information we need.",
+    sectionIcon: 'info-circle',
+    questions: [] as FormQuestion[]
+  });
   
   // If we have no sections defined but have questions, create a default section
   if (sections.length === 0 && questions.length > 0) {
@@ -112,7 +121,7 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
       questions: [...questions] // Clone the questions array
     });
     
-    // Return early since all questions are in the default section
+    // Return the result with the Information section at top
     return result;
   }
   
@@ -143,16 +152,18 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
         section.questions.push({...question}); // Clone the question
       } else {
         // If section doesn't exist, add to unsectioned group
-        result[0].questions.push({...question});
+        result[1].questions.push({...question}); // Now position 1 since Information is at 0
       }
     } else {
       // If no sectionId, add to unsectioned group
-      result[0].questions.push({...question});
+      result[1].questions.push({...question}); // Now position 1 since Information is at 0
     }
   });
   
-  // Remove empty sections
-  const filteredResult = result.filter(section => section.questions.length > 0);
+  // Remove empty sections except the Information section
+  const filteredResult = result.filter((section, index) => 
+    index === 0 || section.questions.length > 0
+  );
   
   console.log("getQuestionsGroupedBySections result:", filteredResult);
   
