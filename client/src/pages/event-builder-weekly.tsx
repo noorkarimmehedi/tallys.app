@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema';
 import { Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, Globe, Eye } from 'lucide-react';
@@ -19,7 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 // Extended Event type with our custom properties
 interface Event extends EventType {
   weeklySchedule: string | null;
-  availableTimes: EventAvailability[];
+  availableTimes?: EventAvailability[];
 }
 
 interface WeekdayAvailability {
