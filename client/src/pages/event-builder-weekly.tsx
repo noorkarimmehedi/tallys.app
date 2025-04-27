@@ -102,34 +102,37 @@ export default function EventBuilder() {
     try {
       console.log("Saving event with logo URL:", logoPath);
       
-      // Create a specific logo-only update object
-      const logoUpdateData = {
-        theme: {
-          backgroundColor: '#ffffff', 
-          textColor: '#000000',
-          primaryColor: '#3b82f6',
-          fontFamily: 'Inter, sans-serif',
-          logoUrl: logoPath
-        }
-      };
-      
       // Only save if editing an existing event
       if (eventId !== 'new') {
-        console.log("Making logo update request with data:", JSON.stringify(logoUpdateData, null, 2));
+        console.log("Making logo update request with logoUrl:", logoPath);
         
+        // Simplify the request to avoid issues with nested objects
         const response = await fetch(`/api/events/${eventId}/logo`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ logoUrl: logoPath })
+          body: JSON.stringify({ 
+            logoUrl: logoPath 
+          })
         });
         
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
         if (!response.ok) {
-          throw new Error('Failed to save logo');
+          console.error("Failed to save logo, status:", response.status);
+          throw new Error(`Failed to save logo: ${responseText}`);
         }
         
-        const updatedEvent = await response.json();
+        let updatedEvent;
+        try {
+          updatedEvent = JSON.parse(responseText);
+        } catch (err) {
+          console.error("Error parsing response:", err);
+          throw new Error("Invalid response from server");
+        }
+        
         console.log("Updated event with logo:", updatedEvent);
         
         // Manually update the query cache to reflect the change
@@ -170,8 +173,16 @@ export default function EventBuilder() {
       const data = await response.json();
       console.log("Logo uploaded successfully:", data);
       
+      // Make sure we use the correct property - server response has fileUrl
+      const logoUrl = data.fileUrl || data.path;
+      console.log("Using logo URL for save:", logoUrl);
+      
+      if (!logoUrl) {
+        throw new Error('No logo URL in response');
+      }
+      
       // Update local state
-      setLogoUrl(data.path);
+      setLogoUrl(logoUrl);
       setLogoFile(null);
       setLogoDialogOpen(false);
       
@@ -181,7 +192,7 @@ export default function EventBuilder() {
       });
       
       // Save the logo to the event
-      await saveEventWithLogo(data.path);
+      await saveEventWithLogo(logoUrl);
       
     } catch (error) {
       console.error("Error uploading logo:", error);
