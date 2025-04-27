@@ -53,6 +53,25 @@ export function MagnetizeNavItem({
         });
         setParticles(newParticles);
     }, [particleCount]);
+    
+    // When isActive changes, reset interaction state and hide particles
+    useEffect(() => {
+        if (isActive) {
+            isInteractingRef.current = false;
+            setIsAttracting(false);
+            
+            // If particles are visible, make them return to their starting positions
+            particlesControl.start((i) => {
+                const particle = particles[i];
+                return {
+                    x: particle.x,
+                    y: particle.y,
+                    opacity: 0,
+                    transition: { duration: 0.3 }
+                };
+            });
+        }
+    }, [isActive, particlesControl, particles]);
 
     // Clean up timeouts to prevent memory leaks
     useEffect(() => {
@@ -64,6 +83,9 @@ export function MagnetizeNavItem({
     }, []);
 
     const handleInteractionStart = useCallback(async () => {
+        // Skip magnetize effect if this nav item is already active
+        if (isActive) return;
+        
         // Prevent rapid toggling with debounce
         if (timeoutRef.current !== null) {
             window.clearTimeout(timeoutRef.current);
@@ -89,9 +111,12 @@ export function MagnetizeNavItem({
                 },
             });
         });
-    }, [particlesControl]);
+    }, [particlesControl, isActive]);
 
     const handleInteractionEnd = useCallback(() => {
+        // Skip magnetize effect if this nav item is already active
+        if (isActive) return;
+        
         // Add debounce to prevent flickering if the user quickly moves in and out
         if (timeoutRef.current !== null) {
             window.clearTimeout(timeoutRef.current);
@@ -124,7 +149,7 @@ export function MagnetizeNavItem({
                 timeoutRef.current = null;
             });
         }, 70); // Slightly longer delay for better visual effect
-    }, [particlesControl, particles]);
+    }, [particlesControl, particles, isActive]);
 
     return (
         <Link
@@ -142,8 +167,8 @@ export function MagnetizeNavItem({
         >
             {/* Memoized particle rendering for better performance */}
             {useMemo(() => {
-                // Only render particles when needed
-                const shouldRenderParticles = isAttracting || particles.some(p => p.x !== 0 || p.y !== 0);
+                // Only render particles when needed AND only when not active (clicked)
+                const shouldRenderParticles = !isActive && (isAttracting || particles.some(p => p.x !== 0 || p.y !== 0));
                 if (!shouldRenderParticles) return null;
                 
                 return particles.map((particle, index) => (
@@ -166,7 +191,7 @@ export function MagnetizeNavItem({
                         }}
                     />
                 ));
-            }, [particles, isAttracting, particlesControl])}
+            }, [particles, isAttracting, particlesControl, isActive])}
             
             <span className={cn(
                 "mr-2 relative",
