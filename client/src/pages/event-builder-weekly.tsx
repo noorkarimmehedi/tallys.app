@@ -70,8 +70,14 @@ export default function EventBuilder() {
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
-    queryFn: eventId === 'new' ? undefined : undefined,
-    // @ts-ignore - Using undefined for queryFn is valid when we don't want to fetch in certain conditions
+    queryFn: eventId === 'new' ? undefined : async () => {
+      const res = await fetch(`/api/events/${eventId}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch event');
+      }
+      return res.json();
+    },
+    enabled: eventId !== 'new'
   });
   
   // Handle logo file change
@@ -229,7 +235,7 @@ export default function EventBuilder() {
           textColor: '#000000',
           primaryColor: '#3b82f6',
           fontFamily: 'Inter, sans-serif',
-          logoUrl: logoUrl || undefined
+          logoUrl: logoUrl // Include logo URL even if it's empty string
         }
       };
       
