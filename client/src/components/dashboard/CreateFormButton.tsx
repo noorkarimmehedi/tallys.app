@@ -1,7 +1,6 @@
 import { FileText, Plus } from 'lucide-react';
 import { Link } from 'wouter';
-import { Button as OldButton } from '../ui/button';
-import { Button } from '../ui/3d-button';
+import { Button } from '../ui/3d-button-new';
 import { Card } from '../ui/card';
 import { motion } from 'framer-motion';
 
@@ -19,8 +18,8 @@ export default function CreateFormButton() {
           </div>
           <h3 className="text-lg font-medium mb-2">Create Form</h3>
           <p className="text-sm text-gray-500 text-center mb-4">Build custom forms for data collection</p>
-          <Button variant="default" className="px-4 py-2" size="sm" supportIcon={() => <Plus size={14} />}>
-            New Form
+          <Button variant="default" size="sm">
+            <Plus className="h-4 w-4 mr-1" /> New Form
           </Button>
         </Card>
       </motion.div>

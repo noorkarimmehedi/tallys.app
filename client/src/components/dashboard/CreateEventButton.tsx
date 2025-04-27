@@ -1,7 +1,6 @@
 import { CalendarClock, Plus } from 'lucide-react';
 import { Link } from 'wouter';
-import { Button as OldButton } from '../ui/button';
-import { Button } from '../ui/3d-button';
+import { Button } from '../ui/3d-button-new';
 import { Card } from '../ui/card';
 import { motion } from 'framer-motion';
 
@@ -19,7 +18,7 @@ export default function CreateEventButton() {
           </div>
           <h3 className="text-lg font-medium mb-2">Create Event</h3>
           <p className="text-sm text-gray-500 text-center mb-4">Schedule appointments with your customers</p>
-          <Button variant="outline" className="rounded-full" size="sm">
+          <Button variant="outline" size="sm">
             <Plus className="h-4 w-4 mr-1" /> New Event
           </Button>
         </Card>
