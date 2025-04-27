@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 
-// Initialize with just the project ID to avoid private key issues
+// Simply use project ID for initialization
+// This avoids issues with private key formatting while still allowing for token verification
 const projectId = process.env.VITE_FIREBASE_PROJECT_ID;
 
 let firebaseInitialized = false;
@@ -8,14 +9,16 @@ let auth: admin.auth.Auth;
 
 try {
   if (projectId) {
-    // Initialize with just the project ID and let it use Application Default Credentials
+    console.log('Initializing Firebase Admin SDK with project ID');
+    
+    // Initialize with application default credentials
     const app = admin.initializeApp({
       projectId: projectId
     });
     
     auth = admin.auth(app);
     firebaseInitialized = true;
-    console.log('Firebase Admin SDK initialized with project ID only');
+    console.log('Firebase Admin SDK initialized successfully');
   } else {
     console.warn('Firebase Admin SDK not initialized due to missing project ID');
   }
