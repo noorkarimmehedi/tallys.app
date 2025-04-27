@@ -15,7 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
 import { TextShimmer } from "@/components/ui/text-shimmer";
-import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import logoImage from "../assets/lgoooo.png";
 
 export default function AuthPage() {
@@ -58,24 +58,42 @@ export default function AuthPage() {
 
       <div className="w-full max-w-6xl mx-auto px-4 pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center">
-          {/* App Logo & Title with Typewriter Effect */}
+          {/* App Logo with Vertical Cut Reveal Animation */}
           <div className="flex flex-col items-center mb-8 text-center">
             <div className="mb-4 flex items-center justify-center">
               <img src={logoImage} alt="Logo" className="h-16 w-auto" />
             </div>
             
-            <div className="flex flex-col items-center justify-center">
-              <TypewriterEffectSmooth
-                words={[
-                  { text: "Welcome" },
-                  { text: "to" },
-                  { text: "tallys", className: "text-blue-500 dark:text-blue-500" },
-                ]}
-                className="mb-2"
-              />
-              <p className="text-neutral-600 dark:text-neutral-300 text-sm sm:text-base mt-1 mb-6">
-                The smart way to create forms and schedule events
-              </p>
+            <div className="w-full text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl flex flex-col items-center justify-center font-medium p-4 tracking-wide text-primary">
+              <VerticalCutReveal
+                splitBy="characters"
+                staggerDuration={0.025}
+                staggerFrom="first"
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 21,
+                }}
+                containerClassName="text-center mb-2"
+              >
+                {`Welcome to tallys!`}
+              </VerticalCutReveal>
+              
+              <VerticalCutReveal
+                splitBy="words"
+                staggerDuration={0.1}
+                staggerFrom="center"
+                reverse={true}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 21,
+                  delay: 0.7,
+                }}
+                containerClassName="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 mt-2 mb-6 text-center"
+              >
+                {`The smart way to create forms and schedule events`}
+              </VerticalCutReveal>
             </div>
           </div>
 
