@@ -346,7 +346,7 @@ export default function EventBooking() {
       </header>
       
       {/* Main content */}
-      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative z-10 px-4 py-6 md:py-8">
+      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative z-10 px-4 py-6 md:py-8" style={{ marginTop: event?.theme?.logoUrl ? '40px' : '0' }}>
         <div className="flex flex-col space-y-6 md:space-y-8 w-full max-w-full sm:max-w-lg">
           {/* Event Title */}
           <div className="text-center">
