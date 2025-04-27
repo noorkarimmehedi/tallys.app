@@ -77,13 +77,21 @@ export default function Calendar() {
     );
   }
   
-  // Format date for display
-  const formattedDate = date ? date.toLocaleDateString('en-US', {
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric'
-  }) : '';
+  // Format date for display with more precision
+  const formattedDate = date ? format(date, "EEEE, MMMM d, yyyy") : '';
+  
+  // Debug selected date
+  useEffect(() => {
+    if (date) {
+      console.log(`Date selected: ${formattedDate} (${dateParam})`);
+      if (bookings && bookings.length > 0) {
+        console.log(`Found ${bookings.length} bookings:`, 
+          bookings.map(b => `${b.name} at ${b.time} (ID: ${b.id})`));
+      } else {
+        console.log('No bookings found for this date');
+      }
+    }
+  }, [date, bookings, dateParam, formattedDate]);
   
   return (
     <div className="flex-1 overflow-y-auto p-6">

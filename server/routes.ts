@@ -592,26 +592,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Event is not published" });
       }
       
-      // Explicitly convert date string to Date object before validation
+      // Handle the date properly to avoid timezone issues
       let dateValue;
       try {
-        // Handle date whether it's a string or already a Date object
-        dateValue = new Date(req.body.date);
+        // Check if we're receiving a formatted date string (YYYY-MM-DD) or an ISO string
+        if (req.body.date && typeof req.body.date === 'string') {
+          // If it's already in YYYY-MM-DD format
+          if (req.body.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // Parse without timezone conversion by appending time
+            const isoString = `${req.body.date}T${req.body.time || '00:00'}:00.000Z`;
+            dateValue = new Date(isoString);
+            
+            // Debug log
+            console.log(`Parsed date from YYYY-MM-DD: ${req.body.date} -> ${dateValue.toISOString()}`);
+          } else {
+            // It's probably an ISO string, handle normally
+            dateValue = new Date(req.body.date);
+            console.log(`Parsed date from ISO: ${req.body.date} -> ${dateValue.toISOString()}`);
+          }
+        } else if (req.body.date instanceof Date) {
+          dateValue = req.body.date;
+        } else {
+          throw new Error('Invalid date format');
+        }
+        
         if (isNaN(dateValue.getTime())) {
           throw new Error('Invalid date format');
         }
       } catch (e) {
+        console.error('Date parsing error:', e);
         return res.status(400).json({ 
           message: "Invalid date format", 
           error: "Please provide a valid date"
         });
       }
       
+      // Log detailed date information for debugging
+      const debugDateInfo = {
+        originalDate: req.body.date,
+        parsedDate: dateValue.toISOString(),
+        parsedDateLocal: dateValue.toString(),
+        utcComponents: {
+          year: dateValue.getUTCFullYear(),
+          month: dateValue.getUTCMonth() + 1, // months are 0-indexed
+          day: dateValue.getUTCDate()
+        },
+        localComponents: {
+          year: dateValue.getFullYear(),
+          month: dateValue.getMonth() + 1, // months are 0-indexed
+          day: dateValue.getDate()
+        }
+      };
+      console.log('Booking date debug:', JSON.stringify(debugDateInfo, null, 2));
+      
       const validatedData = insertBookingSchema.parse({
         eventId: eventId,
         name: req.body.name,
         email: req.body.email,
-        date: dateValue, // Use the converted Date object
+        date: dateValue,
         time: req.body.time,
         status: 'confirmed'
       });

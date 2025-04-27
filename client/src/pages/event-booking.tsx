@@ -156,11 +156,15 @@ export default function EventBooking() {
         throw new Error('Please fill in all required fields');
       }
       
+      // Format the date to maintain proper day value (without timezone issues)
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      console.log(`Creating booking for date: ${formattedDate} (original: ${selectedDate.toISOString()})`);
+      
       const bookingData = {
         eventId: event.id,
         name,
         email,
-        date: selectedDate.toISOString(), // Convert to ISO string - the schema will handle parsing
+        date: formattedDate, // Use YYYY-MM-DD format to avoid timezone issues
         time: selectedTime
       };
       
