@@ -67,13 +67,11 @@ export default function AuthPage() {
             <div className="flex flex-col items-center justify-center">
               <TypewriterEffectSmooth
                 words={[
-                  { text: "Welcome" },
-                  { text: "to" },
-                  { text: "tallys", className: "text-blue-500 dark:text-blue-500" },
+                  { text: "Welcome to tallys", className: "text-blue-500 dark:text-blue-500" },
                 ]}
                 className="mb-2"
               />
-              <p className="text-neutral-600 dark:text-neutral-300 text-sm sm:text-base mt-1 mb-6">
+              <p className="text-neutral-600 dark:text-neutral-300 text-base sm:text-lg mt-2 mb-8">
                 The smart way to create forms and schedule events
               </p>
             </div>
