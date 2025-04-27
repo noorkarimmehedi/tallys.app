@@ -47,7 +47,7 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
                     <Button 
                       onClick={onGoogleSignIn} 
                       disabled={isLoading} 
-                      className="w-full flex items-center justify-center gap-2 py-5"
+                      className="w-full flex items-center justify-center gap-2 py-5 bg-black hover:bg-gray-800"
                     >
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
