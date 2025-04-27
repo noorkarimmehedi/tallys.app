@@ -159,7 +159,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
       {/* Logo Header - Fixed at the top */}
       {form.theme?.logoUrl && (
         <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-1.5 px-4 border-b border-gray-200">
-          <div className="max-w-[600px] mx-auto flex items-center justify-start">
+          <div className="max-w-[600px] mx-auto flex items-center justify-center">
             <img 
               src={`${window.location.origin}${form.theme.logoUrl}?t=${Date.now()}`} 
               alt="Company Logo"
