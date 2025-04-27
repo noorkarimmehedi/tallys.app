@@ -637,45 +637,68 @@ export default function EventBuilder() {
                       
                       <div className="space-y-4">
                         <div>
-                          <Label className="text-sm font-medium">Logo</Label>
-                          <p className="text-sm text-gray-500 mb-2">
-                            Add your company logo to brand your event (recommended size: 427px × 118px)
+                          <Label className="text-base font-medium">Company Logo</Label>
+                          <p className="text-sm text-gray-500 mt-1 mb-3">
+                            Add your logo to customize the branding of your event booking page
                           </p>
                           
-                          <div className="flex items-start space-x-4">
-                            <div className="border border-gray-200 rounded-md p-3 bg-gray-50 w-20 h-20 flex items-center justify-center">
-                              {logoUrl ? (
-                                <img 
-                                  src={logoUrl} 
-                                  alt="Company logo" 
-                                  className="max-w-full max-h-full object-contain"
-                                />
-                              ) : (
-                                <span className="text-sm text-gray-400">No logo</span>
-                              )}
+                          {logoUrl ? (
+                            <div className="mb-4 relative group">
+                              <div className="overflow-hidden border border-gray-200 rounded-lg bg-white p-4 transition-all duration-300 shadow-sm hover:shadow-md">
+                                <div className="flex justify-center items-center py-3">
+                                  <img 
+                                    src={logoUrl} 
+                                    alt="Company logo" 
+                                    className="max-h-16 object-contain"
+                                  />
+                                </div>
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                  <div className="flex gap-2">
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      className="bg-white shadow-md"
+                                      onClick={() => setLogoDialogOpen(true)}
+                                    >
+                                      <PencilIcon className="h-3 w-3 mr-1" /> 
+                                      Change
+                                    </Button>
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      className="bg-white shadow-md text-red-600 hover:text-red-700"
+                                      onClick={() => setLogoUrl("")}
+                                    >
+                                      <Trash2Icon className="h-3 w-3 mr-1" /> 
+                                      Remove
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                              <p className="text-xs text-gray-500 text-center mt-1">
+                                Recommended size: 427px × 118px
+                              </p>
                             </div>
-                            
-                            <div>
+                          ) : (
+                            <div 
+                              className="border-2 border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                              onClick={() => setLogoDialogOpen(true)}
+                            >
+                              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                                <ImageIcon className="h-6 w-6 text-primary" />
+                              </div>
+                              <p className="font-medium text-sm">Upload your logo</p>
+                              <p className="text-xs text-gray-500 mt-1">Recommended size: 427px × 118px</p>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setLogoDialogOpen(true)}
+                                className="mt-4"
                               >
-                                {logoUrl ? "Change Logo" : "Add Logo"}
+                                <UploadIcon className="h-3 w-3 mr-1" /> 
+                                Select Image
                               </Button>
-                              
-                              {logoUrl && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="ml-2 text-red-500 hover:text-red-700"
-                                  onClick={() => setLogoUrl("")}
-                                >
-                                  Remove
-                                </Button>
-                              )}
                             </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -784,56 +807,20 @@ export default function EventBuilder() {
       <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Company Logo</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Company Logo</DialogTitle>
+            <DialogDescription>
+              Add your brand identity to customize the event booking experience
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-3">
-            <p className="text-sm text-gray-500">
-              Upload your company logo to display on your event booking page. The recommended size is 427px × 118px.
-            </p>
-            
-            {logoFile ? (
-              <div className="border rounded-md p-4 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="mr-3">
-                      <div className="h-12 w-12 rounded bg-primary/10 flex items-center justify-center">
-                        <Upload className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{logoFile.name}</p>
-                      <p className="text-xs text-gray-500">{(logoFile.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => setLogoFile(null)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <Label htmlFor="logo-upload" className="block text-sm font-medium mb-2">
-                  Select logo file
-                </Label>
-                <Input
-                  id="logo-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="cursor-pointer"
-                />
-              </div>
-            )}
-            
+          
+          <div className="space-y-6 py-4">
+            {/* Current logo preview */}
             {logoUrl && !logoFile && (
-              <div className="border rounded-md p-4 bg-gray-50">
-                <p className="text-sm font-medium mb-2">Current logo</p>
-                <div className="flex items-center justify-center border rounded-md p-2 bg-white">
+              <div className="rounded-lg overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                <div className="px-4 py-3 bg-gray-100 border-b border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700">Current Logo</h3>
+                </div>
+                <div className="p-6 flex items-center justify-center">
                   <img 
                     src={logoUrl} 
                     alt="Current logo" 
@@ -842,19 +829,94 @@ export default function EventBuilder() {
                 </div>
               </div>
             )}
+            
+            {/* Selected file preview */}
+            {logoFile ? (
+              <div className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700">Selected File</h3>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="mr-4">
+                        <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileImageIcon className="h-7 w-7 text-primary" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{logoFile.name}</p>
+                        <p className="text-sm text-gray-500 mt-1">{(logoFile.size / 1024).toFixed(1)} KB</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={() => setLogoFile(null)}
+                    >
+                      <XIcon className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
+                  <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <ImageIcon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">
+                    Drop your image here
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-6">
+                    SVG, PNG, JPG or GIF (max. 800x400px)
+                  </p>
+                  
+                  <label htmlFor="logo-upload" className="relative inline-block">
+                    <Input
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <Button variant="outline" className="pointer-events-none">
+                      <UploadIcon className="h-4 w-4 mr-2" />
+                      Select File
+                    </Button>
+                  </label>
+                  
+                  <p className="text-xs text-gray-500 mt-6">
+                    Recommended size: 427px × 118px
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          <DialogFooter>
+          
+          <DialogFooter className="flex space-x-2 pt-2">
             <Button
               variant="outline"
               onClick={() => setLogoDialogOpen(false)}
+              className="flex-1 sm:flex-none"
             >
               Cancel
             </Button>
             <Button
               onClick={handleLogoUpload}
               disabled={!logoFile}
+              className="flex-1 sm:flex-none bg-black hover:bg-gray-800 text-white"
             >
-              {logoFile ? "Upload" : "Save"}
+              {logoFile ? (
+                <>
+                  <UploadIcon className="h-4 w-4 mr-2" />
+                  Upload Logo
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
