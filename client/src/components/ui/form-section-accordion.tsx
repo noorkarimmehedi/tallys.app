@@ -234,7 +234,12 @@ function FormSectionAccordion({
         >
           <AccordionTrigger 
             className="group px-3 sm:px-4 py-3 hover:no-underline hover:bg-muted/20"
-            style={{ touchAction: 'manipulation' }}
+            style={isMobile ? { 
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              WebkitUserSelect: 'none',
+              transition: 'none'
+            } : { touchAction: 'manipulation' }}
           >
             <div className="flex items-center gap-2">
               {getSectionIcon(section)}
@@ -245,13 +250,17 @@ function FormSectionAccordion({
             </div>
           </AccordionTrigger>
           <AccordionContent 
-            className="px-3 sm:px-4 transition-all transform-gpu"
-            style={{ 
+            className={`px-3 sm:px-4 ${!isMobile ? 'transition-all transform-gpu' : ''}`}
+            style={isMobile ? { 
               WebkitTransformStyle: 'preserve-3d',
               WebkitBackfaceVisibility: 'hidden',
               WebkitTransform: 'translate3d(0,0,0)',
-              WebkitPerspective: '1000px'
-            }}
+              WebkitPerspective: '1000',
+              transitionProperty: 'none',
+              pointerEvents: 'auto',
+              overflowX: 'hidden',
+              overflowY: 'hidden'
+            } : undefined}
           >
             <div className="py-2 space-y-4">
               {section.sectionDescription && (

@@ -106,49 +106,61 @@
 
 /* Optimized mobile animations - ultra optimized for performance */
 @media (max-width: 767px) {
-  /* Create mobile-specific keyframes with fewer animation steps */
+  /* Create simplified keyframes with minimal steps and reduced animations */
   @keyframes accordion-down-mobile {
-    from {
+    0% {
       height: 0;
-      opacity: 0.6;
+      overflow: hidden;
     }
-    to {
+    100% {
       height: var(--radix-accordion-content-height);
-      opacity: 1;
+      overflow: hidden;
     }
   }
   
   @keyframes accordion-up-mobile {
-    from {
+    0% {
       height: var(--radix-accordion-content-height);
-      opacity: 1;
+      overflow: hidden;
     }
-    to {
+    100% {
       height: 0;
-      opacity: 0.6;
+      overflow: hidden;
     }
   }
   
   .animate-accordion-down {
-    animation: accordion-down-mobile 0.2s ease-out;
-    will-change: height, opacity;
+    animation-name: accordion-down-mobile;
+    animation-duration: 150ms !important;
+    animation-timing-function: linear !important;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    /* Essential performance optimizations */
+    will-change: height;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+    transition: none !important;
   }
   
   .animate-accordion-up {
-    animation: accordion-up-mobile 0.2s ease-out;
-    will-change: height, opacity;
+    animation-name: accordion-up-mobile;
+    animation-duration: 150ms !important;
+    animation-timing-function: linear !important;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    /* Essential performance optimizations */
+    will-change: height;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+    transition: none !important;
   }
   
   /* Apply hardware accelerated transforms to accordion items */
@@ -157,6 +169,13 @@
     -webkit-transform: translate3d(0,0,0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    z-index: 1;
+  }
+  
+  /* Hide chevron animation on mobile to improve performance */
+  .group[data-state="open"] > .chevron {
+    transform: none !important;
+    transition: none !important;
   }
 }
 
