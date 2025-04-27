@@ -403,9 +403,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You do not have permission to modify this event" });
       }
       
-      const updatedEvent = await storage.updateEvent(id, req.body);
+      console.log("Event update request body:", JSON.stringify(req.body, null, 2));
+      console.log("Existing event theme:", JSON.stringify(event.theme, null, 2));
+      
+      // Make sure theme data is properly structured before updating
+      const updateData = {
+        ...req.body,
+        theme: req.body.theme ? {
+          backgroundColor: req.body.theme.backgroundColor || '#ffffff',
+          textColor: req.body.theme.textColor || '#000000',
+          primaryColor: req.body.theme.primaryColor || '#3b82f6',
+          fontFamily: req.body.theme.fontFamily || 'Inter, sans-serif',
+          logoUrl: req.body.theme.logoUrl || undefined
+        } : event.theme
+      };
+      
+      console.log("Processed update data:", JSON.stringify(updateData, null, 2));
+      
+      const updatedEvent = await storage.updateEvent(id, updateData);
+      console.log("Updated event returned:", JSON.stringify(updatedEvent, null, 2));
+      
       res.json(updatedEvent);
     } catch (error) {
+      console.error("Error updating event:", error);
       res.status(500).json({ message: "Failed to update event" });
     }
   });

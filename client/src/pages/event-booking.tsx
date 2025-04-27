@@ -45,6 +45,17 @@ export default function EventBooking() {
       const data = await response.json();
       console.log("Event data loaded:", data);
       console.log("Event theme:", data.theme);
+      
+      // Make sure theme exists with default values
+      if (!data.theme) {
+        data.theme = {
+          backgroundColor: '#ffffff',
+          textColor: '#000000',
+          primaryColor: '#3b82f6',
+          fontFamily: 'Inter, sans-serif'
+        };
+      }
+      
       return data;
     }
   });
@@ -329,24 +340,18 @@ export default function EventBooking() {
       <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm fixed top-0 left-0 right-0 py-1.5 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-center">
           <div className="flex items-center">
-            {/* Debug Logo URL */}
-            {/* Check if logo URL exists */}
-            <span className="hidden">{event?.theme?.logoUrl ? "Logo exists" : "No logo"}</span>
-            {event?.theme?.logoUrl ? (
-              <img 
-                src={`${event.theme.logoUrl}?t=${Date.now()}`} 
-                alt="Company Logo" 
-                className="h-7 max-w-[140px] object-contain" 
-                onError={(e) => {
-                  console.error('Error loading image:', e);
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = logoPath; // Fallback to default logo
-                }}
-              />
-            ) : (
-              <img src={logoPath} alt="Logo" className="h-7" />
-            )}
+            {/* Check if logo URL exists and is valid, otherwise fallback to default */}
+            <img 
+              src={event?.theme?.logoUrl ? event.theme.logoUrl : logoPath}
+              alt="Logo" 
+              className="h-7 max-w-[140px] object-contain" 
+              onError={(e) => {
+                console.error('Error loading image:', e);
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // Prevent infinite error loop
+                target.src = logoPath; // Fallback to default logo
+              }}
+            />
           </div>
         </div>
       </header>
