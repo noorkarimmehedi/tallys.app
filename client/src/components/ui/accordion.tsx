@@ -84,24 +84,22 @@ const AccordionContent = React.forwardRef<
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Mobile-optimized inline styles
+  // Mobile-optimized inline styles - simplified for smoother transitions
   const mobileStyles = {
     WebkitOverflowScrolling: 'touch',
     backfaceVisibility: 'hidden' as 'hidden',
-    WebkitBackfaceVisibility: 'hidden',
+    WebkitBackfaceVisibility: 'hidden' as 'hidden',
     WebkitTransform: 'translate3d(0,0,0)',
     transform: 'translate3d(0,0,0)',
     WebkitPerspective: '1000',
     WebkitFontSmoothing: 'antialiased',
     WebkitTapHighlightColor: 'transparent',
     WebkitUserSelect: 'none' as 'none',
-    transform3D: 'preserve-3d',
-    willChange: 'height, opacity',
-    transitionProperty: 'height, opacity',
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: '200ms',
+    willChange: 'height',
+    transitionProperty: 'none', // Let CSS handle transitions
     overflowX: 'hidden' as 'hidden',
-    overflowY: 'hidden' as 'hidden'
+    overflowY: 'hidden' as 'hidden',
+    pointerEvents: 'auto' as 'auto'
   };
   
   // Desktop styles

@@ -130,11 +130,9 @@
   }
   
   .animate-accordion-down {
-    animation-name: accordion-down-mobile;
-    animation-duration: 150ms !important;
-    animation-timing-function: linear !important;
-    animation-fill-mode: forwards;
-    animation-iteration-count: 1;
+    /* Use only height animation without opacity for smoother experience */
+    height: var(--radix-accordion-content-height) !important;
+    transition: height 180ms ease-out !important;
     /* Essential performance optimizations */
     will-change: height;
     transform: translateZ(0);
@@ -143,15 +141,13 @@
     -webkit-perspective: 1000;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
-    transition: none !important;
+    animation: none !important; /* Disable keyframe animation and use transition instead */
   }
   
   .animate-accordion-up {
-    animation-name: accordion-up-mobile;
-    animation-duration: 150ms !important;
-    animation-timing-function: linear !important;
-    animation-fill-mode: forwards;
-    animation-iteration-count: 1;
+    /* Use only height animation without opacity for smoother experience */
+    height: 0 !important;
+    transition: height 180ms ease-out !important;
     /* Essential performance optimizations */
     will-change: height;
     transform: translateZ(0);
@@ -160,7 +156,18 @@
     -webkit-perspective: 1000;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
-    transition: none !important;
+    animation: none !important; /* Disable keyframe animation and use transition instead */
+  }
+  
+  /* Prevent content from being visible during transition */
+  .data-[state=closed]:not(.data-[state=open]) > div {
+    opacity: 0;
+  }
+  
+  .data-[state=open]:not(.data-[state=closed]) > div {
+    opacity: 1;
+    transition: opacity 60ms ease-in;
+    transition-delay: 120ms;
   }
   
   /* Apply hardware accelerated transforms to accordion items */
@@ -176,6 +183,26 @@
   .group[data-state="open"] > .chevron {
     transform: none !important;
     transition: none !important;
+  }
+  
+  /* Special mobile optimizations for accordion content */
+  .accordion-content-mobile {
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    perspective: 1000px !important;
+    -webkit-perspective: 1000px !important;
+    will-change: height !important;
+    z-index: 1;
+  }
+  
+  /* Prevent flashes during accordion transitions on mobile */
+  @supports (-webkit-touch-callout: none) {
+    .accordion-item {
+      -webkit-transform: translateZ(0) !important;
+      transform: translateZ(0) !important;
+    }
   }
 }
 
