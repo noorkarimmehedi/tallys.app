@@ -96,7 +96,7 @@ export default function EventBuilder() {
     
     try {
       const formData = new FormData();
-      formData.append('logo', logoFile);
+      formData.append('file', logoFile);  // Change 'logo' to 'file' to match server expectation
       
       const response = await fetch('/api/upload', {
         method: 'POST',

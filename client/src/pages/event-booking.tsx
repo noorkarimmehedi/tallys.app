@@ -324,16 +324,16 @@ export default function EventBooking() {
       
       {/* Header */}
       <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+        <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-center">
           <div className="flex items-center space-x-3">
             {event?.theme?.logoUrl ? (
               <img 
                 src={event.theme.logoUrl} 
                 alt="Company Logo" 
-                className="h-10 max-w-[200px] object-contain" 
+                className="h-12 max-w-[250px] object-contain" 
               />
             ) : (
-              <img src={logoPath} alt="Logo" className="h-8" />
+              <img src={logoPath} alt="Logo" className="h-10" />
             )}
           </div>
         </div>
