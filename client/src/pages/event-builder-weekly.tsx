@@ -44,6 +44,9 @@ export default function EventBuilder() {
   const [availableTimes, setAvailableTimes] = useState<EventAvailability[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [activeTab, setActiveTab] = useState('what');
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   
   // Weekly availability schedule
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({
@@ -78,6 +81,11 @@ export default function EventBuilder() {
       setDuration(event.duration);
       setIsPublished(event.published || false);
       setAvailableTimes(event.availableTimes || []);
+      
+      // Load logo URL if available
+      if (event.theme?.logoUrl) {
+        setLogoUrl(event.theme.logoUrl);
+      }
       
       // If the event has a weekly schedule stored, use it
       if (event.weeklySchedule) {

@@ -48,6 +48,13 @@ export const events = pgTable("events", {
   updatedAt: timestamp("updated_at").defaultNow(),
   availableTimes: json("available_times").$type<EventAvailability[]>().default([]).notNull(),
   weeklySchedule: text("weekly_schedule"), // JSON string of weekly availability
+  theme: json("theme").$type<FormTheme>().default({
+    backgroundColor: '#ffffff',
+    textColor: '#000000',
+    primaryColor: '#3b82f6',
+    fontFamily: 'Inter, sans-serif'
+  }),
+  metadata: json("metadata").$type<{infoDescription?: string}>().default({}).notNull(),
 });
 
 export const bookings = pgTable("bookings", {
