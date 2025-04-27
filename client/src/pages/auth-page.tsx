@@ -103,36 +103,7 @@ export default function AuthPage() {
             </Card>
           </div>
 
-          {/* Features Section */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-6 rounded-xl bg-white/40 backdrop-blur-sm flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium">Build Forms</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Create beautiful, responsive forms with a simple drag-and-drop interface.</p>
-            </div>
-            <div className="p-6 rounded-xl bg-white/40 backdrop-blur-sm flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium">Schedule Events</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Let clients book appointments without the back-and-forth emails.</p>
-            </div>
-            <div className="p-6 rounded-xl bg-white/40 backdrop-blur-sm flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium">Analyze Results</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Get insights from your form responses and manage bookings in one place.</p>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
