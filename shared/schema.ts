@@ -6,7 +6,11 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"), // Make password optional for Firebase users
+  firebaseId: text("firebase_id").unique(), // Firebase UID
+  displayName: text("display_name"),
+  photoURL: text("photo_url"),
+  lastLogin: timestamp("last_login"),
 });
 
 export const forms = pgTable("forms", {
@@ -111,10 +115,16 @@ export interface EventAvailability {
 }
 
 // Insert Schemas
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  email: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  lastLogin: true,
+}).extend({
+  // Make password optional for Firebase users
+  password: z.string().min(6).optional(),
+  // Add Firebase fields
+  firebaseId: z.string().optional(),
+  displayName: z.string().optional(),
+  photoURL: z.string().optional(),
 });
 
 export const insertFormSchema = createInsertSchema(forms).omit({

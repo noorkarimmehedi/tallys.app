@@ -21,7 +21,14 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
+  getUserByFirebaseId(firebaseId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  createOrUpdateFirebaseUser(firebaseData: { 
+    firebaseId: string; 
+    email: string; 
+    displayName?: string; 
+    photoURL?: string; 
+  }): Promise<User>;
   
   // Form
   getForms(userId: number): Promise<Form[]>;
@@ -202,9 +209,75 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getUserByFirebaseId(firebaseId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.firebaseId, firebaseId));
+    return user;
+  }
+  
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+  
+  async createOrUpdateFirebaseUser(firebaseData: { 
+    firebaseId: string; 
+    email: string; 
+    displayName?: string; 
+    photoURL?: string; 
+  }): Promise<User> {
+    // Check if the user already exists by Firebase ID
+    const existingUserByFirebaseId = await this.getUserByFirebaseId(firebaseData.firebaseId);
+    if (existingUserByFirebaseId) {
+      // Update existing user
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          displayName: firebaseData.displayName || existingUserByFirebaseId.displayName,
+          photoURL: firebaseData.photoURL || existingUserByFirebaseId.photoURL,
+          lastLogin: new Date()
+        })
+        .where(eq(users.id, existingUserByFirebaseId.id))
+        .returning();
+        
+      return updatedUser;
+    }
+    
+    // Check if user exists by email
+    const existingUserByEmail = await this.getUserByEmail(firebaseData.email);
+    if (existingUserByEmail) {
+      // Link existing account with Firebase
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          firebaseId: firebaseData.firebaseId,
+          displayName: firebaseData.displayName || existingUserByEmail.displayName,
+          photoURL: firebaseData.photoURL || existingUserByEmail.photoURL,
+          lastLogin: new Date()
+        })
+        .where(eq(users.id, existingUserByEmail.id))
+        .returning();
+        
+      return updatedUser;
+    }
+    
+    // Create a new user
+    // Generate a username from email if needed
+    const username = firebaseData.email.split('@')[0] + '-' + 
+      Math.random().toString(36).substring(2, 7);
+      
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        username: username,
+        email: firebaseData.email,
+        firebaseId: firebaseData.firebaseId,
+        displayName: firebaseData.displayName,
+        photoURL: firebaseData.photoURL,
+        lastLogin: new Date()
+      })
+      .returning();
+      
+    return newUser;
   }
 
   // Form methods
