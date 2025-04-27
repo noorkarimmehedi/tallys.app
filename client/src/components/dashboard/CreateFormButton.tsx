@@ -1,6 +1,6 @@
 import { FileText, Plus } from 'lucide-react';
 import { Link } from 'wouter';
-import { Button } from '../ui/3d-button-new';
+import { Button } from '../ui/3d-button-simple';
 import { Card } from '../ui/card';
 import { motion } from 'framer-motion';
 
