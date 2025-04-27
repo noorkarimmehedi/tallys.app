@@ -363,7 +363,7 @@ export default function EventBooking() {
           <div className="text-center">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">{event.title}</h1>
             <div className="flex items-center justify-center text-gray-600">
-              <Clock className="h-4 w-4 mr-2" />
+              <Clock className="h-4 w-4 mr-2 text-blue-500" />
               <span>{event.duration} min</span>
             </div>
           </div>
@@ -379,7 +379,7 @@ export default function EventBooking() {
             <AccordionItem value="event-details" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
               <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
-                  <Clock className="size-4 stroke-2 text-muted-foreground" />
+                  <Clock className="size-4 stroke-2 text-blue-500" />
                   <span className="font-medium">Event Details</span>
                   {activeAccordion !== "event-details" && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
@@ -395,7 +395,7 @@ export default function EventBooking() {
                   <div className="mt-2 space-y-2">
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Clock className="h-5 w-5 text-gray-500 mr-2" />
+                        <Clock className="h-5 w-5 text-blue-500 mr-2" />
                       </div>
                       <div>
                         <h3 className="font-medium">Duration</h3>
@@ -405,7 +405,7 @@ export default function EventBooking() {
                     
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Video className="h-5 w-5 text-gray-500 mr-2" />
+                        <Video className="h-5 w-5 text-blue-500 mr-2" />
                       </div>
                       <div>
                         <h3 className="font-medium">Video call</h3>
@@ -444,7 +444,7 @@ export default function EventBooking() {
             <AccordionItem value="date-time" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
               <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="size-4 stroke-2 text-muted-foreground" />
+                  <CalendarIcon className="size-4 stroke-2 text-blue-500" />
                   <span className="font-medium">Date & Time</span>
                   {selectedDate && selectedTime && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
@@ -487,7 +487,7 @@ export default function EventBooking() {
             <AccordionItem value="your-info" className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
               <AccordionTrigger className="group px-3 py-3 hover:no-underline hover:bg-muted/20">
                 <div className="flex items-center gap-2">
-                  <User className="size-4 stroke-2 text-muted-foreground" />
+                  <User className="size-4 stroke-2 text-blue-500" />
                   <span className="font-medium">Your Information</span>
                   {name && email && (
                     <span className="ml-2 text-sm text-green-500">✓</span>
