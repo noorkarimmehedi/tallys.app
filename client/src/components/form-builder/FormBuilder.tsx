@@ -259,14 +259,16 @@ export function FormBuilder({ id }: FormBuilderProps) {
     formData.append('file', logoFile);
     
     try {
-      // Upload the file to the server
+      // Upload the file to the server using fetch with credentials
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        credentials: 'include'
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload logo');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to upload logo');
       }
       
       const result = await response.json();
