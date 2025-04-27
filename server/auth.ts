@@ -6,6 +6,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as UserType } from "@shared/schema";
+import { verifyFirebaseToken, firebaseInitialized } from "./firebase-admin";
 
 declare global {
   namespace Express {
@@ -29,11 +30,51 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
-// Placeholder for Firebase authentication middleware
-// This will be implemented after Firebase Admin SDK setup is complete
+// Firebase authentication middleware that handles Authorization header tokens
 export async function verifyFirebaseAuthToken(req: Request, res: Response, next: NextFunction) {
-  // Skip Firebase authentication for now 
-  next();
+  // Skip if Firebase is not initialized
+  if (!firebaseInitialized) {
+    return next();
+  }
+  
+  // Check for Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(); // No token, proceed to next middleware
+  }
+
+  // Extract the token
+  const idToken = authHeader.split('Bearer ')[1];
+  if (!idToken) {
+    return next();
+  }
+
+  try {
+    // Verify the token
+    const decodedToken = await verifyFirebaseToken(idToken);
+    if (!decodedToken) {
+      return next();
+    }
+
+    // Create or update user in our database
+    const user = await storage.createOrUpdateFirebaseUser({
+      firebaseId: decodedToken.uid,
+      email: decodedToken.email || '',
+      displayName: decodedToken.name,
+      photoURL: decodedToken.picture
+    });
+
+    // Log the user in
+    req.login(user, (err) => {
+      if (err) {
+        console.error('Error logging in Firebase user:', err);
+      }
+      next();
+    });
+  } catch (error) {
+    console.error('Error in Firebase auth middleware:', error);
+    next();
+  }
 }
 
 export function setupAuth(app: Express) {
@@ -112,11 +153,40 @@ export function setupAuth(app: Express) {
     res.status(200).json(req.user);
   });
 
-  // Temporary Firebase token authentication endpoint
-  // Will be replaced with actual implementation after Firebase setup is complete
+  // Firebase token authentication endpoint
   app.post("/api/firebase-auth", async (req, res, next) => {
     try {
-      return res.status(501).json({ message: "Firebase authentication not yet implemented" });
+      // Check if Firebase Admin is initialized
+      if (!firebaseInitialized) {
+        return res.status(503).json({ 
+          message: "Firebase authentication is not available at this time"
+        });
+      }
+      
+      const { idToken } = req.body;
+      if (!idToken) {
+        return res.status(400).json({ message: "ID token is required" });
+      }
+      
+      // Verify the token
+      const decodedToken = await verifyFirebaseToken(idToken);
+      if (!decodedToken) {
+        return res.status(401).json({ message: "Invalid or expired Firebase token" });
+      }
+      
+      // Create or update user in our database
+      const user = await storage.createOrUpdateFirebaseUser({
+        firebaseId: decodedToken.uid,
+        email: decodedToken.email || '',
+        displayName: decodedToken.name,
+        photoURL: decodedToken.picture
+      });
+      
+      // Log the user in
+      req.login(user, (err) => {
+        if (err) return next(err);
+        res.status(200).json(user);
+      });
     } catch (error) {
       console.error('Error in Firebase authentication:', error);
       res.status(500).json({ message: "Authentication error" });
