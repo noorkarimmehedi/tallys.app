@@ -395,12 +395,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateEvent(id: number, updates: Partial<Event>): Promise<Event | undefined> {
+    console.log("Updating event with ID:", id);
+    console.log("Event updates:", JSON.stringify(updates, null, 2));
+    
     const [updatedEvent] = await db
       .update(events)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(events.id, id))
       .returning();
     
+    console.log("Updated event:", JSON.stringify(updatedEvent, null, 2));
     return updatedEvent;
   }
 
