@@ -99,6 +99,7 @@ export interface FormTheme {
   textColor: string;
   primaryColor: string;
   fontFamily: string;
+  logoUrl?: string;
 }
 
 export interface FormResponse {

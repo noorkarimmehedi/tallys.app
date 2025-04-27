@@ -28,12 +28,13 @@ export function createSection(title: string = '', description: string = ''): For
   }
 }
 
-export function getDefaultFormTheme() {
+export function getDefaultFormTheme(logoUrl?: string) {
   return {
     backgroundColor: "#ffffff",
     textColor: "#000000",
     primaryColor: "#000000",
-    fontFamily: "Alternate Gothic"
+    fontFamily: "Alternate Gothic",
+    logoUrl: logoUrl || ""
   }
 }
 

@@ -28,11 +28,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
   const [infoSectionDialogOpen, setInfoSectionDialogOpen] = useState(false);
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
   const [formUrl, setFormUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [newSectionTitle, setNewSectionTitle] = useState("");
   const [newSectionDescription, setNewSectionDescription] = useState("");
   const [infoSectionDescription, setInfoSectionDescription] = useState("This form collects the necessary information we need.");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   
   // Fetch form if id is provided
   const { data: form, isLoading: isLoadingForm } = useQuery({
@@ -102,6 +105,11 @@ export function FormBuilder({ id }: FormBuilderProps) {
       // Get custom info description from form metadata if available
       if (form.metadata?.infoDescription) {
         setInfoSectionDescription(form.metadata.infoDescription);
+      }
+      
+      // Get logo URL from theme if available
+      if (form.theme?.logoUrl) {
+        setLogoUrl(form.theme.logoUrl);
       }
       
       setLoading(false);
@@ -209,7 +217,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
       title,
       questions,
       sections,
-      theme: getDefaultFormTheme(),
+      theme: getDefaultFormTheme(logoUrl), // Include the logo URL in the theme
       published: publish,
       shortId,
       metadata: {
@@ -223,6 +231,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
       questionsCount: questions.length,
       sectionsCount: sections.length,
       infoDescription: infoSectionDescription,
+      logoUrl: logoUrl,
       shortId
     });
     
@@ -239,6 +248,57 @@ export function FormBuilder({ id }: FormBuilderProps) {
       title: "Copied",
       description: "Form URL copied to clipboard",
     });
+  };
+  
+  // Handle logo file upload
+  const handleLogoUpload = async () => {
+    if (!logoFile) return;
+    
+    // Create a FormData object to upload the file
+    const formData = new FormData();
+    formData.append('file', logoFile);
+    
+    try {
+      // Upload the file to the server
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload logo');
+      }
+      
+      const result = await response.json();
+      
+      // Set the logo URL from the server response
+      setLogoUrl(result.fileUrl);
+      
+      // Reset the file input
+      setLogoFile(null);
+      
+      // Close the dialog
+      setLogoDialogOpen(false);
+      
+      toast({
+        title: "Logo uploaded",
+        description: "Your company logo has been uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload logo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Function to handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogoFile(e.target.files[0]);
+    }
   };
   
   return (
@@ -337,6 +397,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
                 className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-blue-600"
               >
                 Edit Information
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLogoDialogOpen(true)}
+                className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-blue-600"
+              >
+                Company Logo
               </Button>
               <Button
                 variant="ghost"
@@ -562,6 +630,120 @@ export function FormBuilder({ id }: FormBuilderProps) {
             >
               Save Information
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Logo Management Dialog */}
+      <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-xl text-blue-600">
+              Company Logo
+            </DialogTitle>
+            <DialogDescription>
+              Add your company logo to brand your form. The logo will appear at the top of your form.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            {logoUrl ? (
+              <div className="flex flex-col items-center space-y-4">
+                <div className="border border-gray-200 rounded-md p-4 bg-white">
+                  <img 
+                    src={logoUrl} 
+                    alt="Company Logo" 
+                    className="max-h-40 max-w-full object-contain"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLogoUrl('')}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <i className="ri-delete-bin-line mr-2"></i>
+                  Remove Logo
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center space-y-4">
+                <div className="border-2 border-dashed border-gray-300 rounded-md p-8 bg-gray-50 flex flex-col items-center justify-center w-full">
+                  <i className="ri-image-add-line text-4xl text-gray-400 mb-2"></i>
+                  <p className="text-sm text-gray-500 text-center">
+                    Upload your company logo
+                    <br />
+                    (PNG, JPG, SVG - max 2MB)
+                  </p>
+                  <input
+                    type="file"
+                    id="logo-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                  >
+                    Select Image
+                  </label>
+                </div>
+                {logoFile && (
+                  <div className="text-sm text-gray-600">
+                    Selected: {logoFile.name}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="bg-blue-50 p-3 rounded-md border border-blue-200">
+              <div className="flex items-start gap-2">
+                <i className="ri-information-line text-blue-500 mt-1"></i>
+                <div>
+                  <h5 className="text-sm font-medium text-blue-700">Logo tips:</h5>
+                  <ul className="text-xs text-blue-600 mt-1 ml-4 list-disc space-y-1">
+                    <li>Use a logo with transparent background (PNG or SVG) for best results</li>
+                    <li>Keep the logo size under 2MB for faster loading</li>
+                    <li>Square or slightly wide logos work best</li>
+                    <li>Your logo will be displayed at the top of your form</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              className="sm:w-full"
+              onClick={() => setLogoDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            {logoFile ? (
+              <Button 
+                onClick={handleLogoUpload}
+                className="sm:w-full bg-blue-600 hover:bg-blue-700 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+              >
+                Upload Logo
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => {
+                  setLogoDialogOpen(false);
+                  if (logoUrl) {
+                    toast({
+                      title: "Logo saved",
+                      description: "Your company logo has been saved",
+                    });
+                  }
+                }}
+                className="sm:w-full bg-blue-600 hover:bg-blue-700 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+              >
+                Save
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
