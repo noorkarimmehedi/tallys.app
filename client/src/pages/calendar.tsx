@@ -27,7 +27,12 @@ export default function Calendar() {
   const [date, setDate] = useState<Date | undefined>(today);
 
   // Format date string for API call
-  const dateParam = date ? format(date, 'yyyy-MM-dd') : format(today, 'yyyy-MM-dd');
+  // We need to ensure timezone consistency by using UTC date
+  const dateObj = date || today;
+  const dateParam = format(dateObj, 'yyyy-MM-dd');
+  
+  // For debugging - log the selected date
+  console.log(`Selected date: ${dateParam}`);
   
   const { 
     data: bookings,
@@ -144,23 +149,34 @@ export default function Calendar() {
                           <div className="flex items-center text-sm text-gray-600">
                             <Clock className="h-4 w-4 mr-2 text-blue-500" />
                             <span>
-                              {booking.time} 
-                              {booking.eventDuration && (
-                                <>
-                                  <ArrowRight className="inline h-3 w-3 mx-1" />
-                                  {
-                                    (() => {
-                                      // Calculate end time based on start time and duration
-                                      const [hour, minute] = booking.time.split(':').map(Number);
-                                      const startDate = new Date();
-                                      startDate.setHours(hour, minute, 0);
-                                      
-                                      const endDate = new Date(startDate.getTime() + booking.eventDuration * 60000);
-                                      return `${endDate.getHours()}:${endDate.getMinutes().toString().padStart(2, '0')}`;
-                                    })()
-                                  }
-                                </>
-                              )}
+                              {(() => {
+                                // Format time in 12-hour format with AM/PM
+                                const [hour, minute] = booking.time.split(':').map(Number);
+                                const startDate = new Date();
+                                startDate.setHours(hour, minute, 0);
+                                
+                                const startTime = startDate.toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                  hour12: true
+                                });
+                                
+                                if (!booking.eventDuration) return startTime;
+                                
+                                // Calculate and format end time
+                                const endDate = new Date(startDate.getTime() + booking.eventDuration * 60000);
+                                const endTime = endDate.toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                  hour12: true
+                                });
+                                
+                                return (
+                                  <>
+                                    {startTime} <ArrowRight className="inline h-3 w-3 mx-1" /> {endTime}
+                                  </>
+                                );
+                              })()}
                             </span>
                           </div>
                           <div className="flex items-center text-sm text-gray-600">

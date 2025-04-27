@@ -8,7 +8,7 @@ import {
 } from "@shared/schema";
 import { nanoid } from "nanoid";
 import { db } from './db';
-import { eq, and, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, gte, lte, inArray, sql } from 'drizzle-orm';
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from './db';
@@ -454,14 +454,11 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getBookingsByDate(eventIds: number[], date: Date): Promise<Booking[]> {
-    // Create a start and end date for the selected date
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
+    // Format the date to ISO string (YYYY-MM-DD) to ensure timezone consistency
+    const dateStr = date.toISOString().split('T')[0];
+    console.log(`Finding bookings for date: ${dateStr}`);
     
-    const endDate = new Date(date);
-    endDate.setHours(23, 59, 59, 999);
-    
-    // Query bookings between start and end date for the given event IDs
+    // Query bookings for the given date and event IDs
     const dateBookings = await db
       .select({
         booking: bookings,
@@ -475,10 +472,13 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           inArray(bookings.eventId, eventIds),
-          gte(bookings.date, startDate),
-          lte(bookings.date, endDate)
+          // Use the SQL function to extract the date part for comparison
+          // to avoid timezone issues
+          sql`DATE(${bookings.date}) = ${dateStr}`
         )
       );
+    
+    console.log(`Found ${dateBookings.length} bookings for date ${dateStr}`);
     
     // Transform the results to include event details
     return dateBookings.map(item => ({
