@@ -86,7 +86,7 @@ function DefaultFormSectionAccordion() {
         <AccordionItem 
           key={section.id} 
           value={section.id}
-          className="mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu"
+          className="mb-2 rounded-md border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu"
         >
           <AccordionTrigger className="group px-3 sm:px-4 py-3 hover:no-underline hover:bg-muted/20">
             <div className="flex items-center gap-2">
@@ -228,7 +228,7 @@ function FormSectionAccordion({
         <AccordionItem 
           key={section.sectionId || `section-${index}`} 
           value={section.sectionId || `section-${index}`}
-          className={`mb-2 rounded-md border overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu ${isMobile ? 'accordion-item' : ''}`}
+          className={`mb-2 rounded-md border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu ${isMobile ? 'accordion-item' : ''}`}
           style={{ 
             WebkitTransformStyle: 'preserve-3d',
             WebkitBackfaceVisibility: 'hidden',
