@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -112,6 +113,29 @@ function FormSectionAccordion({
   formResponses = {},
   preview = false
 }: FormSectionAccordionProps) {
+  // Add mobile detection
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    // Set initial value on mount
+    setIsMobile(window.innerWidth < 768);
+    
+    // Use a debounced resize handler for better performance
+    let resizeTimer: number;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        setIsMobile(window.innerWidth < 768);
+      }, 100);
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+  
   const groupedQuestions = getQuestionsGroupedBySections({ questions, sections });
 
   // Helper to determine if a field has been completed
@@ -196,10 +220,16 @@ function FormSectionAccordion({
         <AccordionItem 
           key={section.sectionId || `section-${index}`} 
           value={section.sectionId || `section-${index}`}
-          className="mb-3 border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu"
+          className={`mb-3 border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu ${isMobile ? 'accordion-item' : ''}`}
           style={{ 
             WebkitTransformStyle: 'preserve-3d',
-            WebkitBackfaceVisibility: 'hidden'
+            WebkitBackfaceVisibility: 'hidden',
+            ...(isMobile && {
+              WebkitTransform: 'translate3d(0,0,0)',
+              WebkitTransition: 'transform 0.1ms',
+              transformTranslate: '0.1ms',
+              WebkitTapHighlightColor: 'transparent'
+            })
           }}
         >
           <AccordionTrigger 

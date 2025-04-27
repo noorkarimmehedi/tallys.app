@@ -60,27 +60,58 @@ const AccordionContent = React.forwardRef<
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  // Mobile-optimized inline styles
+  const mobileStyles = {
+    WebkitOverflowScrolling: 'touch',
+    backfaceVisibility: 'hidden' as 'hidden',
+    WebkitBackfaceVisibility: 'hidden',
+    WebkitTransform: 'translate3d(0,0,0)',
+    transform: 'translate3d(0,0,0)',
+    WebkitPerspective: '1000',
+    WebkitFontSmoothing: 'antialiased',
+    WebkitTapHighlightColor: 'transparent',
+    WebkitUserSelect: 'none' as 'none',
+    transform3D: 'preserve-3d',
+    willChange: 'height, opacity',
+    transitionProperty: 'height, opacity',
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: '200ms',
+    overflowX: 'hidden' as 'hidden',
+    overflowY: 'hidden' as 'hidden'
+  };
+  
+  // Desktop styles
+  const desktopStyles = {
+    WebkitOverflowScrolling: 'touch',
+    backfaceVisibility: 'hidden' as 'hidden',
+    WebkitTransform: 'translateZ(0)',
+    WebkitBackfaceVisibility: 'hidden' as 'hidden',
+    willChange: 'transform, opacity, height',
+    transitionProperty: 'transform, opacity, height',
+    transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    transitionDuration: '300ms'
+  };
+  
   return (
     <AccordionPrimitive.Content
       ref={ref}
-      className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
-      style={{ 
-        WebkitOverflowScrolling: 'touch',
-        backfaceVisibility: 'hidden',
-        WebkitTransform: 'translateZ(0)',
-        WebkitPerspective: '1000',
-        WebkitBackfaceVisibility: 'hidden',
-        WebkitFontSmoothing: 'antialiased',
-        willChange: 'transform, opacity, height',
-        transitionProperty: 'transform, opacity, height',
-        transitionTimingFunction: isMobile 
-          ? 'cubic-bezier(0.215, 0.61, 0.355, 1)' 
-          : 'cubic-bezier(0.16, 1, 0.3, 1)',
-        transitionDuration: isMobile ? '250ms' : '300ms'
-      }}
+      className={cn(
+        "overflow-hidden text-sm transition-all",
+        "data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+        isMobile && "accordion-item"
+      )}
+      style={isMobile ? mobileStyles : desktopStyles}
       {...props}
     >
-      <div className={cn("pb-4 pt-0", className)}>{children}</div>
+      <div 
+        className={cn("pb-4 pt-0", className)}
+        style={isMobile ? { 
+          transform: 'translate3d(0,0,0)',
+          WebkitTransform: 'translate3d(0,0,0)'
+        } : undefined}
+      >
+        {children}
+      </div>
     </AccordionPrimitive.Content>
   );
 })

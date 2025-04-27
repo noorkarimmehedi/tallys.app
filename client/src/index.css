@@ -104,24 +104,59 @@
   }
 }
 
-/* Optimized mobile animations - slightly faster, different easing */
+/* Optimized mobile animations - ultra optimized for performance */
 @media (max-width: 767px) {
+  /* Create mobile-specific keyframes with fewer animation steps */
+  @keyframes accordion-down-mobile {
+    from {
+      height: 0;
+      opacity: 0.6;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes accordion-up-mobile {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0.6;
+    }
+  }
+  
   .animate-accordion-down {
-    animation: accordion-down 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation: accordion-down-mobile 0.2s ease-out;
     will-change: height, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000px;
+    -webkit-perspective: 1000;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .animate-accordion-up {
-    animation: accordion-up 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation: accordion-up-mobile 0.2s ease-out;
     will-change: height, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000px;
+    -webkit-perspective: 1000;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Apply hardware accelerated transforms to accordion items */
+  .accordion-item {
+    transform: translate3d(0,0,0);
+    -webkit-transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
 
