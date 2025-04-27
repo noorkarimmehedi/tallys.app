@@ -59,22 +59,24 @@ export default function AuthPage() {
                   </ChatBubbleMessage>
                 </ChatBubble>
                 
-                <ChatBubble variant="sent" className="text-right">
-                  <ChatBubbleAvatar fallback="T" />
-                  <ChatBubbleMessage variant="sent" className="text-sm sm:text-base leading-relaxed">
-                    <div className="text-left">
-                      <p>
-                        tallys is an all-in-one platform designed to simplify form creation and event scheduling.
-                      </p>
-                      <p className="mt-2">
-                        It lets you build beautiful interactive forms, organize questions into customizable sections, and easily schedule appointments with clients.
-                      </p>
-                      <p className="mt-2">
-                        With tallys, you can brand your forms with your company logo, share them via simple links, and manage responses all in one place.
-                      </p>
-                    </div>
-                  </ChatBubbleMessage>
-                </ChatBubble>
+                <div className="flex flex-row-reverse items-start gap-2 mb-4">
+                  <div className="flex flex-col items-end">
+                    <ChatBubbleMessage variant="sent" className="text-sm sm:text-base leading-relaxed mb-2">
+                      <div className="text-left">
+                        <p>
+                          tallys is an all-in-one platform designed to simplify form creation and event scheduling.
+                        </p>
+                        <p className="mt-2">
+                          It lets you build beautiful interactive forms, organize questions into customizable sections, and easily schedule appointments with clients.
+                        </p>
+                        <p className="mt-2">
+                          With tallys, you can brand your forms with your company logo, share them via simple links, and manage responses all in one place.
+                        </p>
+                      </div>
+                    </ChatBubbleMessage>
+                    <ChatBubbleAvatar fallback="T" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
