@@ -323,17 +323,23 @@ export default function EventBooking() {
       </div>
       
       {/* Header */}
-      <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="container max-w-6xl mx-auto px-4 py-6 flex items-center justify-center">
-          <div className="flex items-center space-x-3">
+      <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm fixed top-0 left-0 right-0 py-1.5 px-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-center">
+          <div className="flex items-center">
             {event?.theme?.logoUrl ? (
               <img 
                 src={event.theme.logoUrl} 
                 alt="Company Logo" 
-                className="h-12 max-w-[250px] object-contain" 
+                className="h-7 max-w-[140px] object-contain" 
+                onError={(e) => {
+                  console.error('Error loading image:', e);
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = event.theme.logoUrl; // Try without timestamp as fallback
+                }}
               />
             ) : (
-              <img src={logoPath} alt="Logo" className="h-10" />
+              <img src={logoPath} alt="Logo" className="h-7" />
             )}
           </div>
         </div>
