@@ -25,6 +25,7 @@ export const forms = pgTable("forms", {
   questions: json("questions").$type<FormQuestion[]>().notNull(),
   sections: json("sections").$type<FormSection[]>().default([]).notNull(),
   theme: json("theme").$type<FormTheme>().notNull(),
+  metadata: json("metadata").$type<{infoDescription?: string}>().default({}).notNull(),
 });
 
 export const responses = pgTable("responses", {

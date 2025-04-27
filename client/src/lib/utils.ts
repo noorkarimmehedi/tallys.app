@@ -86,7 +86,7 @@ export interface SectionGroup {
   questions: FormQuestion[];
 }
 
-export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[] }): SectionGroup[] {
+export function getQuestionsGroupedBySections(form: { questions: FormQuestion[], sections?: FormSection[], infoDescription?: string }): SectionGroup[] {
   // Ensure questions and sections are arrays
   const questions = Array.isArray(form?.questions) ? form.questions : [];
   const sections = Array.isArray(form?.sections) ? form.sections : [];
@@ -98,7 +98,8 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
     questionsValid: Array.isArray(form?.questions),
     sectionsValid: Array.isArray(form?.sections),
     questionsData: questions,
-    sectionsData: sections
+    sectionsData: sections,
+    infoDescription: form?.infoDescription
   });
   
   // Create default group for questions without a section
@@ -108,7 +109,7 @@ export function getQuestionsGroupedBySections(form: { questions: FormQuestion[],
   result.push({
     sectionId: 'information',
     sectionTitle: "Information",
-    sectionDescription: "This form collects the necessary information we need.",
+    sectionDescription: form?.infoDescription || "This form collects the necessary information we need.",
     sectionIcon: 'info-circle',
     questions: [] as FormQuestion[]
   });

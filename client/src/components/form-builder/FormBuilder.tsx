@@ -27,10 +27,12 @@ export function FormBuilder({ id }: FormBuilderProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
+  const [infoSectionDialogOpen, setInfoSectionDialogOpen] = useState(false);
   const [formUrl, setFormUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [newSectionTitle, setNewSectionTitle] = useState("");
   const [newSectionDescription, setNewSectionDescription] = useState("");
+  const [infoSectionDescription, setInfoSectionDescription] = useState("This form collects the necessary information we need.");
   
   // Fetch form if id is provided
   const { data: form, isLoading: isLoadingForm } = useQuery({
@@ -196,13 +198,17 @@ export function FormBuilder({ id }: FormBuilderProps) {
     // Generate a unique shortId if creating a new form
     const shortId = id ? undefined : `form-${Date.now().toString(36)}`;
     
+    // Store the information section description as metadata in the form
     const formData: Partial<Form> = {
       title,
       questions,
       sections,
       theme: getDefaultFormTheme(),
       published: publish,
-      shortId
+      shortId,
+      metadata: {
+        infoDescription: infoSectionDescription
+      }
     };
     
     console.log("Saving form with data:", {
@@ -210,6 +216,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
       titleLength: title.length,
       questionsCount: questions.length,
       sectionsCount: sections.length,
+      infoDescription: infoSectionDescription,
       shortId
     });
     
@@ -317,6 +324,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </Button>
             </div>
             <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setInfoSectionDialogOpen(true)}
+                className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-blue-600"
+              >
+                Edit Information
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -474,6 +489,72 @@ export function FormBuilder({ id }: FormBuilderProps) {
               className="sm:w-full bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
             >
               Add Section
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Information Section Dialog */}
+      <Dialog open={infoSectionDialogOpen} onOpenChange={setInfoSectionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-xl text-blue-600">
+              Edit Information Section
+            </DialogTitle>
+            <DialogDescription>
+              This is the first section that appears on your form. It provides an overview about the form and its purpose.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            <div>
+              <Label htmlFor="info-description" className="text-sm font-medium text-gray-700">
+                Information Content
+              </Label>
+              <Textarea
+                id="info-description"
+                value={infoSectionDescription}
+                onChange={(e) => setInfoSectionDescription(e.target.value)}
+                placeholder="Describe what this form is about and what information you're collecting"
+                className="w-full mt-1 min-h-[120px]"
+              />
+            </div>
+            
+            <div className="bg-blue-50 p-3 rounded-md border border-blue-200">
+              <div className="flex items-start gap-2">
+                <i className="ri-information-line text-blue-500 mt-1"></i>
+                <div>
+                  <h5 className="text-sm font-medium text-blue-700">Tips for a good Information section:</h5>
+                  <ul className="text-xs text-blue-600 mt-1 ml-4 list-disc space-y-1">
+                    <li>Clearly explain the purpose of your form</li>
+                    <li>Let people know how their data will be used</li>
+                    <li>Mention approximately how long it will take to complete</li>
+                    <li>Include any instructions that apply to the entire form</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              className="sm:w-full"
+              onClick={() => setInfoSectionDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                toast({
+                  title: "Information updated",
+                  description: "Your form information section has been updated",
+                });
+                setInfoSectionDialogOpen(false);
+              }}
+              className="sm:w-full bg-blue-600 hover:bg-blue-700 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+            >
+              Save Information
             </Button>
           </DialogFooter>
         </DialogContent>
