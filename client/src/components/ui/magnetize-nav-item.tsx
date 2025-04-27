@@ -76,7 +76,7 @@ export function MagnetizeNavItem({
             className={cn(
                 "relative touch-none flex items-center px-3 py-2 text-xs font-medium",
                 isActive ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50",
-                "transition-all duration-300",
+                "transition-all duration-300 group",
                 className
             )}
             onMouseEnter={handleInteractionStart}
@@ -99,10 +99,10 @@ export function MagnetizeNavItem({
                 />
             ))}
             <span className={cn(
-                "mr-2 h-4 w-4 relative",
+                "mr-2 relative",
                 isActive ? "text-gray-800" : "text-gray-600"
             )}>
-                {icon}
+                {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
             </span>
             <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm relative">
                 {label}
