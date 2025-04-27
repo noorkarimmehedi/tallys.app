@@ -54,19 +54,27 @@ export default function AuthPage() {
               <img src={logoImage} alt="Logo" className="h-16 w-auto" />
             </div>
             
-            <div className="flex flex-col items-center justify-center mb-4 w-full max-w-lg">
-              <div className="w-full">
+            <div className="flex flex-col items-center justify-center mb-6 w-full max-w-lg">
+              <div className="w-full max-w-md mx-auto">
                 <ChatBubble variant="sent">
                   <ChatBubbleAvatar fallback="U" />
                   <ChatBubbleMessage variant="sent">
-                    <p className="text-sm sm:text-base">What is tallys?</p>
+                    <p className="text-sm sm:text-base font-medium">What is tallys?</p>
                   </ChatBubbleMessage>
                 </ChatBubble>
                 
                 <ChatBubble variant="received">
                   <ChatBubbleAvatar fallback="T" />
-                  <ChatBubbleMessage>
-                    <p className="text-sm sm:text-base">The smart way to create forms and schedule events</p>
+                  <ChatBubbleMessage className="text-sm sm:text-base leading-relaxed">
+                    <p>
+                      tallys is an all-in-one platform designed to simplify form creation and event scheduling.
+                    </p>
+                    <p className="mt-2">
+                      It lets you build beautiful interactive forms, organize questions into customizable sections, and easily schedule appointments with clients.
+                    </p>
+                    <p className="mt-2">
+                      With tallys, you can brand your forms with your company logo, share them via simple links, and manage responses all in one place.
+                    </p>
                   </ChatBubbleMessage>
                 </ChatBubble>
               </div>
