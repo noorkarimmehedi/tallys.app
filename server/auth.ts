@@ -6,8 +6,6 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as UserType } from "@shared/schema";
-import { auth as firebaseAuth } from 'firebase-admin';
-import { getAuth } from 'firebase-admin/auth';
 
 declare global {
   namespace Express {
@@ -29,6 +27,13 @@ async function comparePasswords(supplied: string, stored: string) {
   const hashedBuf = Buffer.from(hashed, "hex");
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
   return timingSafeEqual(hashedBuf, suppliedBuf);
+}
+
+// Placeholder for Firebase authentication middleware
+// This will be implemented after Firebase Admin SDK setup is complete
+export async function verifyFirebaseAuthToken(req: Request, res: Response, next: NextFunction) {
+  // Skip Firebase authentication for now 
+  next();
 }
 
 export function setupAuth(app: Express) {
@@ -107,12 +112,26 @@ export function setupAuth(app: Express) {
     res.status(200).json(req.user);
   });
 
+  // Temporary Firebase token authentication endpoint
+  // Will be replaced with actual implementation after Firebase setup is complete
+  app.post("/api/firebase-auth", async (req, res, next) => {
+    try {
+      return res.status(501).json({ message: "Firebase authentication not yet implemented" });
+    } catch (error) {
+      console.error('Error in Firebase authentication:', error);
+      res.status(500).json({ message: "Authentication error" });
+    }
+  });
+
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
       res.sendStatus(200);
     });
   });
+
+  // Use Firebase middleware before checking authentication
+  app.use(verifyFirebaseAuthToken);
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
