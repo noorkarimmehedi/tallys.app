@@ -74,46 +74,56 @@ export function MagnetizeNavItem({
         if (isInteractingRef.current) return;
         isInteractingRef.current = true;
         
-        setIsAttracting(true);
-        await particlesControl.start({
-            x: 0,
-            y: 0,
-            transition: {
-                type: "spring",
-                stiffness: 80,  // Increased stiffness for faster movement
-                damping: 12,    // Better damping for smoother stops
-                mass: 0.6,      // Lower mass for more responsive particles
-            },
+        // Batch state update with animation for better performance
+        requestAnimationFrame(() => {
+            setIsAttracting(true);
+            particlesControl.start({
+                x: 0,
+                y: 0,
+                transition: {
+                    type: "spring",
+                    stiffness: 120,  // Higher stiffness for even faster movement
+                    damping: 16,     // Increased damping for smoother animation
+                    mass: 0.5,       // Lower mass for more responsive particles
+                    restDelta: 0.01  // More precise rest detection
+                },
+            });
         });
     }, [particlesControl]);
 
-    const handleInteractionEnd = useCallback(async () => {
+    const handleInteractionEnd = useCallback(() => {
         // Add debounce to prevent flickering if the user quickly moves in and out
         if (timeoutRef.current !== null) {
             window.clearTimeout(timeoutRef.current);
         }
         
-        timeoutRef.current = window.setTimeout(async () => {
-            isInteractingRef.current = false;
-            setIsAttracting(false);
-            
-            await particlesControl.start((i) => {
-                const particle = particles[i];
-                return {
-                    x: particle.x,
-                    y: particle.y,
-                    transition: {
-                        type: "spring",
-                        stiffness: 110, // Higher stiffness for more snappy return
-                        damping: 14,    // Slightly higher damping
-                        mass: 0.8,      // More mass for return to give weight
-                        velocity: 2,    // Initial velocity for more natural feel
-                    },
-                };
+        // Use a slightly longer delay for better user experience
+        timeoutRef.current = window.setTimeout(() => {
+            // Use requestAnimationFrame for smoother visual updates
+            requestAnimationFrame(() => {
+                isInteractingRef.current = false;
+                setIsAttracting(false);
+                
+                // Start particles returning to their original positions
+                particlesControl.start((i) => {
+                    const particle = particles[i];
+                    return {
+                        x: particle.x,
+                        y: particle.y,
+                        transition: {
+                            type: "spring",
+                            stiffness: 140, // Higher stiffness for more snappy return
+                            damping: 18,    // Increased damping for smoother stops
+                            mass: 0.7,      // Balanced mass for return
+                            velocity: 3,    // Increased initial velocity
+                            restDelta: 0.01 // More precise rest detection
+                        },
+                    };
+                });
+                
+                timeoutRef.current = null;
             });
-            
-            timeoutRef.current = null;
-        }, 50); // Small delay to prevent rapid toggling
+        }, 70); // Slightly longer delay for better visual effect
     }, [particlesControl, particles]);
 
     return (
@@ -136,30 +146,26 @@ export function MagnetizeNavItem({
                 const shouldRenderParticles = isAttracting || particles.some(p => p.x !== 0 || p.y !== 0);
                 if (!shouldRenderParticles) return null;
                 
-                return (
-                    <React.Fragment>
-                        {particles.map((particle, index) => (
-                            <motion.div
-                                key={particle.id}
-                                custom={index}
-                                initial={{ x: particle.x, y: particle.y }}
-                                animate={particlesControl}
-                                className={cn(
-                                    "absolute w-1 h-1 rounded-full",
-                                    "bg-blue-400 dark:bg-blue-300",
-                                    "transition-opacity duration-300",
-                                    "will-change-transform", // Hardware acceleration hint
-                                    isAttracting ? "opacity-80" : "opacity-0"
-                                )}
-                                style={{
-                                    // Use GPU-accelerated properties for smoother animation
-                                    contain: "layout", // Improve performance by isolating layout
-                                    backfaceVisibility: "hidden" // Additional GPU boost
-                                }}
-                            />
-                        ))}
-                    </React.Fragment>
-                );
+                return particles.map((particle, index) => (
+                    <motion.div
+                        key={particle.id}
+                        custom={index}
+                        initial={{ x: particle.x, y: particle.y }}
+                        animate={particlesControl}
+                        className={cn(
+                            "absolute w-1 h-1 rounded-full",
+                            "bg-blue-400 dark:bg-blue-300",
+                            "transition-opacity duration-300",
+                            "will-change-transform", // Hardware acceleration hint
+                            isAttracting ? "opacity-80" : "opacity-0"
+                        )}
+                        style={{
+                            // Use GPU-accelerated properties for smoother animation
+                            contain: "layout", // Improve performance by isolating layout
+                            backfaceVisibility: "hidden" // Additional GPU boost
+                        }}
+                    />
+                ));
             }, [particles, isAttracting, particlesControl])}
             
             <span className={cn(
