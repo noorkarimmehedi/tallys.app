@@ -1,12 +1,80 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
-import { Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, BarChart } from "lucide-react";
+import { Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, BarChart, LogOut } from "lucide-react";
 import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
+import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
+import { useAuth } from "@/hooks/use-auth";
 import logoImage from "@/assets/logo.png";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MainLayoutProps {
   children: React.ReactNode;
+}
+
+// User Profile Section component
+function UserProfileSection() {
+  const { currentUser, signOut } = useFirebaseAuth();
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  
+  const displayName = currentUser?.displayName || user?.username || "User";
+  const email = currentUser?.email || user?.email || "";
+  const photoURL = currentUser?.photoURL;
+  
+  // Get initials from display name
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 2);
+  };
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+  
+  return (
+    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 relative z-10 bg-blue-50/40">
+      <div className="flex items-center">
+        <Avatar className="h-8 w-8 rounded-full border-2 border-blue-100">
+          {photoURL ? (
+            <AvatarImage src={photoURL} alt={displayName} />
+          ) : null}
+          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+            {getInitials(displayName)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="ml-2 overflow-hidden">
+          <p className="text-xs font-medium text-gray-800 truncate">{displayName}</p>
+          <p className="text-[10px] text-gray-500 truncate">{email}</p>
+        </div>
+      </div>
+      
+      <TooltipProvider delayDuration={300}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button 
+              onClick={handleSignOut}
+              className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5 text-gray-600" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">Sign out</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
@@ -98,17 +166,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </nav>
           
           {/* User Profile */}
-          <div className="flex items-center px-4 py-2 border-t border-gray-200 relative z-10">
-            <div className="flex-shrink-0">
-              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="h-3 w-3 text-gray-600" />
-              </div>
-            </div>
-            <div className="ml-2">
-              <p className="text-xs font-medium text-gray-800">Demo User</p>
-              <p className="text-[10px] text-gray-500">Pro Plan</p>
-            </div>
-          </div>
+          <UserProfileSection />
         </div>
         
         {/* Mobile overlay */}
