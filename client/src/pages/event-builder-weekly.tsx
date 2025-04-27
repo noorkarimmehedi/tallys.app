@@ -10,9 +10,13 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema';
-import { Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, Globe, Eye, Upload } from 'lucide-react';
+import { 
+  Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, 
+  Globe, Eye, Upload, Pencil as PencilIcon, Trash2 as Trash2Icon, 
+  Image as ImageIcon, Upload as UploadIcon, FileImage as FileImageIcon, X as XIcon 
+} from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -808,9 +812,9 @@ export default function EventBuilder() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Company Logo</DialogTitle>
-            <DialogDescription>
+            <p className="text-sm text-gray-500">
               Add your brand identity to customize the event booking experience
-            </DialogDescription>
+            </p>
           </DialogHeader>
           
           <div className="space-y-6 py-4">
