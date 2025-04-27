@@ -75,7 +75,7 @@ export function MagnetizeNavItem({
             href={href} 
             className={cn(
                 "relative touch-none flex items-center px-3 py-2 text-xs font-medium",
-                isActive ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50",
+                isActive ? "bg-blue-100/80 text-blue-900" : "text-gray-600 hover:bg-blue-100/50",
                 "transition-all duration-300 group",
                 className
             )}
@@ -92,7 +92,7 @@ export function MagnetizeNavItem({
                     animate={particlesControl}
                     className={cn(
                         "absolute w-1 h-1 rounded-full",
-                        "bg-violet-400 dark:bg-violet-300",
+                        "bg-blue-400 dark:bg-blue-300",
                         "transition-opacity duration-300",
                         isAttracting ? "opacity-80" : "opacity-0"
                     )}
@@ -100,11 +100,14 @@ export function MagnetizeNavItem({
             ))}
             <span className={cn(
                 "mr-2 relative",
-                isActive ? "text-gray-800" : "text-gray-600"
+                isActive ? "text-blue-800" : "text-gray-600 group-hover:text-blue-600"
             )}>
                 {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
             </span>
-            <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm relative">
+            <span className={cn(
+                "font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm relative",
+                isActive ? "text-blue-900" : "group-hover:text-blue-700"
+            )}>
                 {label}
             </span>
         </Link>
