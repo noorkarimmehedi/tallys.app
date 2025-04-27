@@ -60,8 +60,8 @@ export default function AuthPage() {
         <div className="flex flex-col items-center justify-center">
           {/* App Logo & Title with Typewriter Effect */}
           <div className="flex flex-col items-center mb-8 text-center">
-            <div className="w-16 h-16 mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <img src={logoImage} alt="Logo" className="h-10" />
+            <div className="mb-4 flex items-center justify-center">
+              <img src={logoImage} alt="Logo" className="h-16 w-auto" />
             </div>
             
             <div className="flex flex-col items-center justify-center">
