@@ -684,7 +684,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
                 <div className="border border-gray-200 rounded-md p-6 bg-white">
                   <div className="bg-white shadow-sm border border-gray-100 p-3 rounded-md mb-4">
                     <p className="text-xs text-center text-gray-400 mb-2">Logo Preview (as shown on form)</p>
-                    <div className="flex justify-center bg-gray-50 py-2 border-b border-gray-200">
+                    <div className="flex justify-start px-4 bg-gray-50 py-2 border-b border-gray-200">
                       <img 
                         src={logoUrl.startsWith('/uploads') ? `${window.location.origin}${logoUrl}` : logoUrl} 
                         alt="Company Logo" 
