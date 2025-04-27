@@ -104,19 +104,19 @@ function AppointmentPicker({
     <div>
       <div className="rounded-lg border border-border shadow-sm">
         <div className="flex flex-col">
-          {/* Calendar */}
-          <div className="w-full">
+          {/* Calendar - full width on both mobile and desktop */}
+          <div className="w-full max-w-full">
             <Calendar
               mode="single"
               selected={date}
               onSelect={handleDateSelect}
-              className="p-2 bg-background/80 rounded-t-lg"
+              className="p-2 bg-background/80 rounded-t-lg w-full max-w-full"
               disabled={disabledDates}
               initialFocus
             />
           </div>
           
-          {/* Time slots - now below calendar instead of to the side */}
+          {/* Time slots - below calendar */}
           <div className="w-full border-t border-border p-4 bg-background/90">
             <div className="mb-3">
               <p className="text-sm font-medium text-foreground/80">
