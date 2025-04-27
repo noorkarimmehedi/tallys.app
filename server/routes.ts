@@ -526,6 +526,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bookings
+  // Get bookings for a specific date
+  app.get("/api/bookings/date/:date", isAuthenticated, async (req, res) => {
+    try {
+      const dateParam = req.params.date;
+      // Parse the date from the URL param (format: YYYY-MM-DD)
+      const date = new Date(dateParam);
+      
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({ message: "Invalid date format" });
+      }
+      
+      const userId = req.user!.id;
+      
+      // Get all user's events
+      const userEvents = await storage.getEvents(userId);
+      const eventIds = userEvents.map(event => event.id);
+      
+      if (eventIds.length === 0) {
+        return res.json([]);
+      }
+      
+      // Query bookings for these events on the specified date
+      const bookings = await storage.getBookingsByDate(eventIds, date);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings by date:", error);
+      res.status(500).json({ message: "Failed to get bookings" });
+    }
+  });
+  
   app.get("/api/events/:id/bookings", isAuthenticated, async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {

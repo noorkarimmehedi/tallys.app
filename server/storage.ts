@@ -8,7 +8,7 @@ import {
 } from "@shared/schema";
 import { nanoid } from "nanoid";
 import { db } from './db';
-import { eq } from 'drizzle-orm';
+import { eq, and, gte, lte, inArray } from 'drizzle-orm';
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from './db';
@@ -53,6 +53,7 @@ export interface IStorage {
   
   // Booking
   getEventBookings(eventId: number): Promise<Booking[]>;
+  getBookingsByDate(eventIds: number[], date: Date): Promise<Booking[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBookingStatus(id: number, status: string): Promise<Booking | undefined>;
   
@@ -450,6 +451,41 @@ export class DatabaseStorage implements IStorage {
   // Booking methods
   async getEventBookings(eventId: number): Promise<Booking[]> {
     return db.select().from(bookings).where(eq(bookings.eventId, eventId));
+  }
+  
+  async getBookingsByDate(eventIds: number[], date: Date): Promise<Booking[]> {
+    // Create a start and end date for the selected date
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0);
+    
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999);
+    
+    // Query bookings between start and end date for the given event IDs
+    const dateBookings = await db
+      .select({
+        booking: bookings,
+        event: {
+          title: events.title,
+          duration: events.duration
+        }
+      })
+      .from(bookings)
+      .innerJoin(events, eq(bookings.eventId, events.id))
+      .where(
+        and(
+          inArray(bookings.eventId, eventIds),
+          gte(bookings.date, startDate),
+          lte(bookings.date, endDate)
+        )
+      );
+    
+    // Transform the results to include event details
+    return dateBookings.map(item => ({
+      ...item.booking,
+      eventTitle: item.event.title,
+      eventDuration: item.event.duration
+    }));
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
