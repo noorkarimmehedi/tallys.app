@@ -98,6 +98,12 @@ export function FormBuilder({ id }: FormBuilderProps) {
       setTitle(form.title);
       setQuestions(form.questions || []);
       setSections(form.sections || []);
+      
+      // Get custom info description from form metadata if available
+      if (form.metadata?.infoDescription) {
+        setInfoSectionDescription(form.metadata.infoDescription);
+      }
+      
       setLoading(false);
     } else if (!id) {
       // New form with default section and question

@@ -46,7 +46,8 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
     rawSections: form.sections,
     rawSectionsType: form.sections ? typeof form.sections : 'undefined',
     processedQuestions: questions,
-    processedSections: sections
+    processedSections: sections,
+    infoDescription: form.metadata?.infoDescription
   });
   
   const submitResponseMutation = useMutation({
@@ -173,6 +174,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
               onAnswerChange={handleAnswer}
               formResponses={answers}
               preview={preview}
+              infoDescription={form.metadata?.infoDescription}
             />
           )}
           

@@ -32,6 +32,7 @@ interface FormSectionAccordionProps {
   onAnswerChange?: (questionId: string, answer: any) => void;
   formResponses?: Record<string, any>;
   preview?: boolean;
+  infoDescription?: string;
 }
 
 const sections: FormSection[] = [
@@ -111,7 +112,8 @@ function FormSectionAccordion({
   sections = [], 
   onAnswerChange = () => {}, 
   formResponses = {},
-  preview = false
+  preview = false,
+  infoDescription
 }: FormSectionAccordionProps) {
   // Add mobile detection
   const [isMobile, setIsMobile] = React.useState(false);
@@ -136,7 +138,11 @@ function FormSectionAccordion({
     };
   }, []);
   
-  const groupedQuestions = getQuestionsGroupedBySections({ questions, sections });
+  const groupedQuestions = getQuestionsGroupedBySections({ 
+    questions, 
+    sections,
+    infoDescription 
+  });
 
   // Helper to determine if a field has been completed
   const isFieldComplete = (questionId: string) => {
