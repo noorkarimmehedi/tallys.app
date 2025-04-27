@@ -161,14 +161,14 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
         <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-3 px-4 border-b border-gray-200">
           <div className="max-w-[600px] mx-auto flex items-center justify-center">
             <img 
-              src={`${form.theme.logoUrl}?t=${Date.now()}`} 
+              src={`${window.location.origin}${form.theme.logoUrl}?t=${Date.now()}`} 
               alt="Company Logo"
               className="h-12 max-w-[220px] object-contain" 
               onError={(e) => {
                 console.error('Error loading image:', e);
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = form.theme.logoUrl; // Try without timestamp as fallback
+                target.src = `${window.location.origin}${form.theme.logoUrl}`; // Try without timestamp as fallback
               }}
             />
           </div>

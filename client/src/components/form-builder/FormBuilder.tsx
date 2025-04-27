@@ -683,9 +683,18 @@ export function FormBuilder({ id }: FormBuilderProps) {
               <div className="flex flex-col items-center space-y-4">
                 <div className="border border-gray-200 rounded-md p-4 bg-white">
                   <img 
-                    src={logoUrl} 
+                    src={logoUrl.startsWith('/uploads') ? `${window.location.origin}${logoUrl}` : logoUrl} 
                     alt="Company Logo" 
                     className="max-h-40 max-w-full object-contain"
+                    onError={(e) => {
+                      console.error('Error loading logo in preview:', e);
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      // Try without origin as fallback
+                      if (logoUrl.startsWith('/uploads')) {
+                        target.src = logoUrl;
+                      }
+                    }}
                   />
                 </div>
                 <Button
