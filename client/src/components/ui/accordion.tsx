@@ -43,26 +43,47 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Content
-    ref={ref}
-    className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
-    style={{ 
-      WebkitOverflowScrolling: 'touch',
-      backfaceVisibility: 'hidden',
-      WebkitTransform: 'translateZ(0)',
-      WebkitPerspective: '1000',
-      WebkitBackfaceVisibility: 'hidden',
-      willChange: 'transform, opacity, height',
-      transitionProperty: 'transform, opacity, height',
-      transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
-      transitionDuration: '300ms'
-    }}
-    {...props}
-  >
-    <div className={cn("pb-4 pt-0", className)}>{children}</div>
-  </AccordionPrimitive.Content>
-))
+>(({ className, children, ...props }, ref) => {
+  // Check if we're on a mobile device (client-side only)
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    // Set initial value
+    setIsMobile(window.innerWidth < 768);
+    
+    // Add resize listener to update when window size changes
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return (
+    <AccordionPrimitive.Content
+      ref={ref}
+      className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',
+        backfaceVisibility: 'hidden',
+        WebkitTransform: 'translateZ(0)',
+        WebkitPerspective: '1000',
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitFontSmoothing: 'antialiased',
+        willChange: 'transform, opacity, height',
+        transitionProperty: 'transform, opacity, height',
+        transitionTimingFunction: isMobile 
+          ? 'cubic-bezier(0.215, 0.61, 0.355, 1)' 
+          : 'cubic-bezier(0.16, 1, 0.3, 1)',
+        transitionDuration: isMobile ? '250ms' : '300ms'
+      }}
+      {...props}
+    >
+      <div className={cn("pb-4 pt-0", className)}>{children}</div>
+    </AccordionPrimitive.Content>
+  );
+})
 
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 

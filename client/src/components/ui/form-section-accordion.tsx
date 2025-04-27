@@ -197,8 +197,15 @@ function FormSectionAccordion({
           key={section.sectionId || `section-${index}`} 
           value={section.sectionId || `section-${index}`}
           className="mb-3 border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu"
+          style={{ 
+            WebkitTransformStyle: 'preserve-3d',
+            WebkitBackfaceVisibility: 'hidden'
+          }}
         >
-          <AccordionTrigger className="group px-3 sm:px-4 py-3 hover:no-underline hover:bg-muted/20">
+          <AccordionTrigger 
+            className="group px-3 sm:px-4 py-3 hover:no-underline hover:bg-muted/20"
+            style={{ touchAction: 'manipulation' }}
+          >
             <div className="flex items-center gap-2">
               {getSectionIcon(section)}
               <span className="font-medium">{section.sectionTitle}</span>
@@ -207,14 +214,29 @@ function FormSectionAccordion({
               )}
             </div>
           </AccordionTrigger>
-          <AccordionContent className="px-3 sm:px-4 transition-all transform-gpu">
+          <AccordionContent 
+            className="px-3 sm:px-4 transition-all transform-gpu"
+            style={{ 
+              WebkitTransformStyle: 'preserve-3d',
+              WebkitBackfaceVisibility: 'hidden',
+              WebkitTransform: 'translate3d(0,0,0)',
+              WebkitPerspective: '1000px'
+            }}
+          >
             <div className="py-2 space-y-4">
               {section.sectionDescription && (
                 <p className="text-sm text-muted-foreground mb-4">{section.sectionDescription}</p>
               )}
               
               {section.questions.map(question => (
-                <div key={question.id} className="mb-4">
+                <div 
+                  key={question.id} 
+                  className="mb-4"
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitUserSelect: 'none'
+                  }}
+                >
                   {renderField(question)}
                 </div>
               ))}

@@ -89,15 +89,39 @@
   }
 }
 
-.animate-accordion-down {
-  animation: accordion-down 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: height, opacity;
-  transform: translateZ(0);
+/* Desktop animations - unchanged */
+@media (min-width: 768px) {
+  .animate-accordion-down {
+    animation: accordion-down 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: height, opacity;
+    transform: translateZ(0);
+  }
+  
+  .animate-accordion-up {
+    animation: accordion-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: height, opacity;
+    transform: translateZ(0);
+  }
 }
 
-.animate-accordion-up {
-  animation: accordion-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: height, opacity;
-  transform: translateZ(0);
+/* Optimized mobile animations - slightly faster, different easing */
+@media (max-width: 767px) {
+  .animate-accordion-down {
+    animation: accordion-down 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+    will-change: height, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+  }
+  
+  .animate-accordion-up {
+    animation: accordion-up 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+    will-change: height, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+  }
 }
 
