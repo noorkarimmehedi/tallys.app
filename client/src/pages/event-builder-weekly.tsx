@@ -122,6 +122,40 @@ export default function EventBuilder() {
         title: "Logo uploaded",
         description: "Your company logo has been uploaded",
       });
+      
+      // Automatically save the event with the new logo
+      setTimeout(() => {
+        // Use the updated logo URL in a new event data object
+        const eventData = {
+          title,
+          description,
+          location,
+          duration,
+          published: isPublished,
+          availableTimes: [],
+          weeklySchedule: JSON.stringify(weeklySchedule),
+          theme: {
+            backgroundColor: '#ffffff',
+            textColor: '#000000',
+            primaryColor: '#3b82f6',
+            fontFamily: 'Inter, sans-serif',
+            logoUrl: data.path // Use the newly uploaded logo URL
+          }
+        };
+        
+        // Only save if editing an existing event
+        if (eventId !== 'new') {
+          apiRequest('PATCH', `/api/events/${eventId}`, eventData)
+            .then(response => {
+              if (response.ok) {
+                console.log("Event updated with new logo");
+                // Invalidate the query to refresh the data
+                queryClient.invalidateQueries({ queryKey: ['/api/events', eventId] });
+              }
+            })
+            .catch(err => console.error("Error saving logo to event:", err));
+        }
+      }, 500);
     } catch (error) {
       console.error("Error uploading logo:", error);
       toast({

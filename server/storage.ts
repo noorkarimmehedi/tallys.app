@@ -395,17 +395,51 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateEvent(id: number, updates: Partial<Event>): Promise<Event | undefined> {
-    console.log("Updating event with ID:", id);
-    console.log("Event updates:", JSON.stringify(updates, null, 2));
-    
-    const [updatedEvent] = await db
-      .update(events)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(events.id, id))
-      .returning();
-    
-    console.log("Updated event:", JSON.stringify(updatedEvent, null, 2));
-    return updatedEvent;
+    try {
+      console.log("Updating event with ID:", id);
+      console.log("Event updates:", JSON.stringify(updates, null, 2));
+      
+      // First get the existing event to preserve important data
+      const [existingEvent] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, id));
+      
+      if (!existingEvent) {
+        console.log("Event not found with ID:", id);
+        return undefined;
+      }
+      
+      // Make sure we preserve the theme structure properly
+      const updatedTheme = updates.theme ? {
+        backgroundColor: updates.theme.backgroundColor || existingEvent.theme?.backgroundColor || '#ffffff',
+        textColor: updates.theme.textColor || existingEvent.theme?.textColor || '#000000',
+        primaryColor: updates.theme.primaryColor || existingEvent.theme?.primaryColor || '#3b82f6',
+        fontFamily: updates.theme.fontFamily || existingEvent.theme?.fontFamily || 'Inter, sans-serif',
+        logoUrl: updates.theme.logoUrl !== undefined ? updates.theme.logoUrl : existingEvent.theme?.logoUrl
+      } : existingEvent.theme;
+      
+      console.log("Updating event with theme:", JSON.stringify(updatedTheme, null, 2));
+      
+      // Create the update data with the properly merged theme
+      const updateData = {
+        ...updates,
+        theme: updatedTheme,
+        updatedAt: new Date()
+      };
+      
+      const [updatedEvent] = await db
+        .update(events)
+        .set(updateData)
+        .where(eq(events.id, id))
+        .returning();
+      
+      console.log("Updated event:", JSON.stringify(updatedEvent, null, 2));
+      return updatedEvent;
+    } catch (error) {
+      console.error("Error updating event:", error);
+      return undefined;
+    }
   }
 
   async deleteEvent(id: number): Promise<boolean> {
