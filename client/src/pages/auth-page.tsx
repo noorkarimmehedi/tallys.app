@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { GoogleAuthCard } from "@/components/ui/google-auth-card";
+import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage } from "@/components/ui/chat-bubble";
 import logoImage from "../assets/lgoooo.png";
 
 export default function AuthPage() {
@@ -53,16 +54,22 @@ export default function AuthPage() {
               <img src={logoImage} alt="Logo" className="h-16 w-auto" />
             </div>
             
-            <div className="flex flex-col items-center justify-center">
-              <TypewriterEffectSmooth
-                words={[
-                  { text: "Welcome to tallys", className: "text-blue-500 dark:text-blue-500" },
-                ]}
-                className="mb-2"
-              />
-              <p className="text-neutral-600 dark:text-neutral-300 text-sm sm:text-lg mt-3 mb-4">
-                The smart way to create forms and schedule events
-              </p>
+            <div className="flex flex-col items-center justify-center mb-4 w-full max-w-lg">
+              <div className="w-full">
+                <ChatBubble variant="sent">
+                  <ChatBubbleAvatar fallback="U" />
+                  <ChatBubbleMessage variant="sent">
+                    <p className="text-sm sm:text-base">What is tallys?</p>
+                  </ChatBubbleMessage>
+                </ChatBubble>
+                
+                <ChatBubble variant="received">
+                  <ChatBubbleAvatar fallback="T" />
+                  <ChatBubbleMessage>
+                    <p className="text-sm sm:text-base">The smart way to create forms and schedule events</p>
+                  </ChatBubbleMessage>
+                </ChatBubble>
+              </div>
             </div>
           </div>
 
