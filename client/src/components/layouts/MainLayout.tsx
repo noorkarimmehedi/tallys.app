@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
 import { Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, BarChart } from "lucide-react";
-import { MagnetizeButton } from "@/components/ui/magnetize-button";
+import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
 import logoImage from "@/assets/logo.png";
 
 interface MainLayoutProps {
@@ -56,53 +56,44 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             <div className="px-3 space-y-0.5">
               {/* Home Navigation Item */}
-              <Link 
-                href="/" 
-                className={`flex items-center px-3 py-2 text-xs font-medium group
-                  ${location === "/" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Home className={`mr-2 h-4 w-4 ${location === "/" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Home</span>
-              </Link>
+              <MagnetizeNavItem
+                href="/"
+                icon={<Home />}
+                label="Home"
+                isActive={location === "/"}
+                particleCount={12}
+                attractRadius={40}
+              />
               
               {/* Inbox Navigation Item */}
-              <Link 
-                href="/inbox" 
-                className={`flex items-center px-3 py-2 text-xs font-medium group
-                  ${location === "/inbox" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Inbox className={`mr-2 h-4 w-4 ${location === "/inbox" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Inbox</span>
-              </Link>
+              <MagnetizeNavItem
+                href="/inbox"
+                icon={<Inbox />}
+                label="Inbox"
+                isActive={location === "/inbox"}
+                particleCount={12}
+                attractRadius={40}
+              />
               
               {/* Calendar Navigation Item */}
-              <Link 
-                href="/calendar" 
-                className={`flex items-center px-3 py-2 text-xs font-medium group
-                  ${location === "/calendar" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <CalendarDays className={`mr-2 h-4 w-4 ${location === "/calendar" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Calendar</span>
-              </Link>
+              <MagnetizeNavItem
+                href="/calendar"
+                icon={<CalendarDays />}
+                label="Calendar"
+                isActive={location === "/calendar"}
+                particleCount={12}
+                attractRadius={40}
+              />
               
               {/* Settings Navigation Item */}
-              <Link 
-                href="/settings" 
-                className={`flex items-center px-3 py-2 text-xs font-medium group
-                  ${location === "/settings" ? "bg-gray-100/80 text-gray-900" : "text-gray-600 hover:bg-gray-100/50"}`}
-              >
-                <Settings className={`mr-2 h-4 w-4 ${location === "/settings" ? "text-gray-800" : "text-gray-600"}`} />
-                <span className="font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm">Settings</span>
-              </Link>
-              
-              {/* MagnetizeButton */}
-              <div className="mt-4">
-                <MagnetizeButton 
-                  className="w-full rounded-none text-xs font-medium"
-                  particleCount={12}
-                  attractRadius={50}
-                />
-              </div>
+              <MagnetizeNavItem
+                href="/settings"
+                icon={<Settings />}
+                label="Settings"
+                isActive={location === "/settings"}
+                particleCount={12}
+                attractRadius={40}
+              />
             </div>
           </nav>
           
