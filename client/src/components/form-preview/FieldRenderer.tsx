@@ -6,6 +6,7 @@ import Email from '@/components/ui/form-fields/Email';
 import MultipleChoice from '@/components/ui/form-fields/MultipleChoice';
 import FileUpload from '@/components/ui/form-fields/FileUpload';
 import Rating from '@/components/ui/form-fields/Rating';
+import DateField from '@/components/ui/form-fields/DateField';
 
 interface FieldRendererProps {
   question: FormQuestion;
@@ -89,9 +90,13 @@ export function FieldRenderer({
       );
     case "date":
       return (
-        <ShortText
+        <DateField
           value={value as string}
           onChange={onChange}
+          label={question.title}
+          description={question.description}
+          required={question.required}
+          preview={preview}
         />
       );
     default:
