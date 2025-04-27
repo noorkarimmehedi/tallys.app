@@ -38,7 +38,7 @@ interface FormSectionAccordionProps {
 const sections: FormSection[] = [
   {
     id: "1",
-    icon: <User className="size-4 stroke-2 text-muted-foreground" />,
+    icon: <User className="size-4 stroke-2 text-blue-500" />,
     title: "Personal Information",
     children: (
       <div className="flex flex-col gap-2">
@@ -49,7 +49,7 @@ const sections: FormSection[] = [
   },
   {
     id: "2",
-    icon: <Mail className="size-4 stroke-2 text-muted-foreground" />,
+    icon: <Mail className="size-4 stroke-2 text-blue-500" />,
     title: "Contact Information",
     children: (
       <div className="flex flex-col gap-2">
@@ -60,7 +60,7 @@ const sections: FormSection[] = [
   },
   {
     id: "3",
-    icon: <MapPin className="size-4 stroke-2 text-muted-foreground" />,
+    icon: <MapPin className="size-4 stroke-2 text-blue-500" />,
     title: "Address Information",
     children: (
       <div className="flex flex-col gap-2">

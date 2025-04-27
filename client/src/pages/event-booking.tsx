@@ -417,7 +417,7 @@ export default function EventBooking() {
                     
                     <div className="flex items-start">
                       <div className="mt-1">
-                        <Globe className="h-5 w-5 text-gray-500 mr-2" />
+                        <Globe className="h-5 w-5 text-blue-500 mr-2" />
                       </div>
                       <div>
                         <h3 className="font-medium">Time zone</h3>
@@ -434,7 +434,7 @@ export default function EventBooking() {
                       className="w-full"
                     >
                       Continue to Date & Time
-                      <ChevronRight className="ml-2 h-4 w-4" />
+                      <ChevronRight className="ml-2 h-4 w-4 text-white" />
                     </Button>
                   </div>
                 </div>
@@ -499,7 +499,7 @@ export default function EventBooking() {
                   {selectedDate && selectedTime && (
                     <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 mb-3">
                       <div className="flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4 text-primary" />
+                        <CalendarIcon className="h-4 w-4 text-blue-500" />
                         <div>
                           <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                             {format(selectedDate, 'EEEE, MMMM d, yyyy')}
