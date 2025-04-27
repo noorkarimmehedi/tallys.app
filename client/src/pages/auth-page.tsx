@@ -52,16 +52,16 @@ export default function AuthPage() {
             
             <div className="flex flex-col items-center justify-center mb-6 w-full max-w-lg">
               <div className="w-full max-w-md mx-auto">
-                <ChatBubble variant="sent">
+                <ChatBubble variant="received">
                   <ChatBubbleAvatar fallback="U" />
-                  <ChatBubbleMessage variant="sent">
+                  <ChatBubbleMessage>
                     <p className="text-sm sm:text-base font-medium">What is tallys?</p>
                   </ChatBubbleMessage>
                 </ChatBubble>
                 
-                <ChatBubble variant="received" className="text-left">
+                <ChatBubble variant="sent" className="text-right">
                   <ChatBubbleAvatar fallback="T" />
-                  <ChatBubbleMessage className="text-sm sm:text-base leading-relaxed">
+                  <ChatBubbleMessage variant="sent" className="text-sm sm:text-base leading-relaxed">
                     <div className="text-left">
                       <p>
                         tallys is an all-in-one platform designed to simplify form creation and event scheduling.
