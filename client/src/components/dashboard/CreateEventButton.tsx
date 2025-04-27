@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function CreateEventButton() {
   return (
-    <Link href="/event/new">
+    <Link href="/event-builder/new">
       <motion.div 
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
