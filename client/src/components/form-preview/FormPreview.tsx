@@ -158,24 +158,27 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
       
       {/* Logo Header - Fixed at the top */}
       {form.theme?.logoUrl && (
-        <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-3 px-4 border-b border-gray-200">
+        <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-md py-4 px-4 border-b border-gray-200">
           <div className="max-w-[600px] mx-auto flex items-center justify-center">
-            <img 
-              src={`${window.location.origin}${form.theme.logoUrl}?t=${Date.now()}`} 
-              alt="Company Logo"
-              className="h-12 max-w-[220px] object-contain" 
-              onError={(e) => {
-                console.error('Error loading image:', e);
-                const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.src = `${window.location.origin}${form.theme.logoUrl}`; // Try without timestamp as fallback
-              }}
-            />
+            <div className="bg-white p-2 rounded-md">
+              <img 
+                src={`${window.location.origin}${form.theme.logoUrl}?t=${Date.now()}`} 
+                alt="Company Logo"
+                className="h-16 sm:h-20 max-w-[280px] object-contain" 
+                onError={(e) => {
+                  console.error('Error loading image:', e);
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = `${window.location.origin}${form.theme.logoUrl}`; // Try without timestamp as fallback
+                }}
+                style={{ filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))' }}
+              />
+            </div>
           </div>
         </div>
       )}
       
-      <div className="w-full max-w-[600px] px-3 sm:px-6 py-4 sm:py-6" style={{ marginTop: form.theme?.logoUrl ? '60px' : '0' }}>
+      <div className="w-full max-w-[600px] px-3 sm:px-6 py-4 sm:py-6" style={{ marginTop: form.theme?.logoUrl ? '90px' : '0' }}>
         <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
           <div className="text-center mb-6 sm:mb-8">
             <h3 className="text-xl sm:text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
