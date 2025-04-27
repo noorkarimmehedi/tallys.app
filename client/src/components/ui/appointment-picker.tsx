@@ -84,45 +84,61 @@ function AppointmentPicker({
       onTimeChange(timeSlot);
     }
   };
+  
+  // Format time slot for display (12-hour format with am/pm)
+  const formatTimeSlot = (timeString: string) => {
+    try {
+      // Parse the time string (assuming format like "10:00" or "14:30")
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0);
+      
+      // Format using 12-hour clock with am/pm
+      return format(date, 'h:mm a').toLowerCase();
+    } catch (e) {
+      return timeString; // Return the original if parsing fails
+    }
+  };
 
   return (
     <div>
       <div className="rounded-lg border border-border shadow-sm">
-        <div className="flex max-sm:flex-col">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateSelect}
-            className="p-2 sm:pe-4 bg-background/80 sm:rounded-l-lg"
-            disabled={disabledDates}
-            initialFocus
-          />
-          <div className="relative w-full max-sm:h-52 sm:w-48">
-            <div className="absolute inset-0 border-border py-4 max-sm:border-t sm:border-l">
-              <ScrollArea className="h-full">
-                <div className="space-y-3">
-                  <div className="flex h-6 shrink-0 items-center px-4">
-                    <p className="text-sm font-medium text-foreground/80">
-                      {date ? format(date, "EEEE, MMMM d") : "Select a date"}
-                    </p>
-                  </div>
-                  <div className="grid gap-2 px-4 max-sm:grid-cols-3 sm:grid-cols-1">
-                    {defaultTimeSlots.map(({ time: timeSlot, available }) => (
-                      <Button
-                        key={timeSlot}
-                        variant={time === timeSlot ? "default" : "outline"}
-                        size="sm"
-                        className={`w-full text-sm transition-all ${time === timeSlot ? 'shadow-sm scale-[1.02]' : ''}`}
-                        onClick={() => handleTimeSelect(timeSlot)}
-                        disabled={!available}
-                      >
-                        {timeSlot}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </ScrollArea>
+        <div className="flex flex-col">
+          {/* Calendar */}
+          <div className="w-full">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={handleDateSelect}
+              className="p-2 bg-background/80 rounded-t-lg"
+              disabled={disabledDates}
+              initialFocus
+            />
+          </div>
+          
+          {/* Time slots - now below calendar instead of to the side */}
+          <div className="w-full border-t border-border p-4 bg-background/90">
+            <div className="mb-3">
+              <p className="text-sm font-medium text-foreground/80">
+                {date ? format(date, "EEEE, MMMM d") : "Select a date"}
+              </p>
             </div>
+            <ScrollArea className="max-h-60">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {defaultTimeSlots.map(({ time: timeSlot, available }) => (
+                  <Button
+                    key={timeSlot}
+                    variant={time === timeSlot ? "default" : "outline"}
+                    size="sm"
+                    className={`w-full text-sm transition-all ${time === timeSlot ? 'shadow-sm scale-[1.02]' : ''}`}
+                    onClick={() => handleTimeSelect(timeSlot)}
+                    disabled={!available}
+                  >
+                    {formatTimeSlot(timeSlot)}
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </div>

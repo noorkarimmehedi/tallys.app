@@ -318,7 +318,7 @@ export default function EventBooking() {
       date.setHours(hours, minutes, 0);
       
       // Format using 12-hour clock with am/pm
-      return format(date, 'h:mma').toLowerCase();
+      return format(date, 'h:mm a').toLowerCase();
     } catch (e) {
       return timeString; // Return the original if parsing fails
     }
@@ -452,8 +452,8 @@ export default function EventBooking() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-3 sm:px-4">
-                <div className="flex flex-col gap-2 py-2">
-                  <div className="rounded-md overflow-hidden">
+                <div className="flex flex-col gap-4 py-2">
+                  <div className="rounded-md overflow-visible">
                     <AppointmentPicker
                       initialDate={selectedDate || undefined}
                       initialTime={selectedTime}
