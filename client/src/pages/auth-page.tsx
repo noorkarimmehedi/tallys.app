@@ -6,7 +6,6 @@ import { Tiles } from "@/components/ui/tiles";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { GoogleAuthCard } from "@/components/ui/google-auth-card";
 import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage } from "@/components/ui/chat-bubble";
-import logoImage from "../assets/lgoooo.png";
 
 export default function AuthPage() {
   const [location, navigate] = useLocation();
@@ -50,9 +49,6 @@ export default function AuthPage() {
         <div className="flex flex-col items-center justify-center">
           {/* App Logo & Title with Typewriter Effect */}
           <div className="flex flex-col items-center mb-4 text-center">
-            <div className="mb-4 flex items-center justify-center">
-              <img src={logoImage} alt="Logo" className="h-16 w-auto" />
-            </div>
             
             <div className="flex flex-col items-center justify-center mb-6 w-full max-w-lg">
               <div className="w-full max-w-md mx-auto">
