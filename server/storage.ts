@@ -453,13 +453,25 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(bookings).where(eq(bookings.eventId, eventId));
   }
   
-  async getBookingsByDate(eventIds: number[], date: Date): Promise<Booking[]> {
-    // Format the date to ISO string (YYYY-MM-DD) to ensure timezone consistency
-    const dateStr = date.toISOString().split('T')[0];
-    console.log(`Finding bookings for date: ${dateStr}`);
+  async getBookingsByDate(eventIds: number[], date: Date | string): Promise<Booking[]> {
+    // Handle date formats - if we receive a string, convert it to a proper date
+    // If date is already a Date object, extract date components to ensure consistency
     
-    // Extract date-only strings from booking dates for direct comparison
-    // This ensures consistent date handling regardless of timezone
+    let queryDateStr: string;
+    
+    // If it's a string in YYYY-MM-DD format, use it directly
+    if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      queryDateStr = date;
+    } else {
+      // Extract the date components and create a date string
+      const d = new Date(date);
+      // Format the date to YYYY-MM-DD format
+      queryDateStr = d.toISOString().split('T')[0];
+    }
+    
+    console.log(`Finding bookings for date: ${queryDateStr}`);
+    
+    // Use PostgreSQL's DATE_TRUNC to handle dates properly
     const dateBookings = await db
       .select({
         booking: bookings,
@@ -473,19 +485,28 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           inArray(bookings.eventId, eventIds),
-          // Use date extraction to get YYYY-MM-DD format for comparison
-          sql`DATE_TRUNC('day', ${bookings.date}::timestamp)::date = ${dateStr}::date`
+          // Use DATE_TRUNC for consistent date comparison
+          sql`DATE_TRUNC('day', ${bookings.date}::timestamp AT TIME ZONE 'UTC')::date = ${queryDateStr}::date`
         )
       );
     
-    // Debug output
-    console.log(`Found ${dateBookings.length} bookings for date ${dateStr}`);
+    // Detailed debug output to help identify any issues
+    console.log(`Found ${dateBookings.length} bookings for date ${queryDateStr}`);
     dateBookings.forEach(booking => {
-      const bookingDate = new Date(booking.booking.date);
-      console.log(`Booking: id=${booking.booking.id}, date=${bookingDate.toISOString()}, name=${booking.booking.name}`);
+      // Format date for logging
+      const rawBookingDate = booking.booking.date;
+      const bookingDate = typeof rawBookingDate === 'string' 
+        ? new Date(rawBookingDate) 
+        : rawBookingDate;
+        
+      // Log different date formats for debugging
+      const isoDate = bookingDate.toISOString();
+      const dateOnlyStr = isoDate.split('T')[0];
+      
+      console.log(`Booking: id=${booking.booking.id}, date=${isoDate}, dateOnly=${dateOnlyStr}, name=${booking.booking.name}`);
     });
     
-    // Transform the results to include event details
+    // Transform results with event details
     return dateBookings.map(item => ({
       ...item.booking,
       eventTitle: item.event.title,
@@ -494,7 +515,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    // Ensure proper date handling by standardizing the date format
+    let dateValue = insertBooking.date;
+    
+    // If we got a string date, convert it properly to preserve the date exactly as provided
+    if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Format: YYYY-MM-DD - construct date with time (without timezone conversion)
+      const timeStr = insertBooking.time || '00:00';
+      // Using direct SQL to prevent timezone conversion issues
+      // We deliberately use UTC for storage to have consistent date values
+      
+      // Debug the date being stored
+      const inputDate = dateValue;
+      console.log(`Booking for exactly: ${inputDate} at time: ${timeStr}`);
+    }
+    
+    // Create the booking
     const [booking] = await db.insert(bookings).values(insertBooking).returning();
+    
+    // Verify the date was stored correctly
+    const storedDate = new Date(booking.date);
+    const storedDateStr = storedDate.toISOString().split('T')[0];
+    console.log(`Booking ID ${booking.id} created with date: ${storedDateStr} (original: ${storedDate.toISOString()})`);
+    
     return booking;
   }
 

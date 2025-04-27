@@ -645,11 +645,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       console.log('Booking date debug:', JSON.stringify(debugDateInfo, null, 2));
       
+      // Use the original date string if it was a valid YYYY-MM-DD format
+      // This prevents timezone issues where the day gets shifted
+      const dateToStore = (typeof req.body.date === 'string' && req.body.date.match(/^\d{4}-\d{2}-\d{2}$/))
+        ? req.body.date 
+        : dateValue;
+      
+      console.log(`Final date to store: ${typeof dateToStore === 'string' ? dateToStore : dateToStore.toISOString()}`);
+      
       const validatedData = insertBookingSchema.parse({
         eventId: eventId,
         name: req.body.name,
         email: req.body.email,
-        date: dateValue,
+        date: dateToStore, // Use the properly formatted date
         time: req.body.time,
         status: 'confirmed'
       });
