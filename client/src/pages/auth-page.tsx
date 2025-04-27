@@ -45,7 +45,7 @@ export default function AuthPage() {
         </div>
       </div>
 
-      <div className="w-full max-w-6xl mx-auto px-4 pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
+      <div className="w-full max-w-6xl mx-auto px-4 pt-2 sm:pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center">
           {/* App Logo & Title with Typewriter Effect */}
           <div className="flex flex-col items-center mb-4 text-center">
