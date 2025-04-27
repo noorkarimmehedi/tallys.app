@@ -55,7 +55,7 @@ export default function DateField({ value, onChange, label, description, require
           <Calendar className={`text-gray-500 ${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
         </div>
         
-        <style jsx global>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           /* iOS-specific date input styling */
           @supports (-webkit-touch-callout: none) {
             input[type="date"]::-webkit-date-and-time-value {
@@ -75,7 +75,7 @@ export default function DateField({ value, onChange, label, description, require
               width: 40px;
             }
           }
-        `}</style>
+        ` }} />
         
         <Input
           type="date"
