@@ -250,19 +250,35 @@ export function FormBuilder({ id }: FormBuilderProps) {
     });
   };
   
+  // Function to get form data for saving
+  const getFormDataForSave = () => {
+    return {
+      title,
+      questions,
+      sections,
+      metadata: {
+        infoDescription: infoSectionDescription,
+      },
+      theme: {
+        ...getDefaultFormTheme(),
+        logoUrl: logoUrl.replace(/\?t=\d+$/, '') // Remove timestamp if present
+      }
+    };
+  };
+  
   // Handle logo file upload
   const handleLogoUpload = async () => {
     if (!logoFile) return;
     
     // Create a FormData object to upload the file
-    const formData = new FormData();
-    formData.append('file', logoFile);
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', logoFile);
     
     try {
       // Upload the file to the server using fetch with credentials
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData,
+        body: uploadFormData,
         credentials: 'include'
       });
       
@@ -273,8 +289,22 @@ export function FormBuilder({ id }: FormBuilderProps) {
       
       const result = await response.json();
       
-      // Set the logo URL from the server response
-      setLogoUrl(result.fileUrl);
+      // Set the logo URL from the server response with timestamp to prevent caching issues
+      const logoUrlWithTimestamp = `${result.fileUrl}?t=${Date.now()}`;
+      setLogoUrl(logoUrlWithTimestamp);
+      
+      // Also save the form immediately with the new logo URL
+      const formDataToSave = getFormDataForSave();
+      formDataToSave.theme = {
+        ...formDataToSave.theme,
+        logoUrl: result.fileUrl // Use the original URL for storage
+      };
+      
+      if (id && id !== 'new') {
+        updateFormMutation.mutate(formDataToSave);
+      } else {
+        createFormMutation.mutate(formDataToSave);
+      }
       
       // Reset the file input
       setLogoFile(null);

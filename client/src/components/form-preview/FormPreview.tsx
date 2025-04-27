@@ -158,14 +158,19 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
       
       {/* Logo Header - Fixed at the top */}
       {form.theme?.logoUrl && (
-        <div className="fixed top-0 left-0 right-0 z-10 bg-white/95 backdrop-blur-md shadow-sm py-2 px-4 border-b border-gray-200">
-          <div className="max-w-[600px] mx-auto flex items-center justify-between">
+        <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm py-3 px-4 border-b border-gray-200">
+          <div className="max-w-[600px] mx-auto flex items-center justify-center">
             <img 
-              src={form.theme.logoUrl} 
+              src={`${form.theme.logoUrl}?t=${Date.now()}`} 
               alt="Company Logo"
-              className="h-10 max-w-[180px] object-contain" 
+              className="h-12 max-w-[220px] object-contain" 
+              onError={(e) => {
+                console.error('Error loading image:', e);
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = form.theme.logoUrl; // Try without timestamp as fallback
+              }}
             />
-            <h4 className="text-lg font-medium text-gray-700 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h4>
           </div>
         </div>
       )}
