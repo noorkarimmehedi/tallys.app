@@ -160,7 +160,7 @@ export default function EventBooking() {
         eventId: event.id,
         name,
         email,
-        date: selectedDate, // Send Date object directly without conversion to string
+        date: selectedDate.toISOString(), // Convert to ISO string - the schema will handle parsing
         time: selectedTime
       };
       

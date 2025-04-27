@@ -157,6 +157,12 @@ export const insertEventSchema = createInsertSchema(events).omit({
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
   createdAt: true,
+}).extend({
+  // Make sure date can be parsed from both string and Date
+  date: z.preprocess(
+    (val) => val instanceof Date ? val : new Date(String(val)),
+    z.date()
+  )
 });
 
 // Types
