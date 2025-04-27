@@ -562,11 +562,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Event is not published" });
       }
       
+      // Explicitly convert date string to Date object before validation
+      let dateValue;
+      try {
+        // Handle date whether it's a string or already a Date object
+        dateValue = new Date(req.body.date);
+        if (isNaN(dateValue.getTime())) {
+          throw new Error('Invalid date format');
+        }
+      } catch (e) {
+        return res.status(400).json({ 
+          message: "Invalid date format", 
+          error: "Please provide a valid date"
+        });
+      }
+      
       const validatedData = insertBookingSchema.parse({
         eventId: eventId,
         name: req.body.name,
         email: req.body.email,
-        date: req.body.date,
+        date: dateValue, // Use the converted Date object
         time: req.body.time,
         status: 'confirmed'
       });
@@ -597,11 +612,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Event is not published" });
       }
       
+      // Explicitly convert date string to Date object before validation
+      let dateValue;
+      try {
+        // Handle date whether it's a string or already a Date object
+        dateValue = new Date(req.body.date);
+        if (isNaN(dateValue.getTime())) {
+          throw new Error('Invalid date format');
+        }
+      } catch (e) {
+        return res.status(400).json({ 
+          message: "Invalid date format", 
+          error: "Please provide a valid date"
+        });
+      }
+      
       const validatedData = insertBookingSchema.parse({
         eventId: id,
         name: req.body.name,
         email: req.body.email,
-        date: req.body.date,
+        date: dateValue, // Use the converted Date object
         time: req.body.time,
         status: 'confirmed'
       });
