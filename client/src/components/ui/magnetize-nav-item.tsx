@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils";
 import { motion, useAnimation } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { Link } from "wouter";
 
 interface MagnetizeNavItemProps {
@@ -34,40 +34,86 @@ export function MagnetizeNavItem({
     const [isAttracting, setIsAttracting] = useState(false);
     const [particles, setParticles] = useState<Particle[]>([]);
     const particlesControl = useAnimation();
+    
+    // Refs for debouncing and optimization
+    const timeoutRef = useRef<number | null>(null);
+    const isInteractingRef = useRef(false);
 
     useEffect(() => {
-        const newParticles = Array.from({ length: particleCount }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100 - 50,
-            y: Math.random() * 40 - 20,
-        }));
+        // Create particles with more optimized spacing and arrangement
+        const newParticles = Array.from({ length: particleCount }, (_, i) => {
+            // More strategic particle positioning for better visual effect
+            const angle = (i / particleCount) * Math.PI * 2; // Distribute in a circle
+            const distance = 20 + Math.random() * 30; // Vary the distance
+            return {
+                id: i,
+                x: Math.cos(angle) * distance,
+                y: Math.sin(angle) * distance,
+            };
+        });
         setParticles(newParticles);
     }, [particleCount]);
 
+    // Clean up timeouts to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current !== null) {
+                window.clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
     const handleInteractionStart = useCallback(async () => {
+        // Prevent rapid toggling with debounce
+        if (timeoutRef.current !== null) {
+            window.clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        
+        // Avoid unnecessary state updates
+        if (isInteractingRef.current) return;
+        isInteractingRef.current = true;
+        
         setIsAttracting(true);
         await particlesControl.start({
             x: 0,
             y: 0,
             transition: {
                 type: "spring",
-                stiffness: 50,
-                damping: 10,
+                stiffness: 80,  // Increased stiffness for faster movement
+                damping: 12,    // Better damping for smoother stops
+                mass: 0.6,      // Lower mass for more responsive particles
             },
         });
     }, [particlesControl]);
 
     const handleInteractionEnd = useCallback(async () => {
-        setIsAttracting(false);
-        await particlesControl.start((i) => ({
-            x: particles[i].x,
-            y: particles[i].y,
-            transition: {
-                type: "spring",
-                stiffness: 100,
-                damping: 15,
-            },
-        }));
+        // Add debounce to prevent flickering if the user quickly moves in and out
+        if (timeoutRef.current !== null) {
+            window.clearTimeout(timeoutRef.current);
+        }
+        
+        timeoutRef.current = window.setTimeout(async () => {
+            isInteractingRef.current = false;
+            setIsAttracting(false);
+            
+            await particlesControl.start((i) => {
+                const particle = particles[i];
+                return {
+                    x: particle.x,
+                    y: particle.y,
+                    transition: {
+                        type: "spring",
+                        stiffness: 110, // Higher stiffness for more snappy return
+                        damping: 14,    // Slightly higher damping
+                        mass: 0.8,      // More mass for return to give weight
+                        velocity: 2,    // Initial velocity for more natural feel
+                    },
+                };
+            });
+            
+            timeoutRef.current = null;
+        }, 50); // Small delay to prevent rapid toggling
     }, [particlesControl, particles]);
 
     return (
@@ -84,20 +130,38 @@ export function MagnetizeNavItem({
             onTouchStart={handleInteractionStart}
             onTouchEnd={handleInteractionEnd}
         >
-            {particles.map((_, index) => (
-                <motion.div
-                    key={index}
-                    custom={index}
-                    initial={{ x: particles[index].x, y: particles[index].y }}
-                    animate={particlesControl}
-                    className={cn(
-                        "absolute w-1 h-1 rounded-full",
-                        "bg-blue-400 dark:bg-blue-300",
-                        "transition-opacity duration-300",
-                        isAttracting ? "opacity-80" : "opacity-0"
-                    )}
-                />
-            ))}
+            {/* Memoized particle rendering for better performance */}
+            {useMemo(() => {
+                // Only render particles when needed
+                const shouldRenderParticles = isAttracting || particles.some(p => p.x !== 0 || p.y !== 0);
+                if (!shouldRenderParticles) return null;
+                
+                return (
+                    <React.Fragment>
+                        {particles.map((particle, index) => (
+                            <motion.div
+                                key={particle.id}
+                                custom={index}
+                                initial={{ x: particle.x, y: particle.y }}
+                                animate={particlesControl}
+                                className={cn(
+                                    "absolute w-1 h-1 rounded-full",
+                                    "bg-blue-400 dark:bg-blue-300",
+                                    "transition-opacity duration-300",
+                                    "will-change-transform", // Hardware acceleration hint
+                                    isAttracting ? "opacity-80" : "opacity-0"
+                                )}
+                                style={{
+                                    // Use GPU-accelerated properties for smoother animation
+                                    contain: "layout", // Improve performance by isolating layout
+                                    backfaceVisibility: "hidden" // Additional GPU boost
+                                }}
+                            />
+                        ))}
+                    </React.Fragment>
+                );
+            }, [particles, isAttracting, particlesControl])}
+            
             <span className={cn(
                 "mr-2 relative",
                 isActive ? "text-blue-800" : "text-gray-600 group-hover:text-blue-600"
