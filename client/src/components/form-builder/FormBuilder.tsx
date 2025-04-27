@@ -765,6 +765,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
                   <ul className="text-xs text-blue-600 mt-1 ml-4 list-disc space-y-1">
                     <li>Use a logo with transparent background (PNG or SVG) for best results</li>
                     <li>Keep the logo size under 2MB for faster loading</li>
+                    <li>Preferred logo dimensions: 427px width × 118px height</li>
                     <li>Square or slightly wide logos work best</li>
                     <li>Your logo will be displayed at the top of your form</li>
                   </ul>
