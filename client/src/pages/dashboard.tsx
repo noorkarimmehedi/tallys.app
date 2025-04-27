@@ -35,13 +35,13 @@ export default function Dashboard() {
         <div className="flex gap-3">
           <Link href="/form-builder/new">
             <Button className="bg-black hover:bg-gray-800">
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="h-4 w-4 mr-2 text-white" />
               Create Form
             </Button>
           </Link>
           <Link href="/event-builder/new">
             <Button className="bg-black hover:bg-gray-800">
-              <CalendarDays className="h-4 w-4 mr-2" />
+              <CalendarDays className="h-4 w-4 mr-2 text-white" />
               Create Event
             </Button>
           </Link>
@@ -52,11 +52,11 @@ export default function Dashboard() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="forms" className="flex items-center gap-1">
-            <FileText className="h-4 w-4" />
+            <FileText className="h-4 w-4 text-blue-500" />
             Forms
           </TabsTrigger>
           <TabsTrigger value="events" className="flex items-center gap-1">
-            <CalendarDays className="h-4 w-4" />
+            <CalendarDays className="h-4 w-4 text-blue-500" />
             Events
           </TabsTrigger>
         </TabsList>

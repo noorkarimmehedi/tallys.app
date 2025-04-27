@@ -192,23 +192,23 @@ function FormSectionAccordion({
     if (sectionGroup.sectionId === 'information') {
       return <FileText className="size-4 stroke-2 text-blue-500" />;
     } else if (sectionGroup.sectionTitle.toLowerCase().includes('personal')) {
-      return <User className="size-4 stroke-2 text-muted-foreground" />;
+      return <User className="size-4 stroke-2 text-blue-500" />;
     } else if (sectionGroup.sectionTitle.toLowerCase().includes('contact')) {
-      return <Mail className="size-4 stroke-2 text-muted-foreground" />;
+      return <Mail className="size-4 stroke-2 text-blue-500" />;
     } else if (sectionGroup.sectionTitle.toLowerCase().includes('address')) {
-      return <MapPin className="size-4 stroke-2 text-muted-foreground" />;
+      return <MapPin className="size-4 stroke-2 text-blue-500" />;
     } else if (firstQuestionType === 'paragraph') {
-      return <FileText className="size-4 stroke-2 text-muted-foreground" />;
+      return <FileText className="size-4 stroke-2 text-blue-500" />;
     } else if (firstQuestionType === 'rating') {
-      return <Star className="size-4 stroke-2 text-muted-foreground" />;
+      return <Star className="size-4 stroke-2 text-blue-500" />;
     } else if (firstQuestionType === 'fileUpload') {
-      return <FileText className="size-4 stroke-2 text-muted-foreground" />;
+      return <FileText className="size-4 stroke-2 text-blue-500" />;
     } else if (firstQuestionType === 'date') {
-      return <Calendar className="size-4 stroke-2 text-muted-foreground" />;
+      return <Calendar className="size-4 stroke-2 text-blue-500" />;
     } else if (firstQuestionType === 'phone') {
-      return <PhoneIcon className="size-4 stroke-2 text-muted-foreground" />;
+      return <PhoneIcon className="size-4 stroke-2 text-blue-500" />;
     } else {
-      return <FileText className="size-4 stroke-2 text-muted-foreground" />;
+      return <FileText className="size-4 stroke-2 text-blue-500" />;
     }
   };
 

@@ -53,7 +53,7 @@ export default function DateField({ value, onChange, label, description, require
         {/* Calendar icon - only shown on desktop */}
         {!isMobile && (
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Calendar className="h-4 w-4 text-gray-500" />
+            <Calendar className="h-4 w-4 text-blue-500" />
           </div>
         )}
         
