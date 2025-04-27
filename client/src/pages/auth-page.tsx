@@ -71,7 +71,7 @@ export default function AuthPage() {
                 ]}
                 className="mb-2"
               />
-              <p className="text-neutral-600 dark:text-neutral-300 text-base sm:text-lg mt-2 mb-8">
+              <p className="text-neutral-600 dark:text-neutral-300 text-sm sm:text-lg mt-3 mb-8">
                 The smart way to create forms and schedule events
               </p>
             </div>
