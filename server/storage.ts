@@ -458,7 +458,8 @@ export class DatabaseStorage implements IStorage {
     const dateStr = date.toISOString().split('T')[0];
     console.log(`Finding bookings for date: ${dateStr}`);
     
-    // Query bookings for the given date and event IDs
+    // Extract date-only strings from booking dates for direct comparison
+    // This ensures consistent date handling regardless of timezone
     const dateBookings = await db
       .select({
         booking: bookings,
@@ -472,13 +473,17 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           inArray(bookings.eventId, eventIds),
-          // Use the SQL function to extract the date part for comparison
-          // to avoid timezone issues
-          sql`DATE(${bookings.date}) = ${dateStr}`
+          // Use date extraction to get YYYY-MM-DD format for comparison
+          sql`DATE_TRUNC('day', ${bookings.date}::timestamp)::date = ${dateStr}::date`
         )
       );
     
+    // Debug output
     console.log(`Found ${dateBookings.length} bookings for date ${dateStr}`);
+    dateBookings.forEach(booking => {
+      const bookingDate = new Date(booking.booking.date);
+      console.log(`Booking: id=${booking.booking.id}, date=${bookingDate.toISOString()}, name=${booking.booking.name}`);
+    });
     
     // Transform the results to include event details
     return dateBookings.map(item => ({
