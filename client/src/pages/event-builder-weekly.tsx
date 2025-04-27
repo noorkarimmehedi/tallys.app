@@ -97,12 +97,66 @@ export default function EventBuilder() {
   };
 
   // Upload logo
+  // Direct function to update just the event logo - completely separate from event data update
+  const saveEventWithLogo = async (logoPath: string) => {
+    try {
+      console.log("Saving event with logo URL:", logoPath);
+      
+      // Create a specific logo-only update object
+      const logoUpdateData = {
+        theme: {
+          backgroundColor: '#ffffff', 
+          textColor: '#000000',
+          primaryColor: '#3b82f6',
+          fontFamily: 'Inter, sans-serif',
+          logoUrl: logoPath
+        }
+      };
+      
+      // Only save if editing an existing event
+      if (eventId !== 'new') {
+        console.log("Making logo update request with data:", JSON.stringify(logoUpdateData, null, 2));
+        
+        const response = await fetch(`/api/events/${eventId}/logo`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ logoUrl: logoPath })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to save logo');
+        }
+        
+        const updatedEvent = await response.json();
+        console.log("Updated event with logo:", updatedEvent);
+        
+        // Manually update the query cache to reflect the change
+        queryClient.setQueryData([`/api/events/${eventId}`], updatedEvent);
+        queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+        
+        toast({
+          title: "Logo saved",
+          description: "Your logo has been saved to the event",
+        });
+      }
+    } catch (error) {
+      console.error("Error saving logo to event:", error);
+      toast({
+        title: "Failed to save logo",
+        description: "There was an error saving your logo to the event",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleLogoUpload = async () => {
     if (!logoFile) return;
     
     try {
       const formData = new FormData();
-      formData.append('file', logoFile);  // Change 'logo' to 'file' to match server expectation
+      formData.append('file', logoFile);
       
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -114,6 +168,9 @@ export default function EventBuilder() {
       }
       
       const data = await response.json();
+      console.log("Logo uploaded successfully:", data);
+      
+      // Update local state
       setLogoUrl(data.path);
       setLogoFile(null);
       setLogoDialogOpen(false);
@@ -123,39 +180,9 @@ export default function EventBuilder() {
         description: "Your company logo has been uploaded",
       });
       
-      // Automatically save the event with the new logo
-      setTimeout(() => {
-        // Use the updated logo URL in a new event data object
-        const eventData = {
-          title,
-          description,
-          location,
-          duration,
-          published: isPublished,
-          availableTimes: [],
-          weeklySchedule: JSON.stringify(weeklySchedule),
-          theme: {
-            backgroundColor: '#ffffff',
-            textColor: '#000000',
-            primaryColor: '#3b82f6',
-            fontFamily: 'Inter, sans-serif',
-            logoUrl: data.path // Use the newly uploaded logo URL
-          }
-        };
-        
-        // Only save if editing an existing event
-        if (eventId !== 'new') {
-          apiRequest('PATCH', `/api/events/${eventId}`, eventData)
-            .then(response => {
-              if (response.ok) {
-                console.log("Event updated with new logo");
-                // Invalidate the query to refresh the data
-                queryClient.invalidateQueries({ queryKey: ['/api/events', eventId] });
-              }
-            })
-            .catch(err => console.error("Error saving logo to event:", err));
-        }
-      }, 500);
+      // Save the logo to the event
+      await saveEventWithLogo(data.path);
+      
     } catch (error) {
       console.error("Error uploading logo:", error);
       toast({

@@ -429,6 +429,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update event" });
     }
   });
+  
+  // Special endpoint just for updating event logo
+  app.patch("/api/events/:id/logo", isAuthenticated, async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+    
+    try {
+      // Get the current event
+      const event = await storage.getEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Check if the event belongs to the authenticated user
+      if (event.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You do not have permission to modify this event" });
+      }
+      
+      // Extract the logo URL from the request
+      const { logoUrl } = req.body;
+      console.log("Received logo URL update request:", logoUrl);
+      
+      if (!logoUrl) {
+        return res.status(400).json({ message: "Logo URL is required" });
+      }
+      
+      // Create a new theme object preserving other theme values
+      const updatedTheme = {
+        backgroundColor: event.theme?.backgroundColor || '#ffffff',
+        textColor: event.theme?.textColor || '#000000',
+        primaryColor: event.theme?.primaryColor || '#3b82f6',
+        fontFamily: event.theme?.fontFamily || 'Inter, sans-serif',
+        logoUrl: logoUrl
+      };
+      
+      console.log("Updating event theme with:", JSON.stringify(updatedTheme, null, 2));
+      
+      // Update just the theme part of the event
+      const updatedEvent = await storage.updateEvent(id, { 
+        theme: updatedTheme 
+      });
+      
+      if (!updatedEvent) {
+        return res.status(500).json({ message: "Failed to update event" });
+      }
+      
+      console.log("Event logo updated successfully:", JSON.stringify(updatedEvent.theme, null, 2));
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error updating event logo:", error);
+      res.status(500).json({ message: "Failed to update event logo" });
+    }
+  });
 
   app.delete("/api/events/:id", isAuthenticated, async (req, res) => {
     const id = parseInt(req.params.id);
