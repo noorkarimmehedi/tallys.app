@@ -159,6 +159,15 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
       <div className="w-full max-w-[600px] px-3 sm:px-6 py-4 sm:py-6">
         <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
           <div className="text-center mb-6 sm:mb-8">
+            {form.theme?.logoUrl && (
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={form.theme.logoUrl} 
+                  alt="Company Logo"
+                  className="max-h-20 max-w-full object-contain" 
+                />
+              </div>
+            )}
             <h3 className="text-xl sm:text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Please complete all the sections below</p>
           </div>

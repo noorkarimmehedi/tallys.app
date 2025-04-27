@@ -4,6 +4,9 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertFormSchema, insertResponseSchema, insertEventSchema, insertBookingSchema } from "@shared/schema";
 import { setupAuth } from "./auth";
+import fileUpload from "express-fileupload";
+import path from "path";
+import fs from "fs";
 
 // Middleware to check if a user is authenticated
 function isAuthenticated(req: Request, res: Response, next: NextFunction) {
@@ -17,8 +20,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
   
+  // Setup file upload middleware
+  app.use(fileUpload({
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max file size
+    createParentPath: true, // Create the uploads directory if it doesn't exist
+    abortOnLimit: true,
+    responseOnLimit: "File size limit has been reached (2MB)",
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+  }));
+  
+  // Make sure uploads directory exists
+  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  
   // API routes
   const apiRouter = app.route('/api');
+  
+  // File upload endpoint
+  app.post('/api/upload', isAuthenticated, async (req, res) => {
+    try {
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({ message: 'No files were uploaded' });
+      }
+      
+      const file = req.files.file as fileUpload.UploadedFile;
+      
+      // Check file type (allow only images)
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+      if (!allowedTypes.includes(file.mimetype)) {
+        return res.status(400).json({ 
+          message: 'Invalid file type. Only JPG, PNG, GIF, and SVG files are allowed'
+        });
+      }
+      
+      // Generate a unique filename
+      const timestamp = Date.now();
+      const fileExtension = path.extname(file.name);
+      const fileName = `logo_${timestamp}${fileExtension}`;
+      const uploadPath = path.join(uploadsDir, fileName);
+      
+      // Move the file to the uploads directory
+      await file.mv(uploadPath);
+      
+      // Return the file URL
+      const fileUrl = `/uploads/${fileName}`;
+      res.json({
+        message: 'File uploaded successfully',
+        fileUrl
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({
+        message: 'Failed to upload file'
+      });
+    }
+  });
   
   // Forms - authenticated routes
   app.get("/api/forms", isAuthenticated, async (req, res) => {
@@ -51,7 +110,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           backgroundColor: "#ffffff",
           textColor: "#000000",
           primaryColor: "#0070f3",
-          fontFamily: "Alternate Gothic, sans-serif"
+          fontFamily: "Alternate Gothic, sans-serif",
+          logoUrl: null
         },
         published: false,
         views: 0,
