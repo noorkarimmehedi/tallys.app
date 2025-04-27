@@ -460,7 +460,7 @@ export class DatabaseStorage implements IStorage {
     let queryDateStr: string;
     
     // If it's a string in YYYY-MM-DD format, use it directly
-    if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
       queryDateStr = date;
     } else {
       // Extract the date components and create a date string
@@ -519,7 +519,7 @@ export class DatabaseStorage implements IStorage {
     let dateValue = insertBooking.date;
     
     // If we got a string date, convert it properly to preserve the date exactly as provided
-    if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
       // Format: YYYY-MM-DD - construct date with time (without timezone conversion)
       const timeStr = insertBooking.time || '00:00';
       // Using direct SQL to prevent timezone conversion issues

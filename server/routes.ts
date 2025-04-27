@@ -598,7 +598,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if we're receiving a formatted date string (YYYY-MM-DD) or an ISO string
         if (req.body.date && typeof req.body.date === 'string') {
           // If it's already in YYYY-MM-DD format
-          if (req.body.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(req.body.date)) {
             // Parse without timezone conversion by appending time
             const isoString = `${req.body.date}T${req.body.time || '00:00'}:00.000Z`;
             dateValue = new Date(isoString);
@@ -647,7 +647,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Use the original date string if it was a valid YYYY-MM-DD format
       // This prevents timezone issues where the day gets shifted
-      const dateToStore = (typeof req.body.date === 'string' && req.body.date.match(/^\d{4}-\d{2}-\d{2}$/))
+      const dateToStore = (typeof req.body.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(req.body.date))
         ? req.body.date 
         : dateValue;
       
@@ -688,26 +688,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Event is not published" });
       }
       
-      // Explicitly convert date string to Date object before validation
+      // Handle the date properly to avoid timezone issues
       let dateValue;
       try {
-        // Handle date whether it's a string or already a Date object
-        dateValue = new Date(req.body.date);
-        if (isNaN(dateValue.getTime())) {
+        // Check if we're receiving a formatted date string (YYYY-MM-DD) or an ISO string
+        if (req.body.date && typeof req.body.date === 'string') {
+          // If it's already in YYYY-MM-DD format
+          if (/^\d{4}-\d{2}-\d{2}$/.test(req.body.date)) {
+            // Use the date string directly to avoid timezone issues
+            dateValue = req.body.date;
+            console.log(`Using direct date string: ${dateValue}`);
+          } else {
+            // It's probably an ISO string, parse it
+            dateValue = new Date(req.body.date);
+            console.log(`Parsed date from ISO: ${req.body.date} -> ${dateValue.toISOString()}`);
+          }
+        } else if (req.body.date instanceof Date) {
+          dateValue = req.body.date;
+        } else {
+          throw new Error('Invalid date format');
+        }
+        
+        // If it's a Date object, validate it
+        if (dateValue instanceof Date && isNaN(dateValue.getTime())) {
           throw new Error('Invalid date format');
         }
       } catch (e) {
+        console.error('Date parsing error:', e);
         return res.status(400).json({ 
           message: "Invalid date format", 
           error: "Please provide a valid date"
         });
       }
       
+      // Log the date we're using for booking
+      console.log(`Creating booking for date: ${typeof dateValue === 'string' ? dateValue : (dateValue as Date).toISOString()}`);
+      
       const validatedData = insertBookingSchema.parse({
         eventId: id,
         name: req.body.name,
         email: req.body.email,
-        date: dateValue, // Use the converted Date object
+        date: dateValue, // Use either the string date or Date object
         time: req.body.time,
         status: 'confirmed'
       });
