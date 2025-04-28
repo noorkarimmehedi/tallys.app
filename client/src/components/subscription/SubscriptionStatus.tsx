@@ -190,47 +190,79 @@ const SubscriptionStatus: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isTrialing && (
-          <div className="space-y-4">
-            <p>You are currently on a trial which will end {formattedTrialEndsAt}.</p>
-            <p>After your trial ends, you'll need to subscribe to continue using all features.</p>
+        <div className="mb-6">
+          <div className="bg-black text-white rounded-lg p-4 mb-6">
+            <h3 className="text-xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">tallys Pro</h3>
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold">$19</span>
+              <span className="ml-1 text-gray-300">/month</span>
+            </div>
+            <ul className="mt-3 space-y-2">
+              <li className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                <span>Unlimited forms and responses</span>
+              </li>
+              <li className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                <span>Unlimited event bookings</span>
+              </li>
+              <li className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                <span>Custom branding and logo</span>
+              </li>
+              <li className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                <span>Advanced form logic</span>
+              </li>
+              <li className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                <span>Priority support</span>
+              </li>
+            </ul>
           </div>
-        )}
         
-        {isActive && (
-          <div className="space-y-4">
-            <p>Your subscription is active.</p>
-            <p>You have access to all premium features.</p>
-          </div>
-        )}
-        
-        {isCanceling && (
-          <div className="space-y-4">
-            <p>Your subscription will be canceled {formattedSubscriptionEndsAt}.</p>
-            <p>You can reactivate your subscription before then to maintain access.</p>
-          </div>
-        )}
-        
-        {isPastDue && (
-          <div className="space-y-4">
-            <p className="text-red-500">Your payment is past due.</p>
-            <p>Please update your payment information to continue using premium features.</p>
-          </div>
-        )}
-        
-        {isIncomplete && (
-          <div className="space-y-4">
-            <p className="text-red-600 font-medium">Your subscription is incomplete.</p>
-            <p>Please complete the payment process to activate your subscription.</p>
-          </div>
-        )}
-        
-        {!user.subscriptionStatus && (
-          <div className="space-y-4">
-            <p>You don't have an active subscription.</p>
-            <p>Start a 7-day free trial to access all premium features.</p>
-          </div>
-        )}
+          {isTrialing && (
+            <div className="space-y-4">
+              <p>You are currently on a trial which will end {formattedTrialEndsAt}.</p>
+              <p>After your trial ends, you'll need to subscribe to continue using all features.</p>
+            </div>
+          )}
+          
+          {isActive && (
+            <div className="space-y-4">
+              <p>Your subscription is active.</p>
+              <p>You have access to all premium features.</p>
+            </div>
+          )}
+          
+          {isCanceling && (
+            <div className="space-y-4">
+              <p>Your subscription will be canceled {formattedSubscriptionEndsAt}.</p>
+              <p>You can reactivate your subscription before then to maintain access.</p>
+            </div>
+          )}
+          
+          {isPastDue && (
+            <div className="space-y-4">
+              <p className="text-red-500">Your payment is past due.</p>
+              <p>Please update your payment information to continue using premium features.</p>
+            </div>
+          )}
+          
+          {isIncomplete && (
+            <div className="space-y-4">
+              <p className="text-red-600 font-medium">Your subscription is incomplete.</p>
+              <p>Please complete the payment process to activate your subscription.</p>
+            </div>
+          )}
+          
+          {!user.subscriptionStatus && (
+            <div className="space-y-4">
+              <p>You don't have an active subscription.</p>
+              <p>Start a 7-day free trial to access all premium features.</p>
+            </div>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
         {(!user.subscriptionStatus || user.subscriptionStatus === 'canceled') && (
