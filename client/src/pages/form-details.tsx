@@ -96,58 +96,53 @@ export default function FormDetails() {
 
   if (formLoading) {
     return (
-      <MainLayout>
-        <div className="p-6">
-          <div className="flex items-center space-x-4 mb-6">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocation("/inbox")}
-              className="text-sm"
-            >
-              ← Back
-            </Button>
-            <Skeleton className="h-8 w-48" />
-          </div>
-          
-          <div className="mb-6">
-            <Skeleton className="h-12 w-full mb-4" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-24 w-full" />
-              ))}
-            </div>
+      <div className="p-6">
+        <div className="flex items-center space-x-4 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation("/inbox")}
+            className="text-sm"
+          >
+            ← Back
+          </Button>
+          <Skeleton className="h-8 w-48" />
+        </div>
+        
+        <div className="mb-6">
+          <Skeleton className="h-12 w-full mb-4" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
           </div>
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
   if (!form) {
     return (
-      <MainLayout>
-        <div className="p-6">
-          <div className="flex items-center space-x-4 mb-6">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocation("/inbox")}
-              className="text-sm"
-            >
-              ← Back
-            </Button>
-          </div>
-          <div className="text-center py-12">
-            <h3 className="text-xl font-medium text-gray-800 mb-2">Form not found</h3>
-            <p className="text-gray-600">The form you're looking for doesn't exist or you don't have access to it.</p>
-          </div>
+      <div className="p-6">
+        <div className="flex items-center space-x-4 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation("/inbox")}
+            className="text-sm"
+          >
+            ← Back
+          </Button>
         </div>
-      </MainLayout>
+        <div className="text-center py-12">
+          <h3 className="text-xl font-medium text-gray-800 mb-2">Form not found</h3>
+          <p className="text-gray-600">The form you're looking for doesn't exist or you don't have access to it.</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
       <div className="p-6">
         {/* Header with back button and title */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -353,6 +348,5 @@ export default function FormDetails() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
   );
 }

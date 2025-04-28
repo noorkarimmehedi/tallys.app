@@ -1,19 +1,36 @@
-import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useMemo } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Download, Calendar, Filter } from "lucide-react";
-import { Form, Response, FormQuestion, FormResponse } from "@shared/schema";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Calendar,
+  Download,
+  Filter,
+  Search,
+} from "lucide-react";
+import { Form, Response } from "@shared/schema";
 
 interface FormSubmissionsTableProps {
   form: Form;
@@ -24,12 +41,14 @@ interface FormSubmissionsTableProps {
 export default function FormSubmissionsTable({
   form,
   responses,
-  isLoading
+  isLoading,
 }: FormSubmissionsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
-  // Extract column headers from questions
+  // Generate columns from form questions
   const columns = useMemo(() => {
+    if (!form.questions) return [];
+    
     return form.questions.map(question => ({
       id: question.id,
       title: question.title,
@@ -203,7 +222,7 @@ export default function FormSubmissionsTable({
                       #{response.id}
                     </TableCell>
                     <TableCell className="text-gray-700 sticky left-[70px] bg-white z-10 whitespace-nowrap">
-                      {formatDate(response.createdAt || "")}
+                      {formatDate(response.createdAt)}
                     </TableCell>
                     {columns.map((column) => (
                       <TableCell key={column.id} className="text-gray-700">

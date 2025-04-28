@@ -57,7 +57,11 @@ function Router() {
         </MainLayout>
       )} />
       
-      <ProtectedRoute path="/form-details/:id" component={FormDetails} />
+      <ProtectedRoute path="/form-details/:id" component={() => (
+        <MainLayout>
+          <FormDetails />
+        </MainLayout>
+      )} />
       
       <ProtectedRoute path="/inbox" component={() => (
         <MainLayout>

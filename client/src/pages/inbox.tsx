@@ -79,8 +79,8 @@ export default function Inbox() {
                     formId={form.id} 
                     formTitle={form.title}
                     shortId={form.shortId}
-                    views={form.views}
-                    published={form.published}
+                    views={form.views ?? 0}
+                    published={form.published ?? false}
                   />
                 ))}
               </div>
@@ -184,11 +184,11 @@ function FormCard({ formId, formTitle, shortId, views = 0, published = false }: 
           <div className="mt-4">
             <h4 className="text-sm font-medium mb-2">Recent Responses</h4>
             <div className="space-y-2">
-              {responses.slice(0, 2).map((response) => (
+              {responses && responses.slice(0, 2).map((response) => (
                 <div key={response.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
                   <span>Response #{response.id}</span>
                   <span className="text-gray-500 text-xs">
-                    {new Date(response.createdAt).toLocaleDateString()}
+                    {response.createdAt ? new Date(response.createdAt).toLocaleDateString() : 'Unknown date'}
                   </span>
                 </div>
               ))}

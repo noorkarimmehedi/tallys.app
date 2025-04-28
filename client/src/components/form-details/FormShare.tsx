@@ -1,211 +1,240 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Link, Mail, Check, Share2, Twitter, Facebook, Linkedin } from "lucide-react";
-import { Form } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 import { createFormUrl } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
+import { Form } from "@shared/schema";
+import {
+  Copy,
+  Facebook,
+  Link as LinkIcon,
+  Mail,
+  Share2,
+  Twitter,
+  Globe,
+  Code,
+} from "lucide-react";
 
 interface FormShareProps {
   form: Form;
 }
 
 export default function FormShare({ form }: FormShareProps) {
-  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("link");
+  const { toast } = useToast();
+  
   const formUrl = createFormUrl(form.shortId);
   
-  // Function to copy form link to clipboard
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(formUrl);
-    setCopied(true);
+  const copyToClipboard = (text: string, message: string = "Copied to clipboard") => {
+    navigator.clipboard.writeText(text);
     toast({
-      title: "Link copied",
-      description: "Form link copied to clipboard",
+      title: message,
+      duration: 2000,
     });
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
   };
   
-  // Generate email share link
-  const getEmailLink = () => {
-    const subject = encodeURIComponent(`Please fill out my form: ${form.title}`);
-    const body = encodeURIComponent(`I've created a form and would appreciate if you could fill it out: ${formUrl}`);
-    return `mailto:?subject=${subject}&body=${body}`;
+  const embedCode = `<iframe src="${formUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  
+  const openShareWindow = (url: string) => {
+    window.open(url, '_blank', 'width=600,height=400');
   };
-
-  // Generate Twitter share link
-  const getTwitterLink = () => {
-    const text = encodeURIComponent(`Check out my form: ${form.title} ${formUrl}`);
-    return `https://twitter.com/intent/tweet?text=${text}`;
-  };
-
-  // Generate Facebook share link
-  const getFacebookLink = () => {
-    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(formUrl)}`;
-  };
-
-  // Generate LinkedIn share link
-  const getLinkedInLink = () => {
-    const title = encodeURIComponent(form.title);
-    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(formUrl)}&title=${title}`;
-  };
-
+  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Share your form</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="link">
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="link">Link</TabsTrigger>
-            <TabsTrigger value="embed">Embed</TabsTrigger>
-            <TabsTrigger value="social">Social</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="link">
-            <div className="space-y-4">
+    <div className="grid gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Share Form</CardTitle>
+          <CardDescription>
+            Share your form with others via link, email, or social media.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-4">
+              <TabsTrigger value="link">
+                <LinkIcon className="h-4 w-4 mr-2" />
+                Link
+              </TabsTrigger>
+              <TabsTrigger value="social">
+                <Share2 className="h-4 w-4 mr-2" />
+                Social
+              </TabsTrigger>
+              <TabsTrigger value="embed">
+                <Code className="h-4 w-4 mr-2" />
+                Embed
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="link" className="space-y-4">
               <div>
-                <Label htmlFor="form-link">Form Link</Label>
-                <div className="flex mt-1.5">
-                  <Input 
-                    id="form-link"
-                    value={formUrl} 
-                    readOnly 
-                    className="flex-1 bg-gray-50"
-                  />
-                  <Button 
-                    variant="outline" 
-                    className="ml-2 min-w-[100px]"
-                    onClick={copyToClipboard}
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <Label className="mb-2 block">Share via</Label>
-                <div className="flex gap-2 flex-wrap">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => window.open(getEmailLink(), '_blank')}
-                  >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Email
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => window.open(formUrl, '_blank')}
-                  >
-                    <Link className="h-4 w-4 mr-2" />
-                    Open
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="embed">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="embed-code">Embed Code</Label>
-                <div className="flex mt-1.5">
-                  <Input 
-                    id="embed-code"
-                    value={`<iframe src="${formUrl}" width="100%" height="600" frameborder="0"></iframe>`} 
-                    readOnly 
-                    className="flex-1 bg-gray-50"
-                  />
-                  <Button 
-                    variant="outline" 
-                    className="ml-2 min-w-[100px]"
-                    onClick={() => {
-                      navigator.clipboard.writeText(`<iframe src="${formUrl}" width="100%" height="600" frameborder="0"></iframe>`);
-                      toast({
-                        title: "Embed code copied",
-                        description: "Embed code copied to clipboard",
-                      });
-                    }}
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <Label className="mb-2 block">Preview</Label>
-                <div className="border rounded-md p-4 bg-gray-50 flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <div className="text-gray-400 mb-2">
-                      <Share2 className="h-12 w-12 mx-auto" />
+                <div className="flex items-center mb-2">
+                  <p className="text-sm font-medium">Form Link</p>
+                  {!form.published && (
+                    <div className="ml-2 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded">
+                      Draft
                     </div>
-                    <p className="text-gray-600">Embed preview not available</p>
-                  </div>
+                  )}
                 </div>
+                <div className="flex items-center">
+                  <Input
+                    value={formUrl}
+                    readOnly
+                    className="text-sm flex-1 bg-gray-50"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => copyToClipboard(formUrl)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  {form.published
+                    ? "This form is published and accessible to anyone with the link."
+                    : "This form is currently in draft mode. Enable publishing in Settings to make it accessible."}
+                </p>
               </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="social">
-            <div className="space-y-4">
-              <Label className="mb-2 block">Share on social media</Label>
-              <div className="grid grid-cols-2 gap-3">
+              
+              <div className="pt-4">
                 <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => window.open(getTwitterLink(), '_blank')}
+                  onClick={() => window.open(formUrl, '_blank')}
+                  className="w-full sm:w-auto"
                 >
-                  <Twitter className="h-4 w-4 mr-2 text-[#1DA1F2]" />
-                  Twitter
+                  <Globe className="h-4 w-4 mr-2" />
+                  Open Form
                 </Button>
-                <Button 
-                  variant="outline" 
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="social" className="space-y-4">
+              <p className="text-sm text-gray-500 mb-4">
+                Share your form directly on social media platforms.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <Button
+                  variant="outline"
                   className="justify-start"
-                  onClick={() => window.open(getFacebookLink(), '_blank')}
+                  onClick={() => openShareWindow(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(formUrl)}`)}
                 >
-                  <Facebook className="h-4 w-4 mr-2 text-[#1877F2]" />
+                  <Facebook className="h-4 w-4 mr-2 text-blue-600" />
                   Facebook
                 </Button>
-                <Button 
-                  variant="outline" 
+                
+                <Button
+                  variant="outline"
                   className="justify-start"
-                  onClick={() => window.open(getLinkedInLink(), '_blank')}
+                  onClick={() => openShareWindow(`https://twitter.com/intent/tweet?url=${encodeURIComponent(formUrl)}&text=Check out this form: ${encodeURIComponent(form.title)}`)}
                 >
-                  <Linkedin className="h-4 w-4 mr-2 text-[#0077B5]" />
-                  LinkedIn
+                  <Twitter className="h-4 w-4 mr-2 text-blue-400" />
+                  Twitter
                 </Button>
-                <Button 
-                  variant="outline" 
+                
+                <Button
+                  variant="outline"
                   className="justify-start"
-                  onClick={() => window.open(getEmailLink(), '_blank')}
+                  onClick={() => openShareWindow(`mailto:?subject=${encodeURIComponent(`Form: ${form.title}`)}&body=${encodeURIComponent(`Check out this form: ${formUrl}`)}`)}
                 >
-                  <Mail className="h-4 w-4 mr-2 text-gray-500" />
+                  <Mail className="h-4 w-4 mr-2 text-gray-600" />
                   Email
                 </Button>
               </div>
+              
+              {!form.published && (
+                <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 text-sm rounded-md">
+                  <p>Remember: Your form is in draft mode. Publish it first to share with others.</p>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="embed" className="space-y-4">
+              <p className="text-sm text-gray-500 mb-4">
+                Embed this form directly on your website using the code below.
+              </p>
+              
+              <div className="bg-gray-100 p-3 rounded-md">
+                <pre className="text-xs overflow-x-auto whitespace-pre-wrap break-all">
+                  {embedCode}
+                </pre>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => copyToClipboard(embedCode, "Embed code copied")}
+                className="mt-2"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Code
+              </Button>
+              
+              {!form.published && (
+                <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 text-sm rounded-md">
+                  <p>Your form is in draft mode. It must be published for the embed to work properly.</p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+      
+      {form.published && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">QR Code</CardTitle>
+            <CardDescription>
+              Generate a QR code for your form to share offline.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center">
+            <div className="bg-white p-4 rounded-md border">
+              <div className="w-48 h-48 bg-gray-100 flex items-center justify-center">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(formUrl)}`} 
+                  alt="QR Code"
+                  className="w-full h-full"
+                />
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+            <div className="mt-4 flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(formUrl)}`;
+                  window.open(qrUrl, '_blank');
+                }}
+              >
+                Preview
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(formUrl)}`;
+                  const link = document.createElement('a');
+                  link.href = qrUrl;
+                  link.download = `form-qr-${form.shortId}.png`;
+                  link.click();
+                }}
+              >
+                Download
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

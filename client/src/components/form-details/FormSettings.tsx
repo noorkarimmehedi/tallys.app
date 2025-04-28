@@ -1,177 +1,251 @@
-import { useState } from "react";
+import React from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Form } from "@shared/schema";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Trash, Save, AlertTriangle } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Form as FormType } from "@shared/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { AlertTriangle, Settings } from "lucide-react";
 
 interface FormSettingsProps {
-  form: Form;
+  form: FormType;
 }
 
-export default function FormSettings({ form }: FormSettingsProps) {
-  const [isPublished, setIsPublished] = useState(form.published || false);
-  const [, navigate] = useLocation();
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  published: z.boolean().default(false),
+  redirectUrl: z.string().optional(),
+  submitButtonText: z.string().default("Submit"),
+});
 
-  // Mutation to update form settings
+type FormValues = z.infer<typeof formSchema>;
+
+export default function FormSettings({ form }: FormSettingsProps) {
+  const { toast } = useToast();
+  const [location, setLocation] = useLocation();
+  
+  // Create form with default values from the current form
+  const formMethods = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: form.title,
+      published: form.published || false,
+      redirectUrl: form.metadata?.redirectUrl || "",
+      submitButtonText: form.metadata?.submitButtonText || "Submit",
+    },
+  });
+  
+  // Update form settings mutation
   const updateFormMutation = useMutation({
-    mutationFn: async (data: Partial<Form>) => {
-      const res = await apiRequest("PATCH", `/api/forms/${form.id}`, data);
-      return await res.json();
+    mutationFn: async (values: FormValues) => {
+      const response = await apiRequest("PATCH", `/api/forms/${form.id}`, values);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/forms/${form.id}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/forms'] });
       toast({
-        title: "Settings updated",
-        description: "Form settings have been updated successfully",
+        title: "Form settings updated",
+        description: "Your form settings have been updated successfully.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: `Failed to update form settings: ${error.message}`,
+        title: "Failed to update form settings",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
-
-  // Mutation to delete form
+  
+  // Delete form mutation
   const deleteFormMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("DELETE", `/api/forms/${form.id}`);
-      return res.ok;
+      await apiRequest("DELETE", `/api/forms/${form.id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/forms'] });
       toast({
         title: "Form deleted",
-        description: "Form has been deleted successfully",
+        description: "Your form has been deleted successfully.",
       });
-      navigate("/inbox");
+      queryClient.invalidateQueries({ queryKey: ['/api/forms'] });
+      setLocation("/inbox");
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: `Failed to delete form: ${error.message}`,
+        title: "Failed to delete form",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
-
-  // Handle publish status change
-  const handlePublishChange = (checked: boolean) => {
-    setIsPublished(checked);
-    updateFormMutation.mutate({ published: checked });
-  };
-
+  
+  function onSubmit(values: FormValues) {
+    updateFormMutation.mutate(values);
+  }
+  
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Form Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="publish" className="text-base font-medium">Publish Form</Label>
-              <p className="text-sm text-gray-500">
-                {isPublished 
-                  ? "Your form is live and accepting responses" 
-                  : "Your form is currently in draft mode"}
-              </p>
-            </div>
-            <Switch 
-              id="publish" 
-              checked={isPublished} 
-              onCheckedChange={handlePublishChange}
-            />
-          </div>
-
-          <div className="border-t pt-4">
-            <Label className="text-base font-medium">Form Privacy</Label>
-            <div className="mt-2 space-y-2">
-              <div className="flex items-center">
-                <input 
-                  type="radio" 
-                  id="public" 
-                  name="privacy" 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500" 
-                  checked 
-                  readOnly
-                />
-                <label htmlFor="public" className="ml-2 block text-sm text-gray-700">
-                  Public - Anyone with the link can view and submit
-                </label>
-              </div>
-              <div className="flex items-center opacity-50">
-                <input 
-                  type="radio" 
-                  id="restricted" 
-                  name="privacy" 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500" 
-                  disabled 
-                />
-                <label htmlFor="restricted" className="ml-2 block text-sm text-gray-700">
-                  Restricted - Require login or password (Coming soon)
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <Label className="text-base font-medium">Response Settings</Label>
-            <div className="mt-2 space-y-2">
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="allow-multiple" 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500" 
-                  checked 
-                  readOnly
-                />
-                <label htmlFor="allow-multiple" className="ml-2 block text-sm text-gray-700">
-                  Allow multiple submissions from the same device
-                </label>
-              </div>
-              <div className="flex items-center opacity-50">
-                <input 
-                  type="checkbox" 
-                  id="collect-emails" 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500" 
-                  disabled 
-                />
-                <label htmlFor="collect-emails" className="ml-2 block text-sm text-gray-700">
-                  Collect email addresses (Coming soon)
-                </label>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-red-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-red-600">Danger Zone</CardTitle>
+          <CardTitle className="text-lg">General Settings</CardTitle>
+          <CardDescription>
+            Manage your form's title, status, and submission behavior.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600">
-            Deleting this form will permanently remove all form data and responses. This action cannot be undone.
+          <Form {...formMethods}>
+            <form id="settings-form" onSubmit={formMethods.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={formMethods.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Form Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter form title" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is the title displayed at the top of your form.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={formMethods.control}
+                name="published"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Publish Form</FormLabel>
+                      <FormDescription>
+                        When enabled, your form will be accessible to anyone with the link.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={formMethods.control}
+                name="submitButtonText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Submit Button Text</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Submit" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Customize the text on the form's submit button.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={formMethods.control}
+                name="redirectUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Redirect URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://example.com/thank-you" 
+                        {...field} 
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Redirect users to this URL after form submission. Leave blank to show the default thank you page.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex justify-between border-t pt-6">
+          <Button
+            type="submit"
+            form="settings-form"
+            disabled={updateFormMutation.isPending}
+            className="ml-auto"
+          >
+            {updateFormMutation.isPending ? "Saving..." : "Save Changes"}
+          </Button>
+        </CardFooter>
+      </Card>
+      
+      <Card className="border-red-200">
+        <CardHeader>
+          <CardTitle className="text-lg text-red-600 flex items-center">
+            <AlertTriangle className="h-5 w-5 mr-2" />
+            Danger Zone
+          </CardTitle>
+          <CardDescription>
+            Permanently delete this form and all of its data.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-500">
+            Once you delete a form, there is no going back. This action permanently removes the form, all of its questions, and all of its responses.
           </p>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="border-t pt-6">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Form
-              </Button>
+              <Button variant="destructive">Delete Form</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
