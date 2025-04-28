@@ -1,13 +1,119 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SubscriptionStatus from "@/components/subscription/SubscriptionStatus";
 
 export default function Settings() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // Password update form state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  // User profile update state
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  
+  // Set initial values from user data
+  React.useEffect(() => {
+    if (user) {
+      setName(user.displayName || user.username || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
+  
+  // Password update mutation
+  const updatePasswordMutation = useMutation({
+    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+      const res = await apiRequest("PUT", "/api/user/password", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password updated",
+        description: "Your password has been updated successfully.",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update password",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Profile update mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: { name: string; email: string }) => {
+      const res = await apiRequest("PUT", "/api/user/profile", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handlePasswordUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New passwords don't match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    updatePasswordMutation.mutate({
+      currentPassword,
+      newPassword,
+    });
+  };
+  
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfileMutation.mutate({
+      name,
+      email,
+    });
+  };
+  
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   return (
     <div className="flex-1 overflow-y-auto p-6">
       <div className="mb-8">
@@ -31,23 +137,43 @@ export default function Settings() {
                 <CardDescription>Update your personal information</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4">
+                <form onSubmit={handleProfileUpdate} className="grid gap-4">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="name">Name</Label>
-                      <Input id="name" defaultValue="Demo User" />
+                      <Input 
+                        id="name" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" defaultValue="demo@example.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div>
-                    <Button className="mt-4 bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
-                      Save Changes
+                    <Button 
+                      type="submit"
+                      className="mt-4 bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+                      disabled={updateProfileMutation.isPending}
+                    >
+                      {updateProfileMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Changes'
+                      )}
                     </Button>
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
             
@@ -57,27 +183,56 @@ export default function Settings() {
                 <CardDescription>Update your password</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4">
+                <form onSubmit={handlePasswordUpdate} className="grid gap-4">
                   <div>
                     <Label htmlFor="current-password">Current Password</Label>
-                    <Input id="current-password" type="password" />
+                    <Input 
+                      id="current-password" 
+                      type="password" 
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="new-password">New Password</Label>
-                      <Input id="new-password" type="password" />
+                      <Input 
+                        id="new-password" 
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                      />
                     </div>
                     <div>
                       <Label htmlFor="confirm-password">Confirm Password</Label>
-                      <Input id="confirm-password" type="password" />
+                      <Input 
+                        id="confirm-password" 
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                   <div>
-                    <Button className="mt-4 bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">
-                      Update Password
+                    <Button 
+                      type="submit"
+                      className="mt-4 bg-black hover:bg-gray-800 font-['Alternate_Gothic', 'sans-serif'] tracking-wide"
+                      disabled={updatePasswordMutation.isPending}
+                    >
+                      {updatePasswordMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        'Update Password'
+                      )}
                     </Button>
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
           </div>

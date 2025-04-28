@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertFormSchema, insertResponseSchema, insertEventSchema, insertBookingSchema } from "@shared/schema";
-import { setupAuth } from "./auth";
+import { setupAuth, comparePasswords, hashPassword } from "./auth";
 import fileUpload from "express-fileupload";
 import path from "path";
 import fs from "fs";
