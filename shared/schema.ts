@@ -11,6 +11,13 @@ export const users = pgTable("users", {
   displayName: text("display_name"),
   photoURL: text("photo_url"),
   lastLogin: timestamp("last_login"),
+  
+  // Subscription-related fields
+  stripeCustomerId: text("stripe_customer_id").unique(),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionStatus: text("subscription_status").default("trial"),
+  trialEndsAt: timestamp("trial_ends_at"),
+  subscriptionEndsAt: timestamp("subscription_ends_at"),
 });
 
 export const forms = pgTable("forms", {
