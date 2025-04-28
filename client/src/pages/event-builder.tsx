@@ -142,16 +142,13 @@ export default function EventBuilder() {
   
   if (isLoading) {
     return (
-      <MainLayout>
-        <div className="flex justify-center items-center h-full">
-          <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
-        </div>
-      </MainLayout>
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+      </div>
     );
   }
   
   return (
-    <MainLayout>
       <div className="container max-w-3xl mx-auto py-8 px-4 sm:px-6">
         <div className="flex flex-col gap-6">
           {/* Header with title and action buttons */}
@@ -406,6 +403,5 @@ export default function EventBuilder() {
           )}
         </div>
       </div>
-    </MainLayout>
   );
 }
