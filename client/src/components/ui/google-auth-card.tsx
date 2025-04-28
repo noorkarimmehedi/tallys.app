@@ -23,7 +23,7 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
           data-aos="fade-down"
         >
           <HighlighterItem className="rounded-3xl p-4">
-            <div className="relative z-20 overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-black md:h-60 h-auto">
+            <div className="relative z-20 overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-black md:h-[240px] h-auto">
               <Particles
                 className="absolute inset-0 -z-10 opacity-10 transition-opacity duration-1000 ease-in-out group-hover/item:opacity-100"
                 quantity={200}

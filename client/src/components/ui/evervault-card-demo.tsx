@@ -9,10 +9,10 @@ export function EvervaultCardDemo() {
       <Icon className="absolute h-6 w-6 -top-3 -right-3 dark:text-white text-black" />
       <Icon className="absolute h-6 w-6 -bottom-3 -right-3 dark:text-white text-black" />
 
-      <div className="w-full md:min-h-[16rem] min-h-[120px] flex items-center justify-center">
+      <div className="w-full md:min-h-[240px] min-h-[120px] flex items-center justify-center">
         <EvervaultCard 
           text="tallys" 
-          className="md:h-60 h-28" 
+          className="md:h-[240px] h-28" 
         />
       </div>
       
