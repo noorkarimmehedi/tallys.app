@@ -56,10 +56,12 @@ export default function AuthPage() {
           </div>
 
           {/* Modern Auth Card with Particles */}
-          <GoogleAuthCard
-            onGoogleSignIn={handleGoogleSignIn}
-            isLoading={loading}
-          />
+          <div className="w-full max-w-lg mx-auto">
+            <GoogleAuthCard
+              onGoogleSignIn={handleGoogleSignIn}
+              isLoading={loading}
+            />
+          </div>
         </div>
       </div>
     </div>
