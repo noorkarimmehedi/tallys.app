@@ -40,7 +40,11 @@ export function EmptyStateForEvents() {
       icons={[Calendar, Clock, MessageSquare]}
       action={{
         label: "Create Event",
-        onClick: () => setLocation("/event-builder/new")
+        onClick: () => {
+          // Store the tab preference in sessionStorage so we can redirect back to events tab
+          sessionStorage.setItem('dashboard_active_tab', 'events');
+          setLocation("/event-builder-weekly/new");
+        }
       }}
     />
   )

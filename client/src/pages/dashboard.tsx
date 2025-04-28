@@ -10,13 +10,23 @@ export default function Dashboard() {
   const [location] = useLocation();
   const [activeTab, setActiveTab] = useState("forms");
   
-  // Get tab from URL query parameter if exists
+  // Get tab from URL query parameter or sessionStorage
   useEffect(() => {
+    // First check URL params
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get("tab");
     
     if (tabParam === "events" || tabParam === "forms") {
       setActiveTab(tabParam);
+      return;
+    }
+    
+    // Then check sessionStorage (for redirects from empty states)
+    const storedTab = sessionStorage.getItem('dashboard_active_tab');
+    if (storedTab === "events" || storedTab === "forms") {
+      setActiveTab(storedTab);
+      // Clear the storage to avoid persisting across page refreshes
+      sessionStorage.removeItem('dashboard_active_tab');
     }
   }, [location]);
   
