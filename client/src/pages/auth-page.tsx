@@ -50,7 +50,7 @@ export default function AuthPage() {
           {/* App Logo & Title with Typewriter Effect */}
           <div className="flex flex-col items-center mb-4 text-center">
             
-            <div className="flex flex-col items-center justify-center mb-6 w-full max-w-lg">
+            <div className="flex flex-col items-center justify-center mb-1 md:mb-3 w-full max-w-lg">
               <EvervaultCardDemo />
             </div>
           </div>
