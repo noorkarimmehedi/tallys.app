@@ -119,13 +119,16 @@ export default function EventBuilder() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-      if (eventId === 'new') {
-        navigate(`/event-builder/${data.id}`);
-      }
+      
       toast({
         title: 'Success',
         description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
       });
+      
+      // Navigate to dashboard events tab after successful save
+      setTimeout(() => {
+        navigate('/dashboard?tab=events');
+      }, 1000);
     },
     onError: () => {
       toast({
@@ -176,7 +179,7 @@ export default function EventBuilder() {
             <div className="flex gap-3">
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/dashboard?tab=events')}
               >
                 Cancel
               </Button>
