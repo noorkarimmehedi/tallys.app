@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { PlusCircle, X, GripVertical } from "lucide-react";
-import { motion, Reorder, useDragControls } from "framer-motion";
+import { PlusCircle, X, GripVertical, Plus, Circle, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MultipleChoiceProps {
   value: string;
@@ -61,13 +61,6 @@ export default function MultipleChoice({
     }
   }, [options, onOptionsChange]);
 
-  const handleReorder = useCallback((newOrder: string[]) => {
-    if (onOptionsChange) {
-      onOptionsChange(newOrder);
-      setNextId(prev => prev + 1); // Update to force re-render
-    }
-  }, [onOptionsChange]);
-
   // If in preview mode or no options management capability, use the simple view
   if (preview || !onOptionsChange) {
     return (
@@ -80,21 +73,40 @@ export default function MultipleChoice({
             <p className="text-sm text-gray-500 mb-2">{description}</p>
           )}
         </div>
-        <RadioGroup value={value} onValueChange={onChange}>
+        <div className="grid grid-cols-1 gap-2">
           {options.map((option, index) => (
-            <div key={index} className="flex items-center gap-2 py-2">
-              <RadioGroupItem value={option} id={`option-${index}`} />
-              <Label htmlFor={`option-${index}`} className="text-sm">
+            <div 
+              key={index} 
+              className={`
+                flex items-center gap-2 p-3 rounded-md border transition-all 
+                ${value === option 
+                  ? 'bg-blue-50 border-blue-200' 
+                  : 'border-gray-200 hover:border-gray-300'
+                }
+                cursor-pointer
+              `}
+              onClick={() => onChange(option)}
+            >
+              <div 
+                className="h-5 w-5 flex-shrink-0"
+              >
+                {value === option ? (
+                  <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                ) : (
+                  <Circle className="h-5 w-5 text-gray-400" />
+                )}
+              </div>
+              <span className="text-sm font-medium">
                 {option}
-              </Label>
+              </span>
             </div>
           ))}
-        </RadioGroup>
+        </div>
       </div>
     );
   }
   
-  // Editor mode with enhanced UI and reordering capability
+  // Editor mode with enhanced UI
   return (
     <div className="space-y-6">
       <div>
@@ -112,53 +124,108 @@ export default function MultipleChoice({
           Options
         </Label>
         
-        {options.length === 0 ? (
-          <div className="text-center p-4 border border-dashed border-gray-300 rounded-md">
-            <p className="text-gray-500 text-sm">No options added yet</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {options.map((option, index) => (
-              <OptionItem 
-                key={getUniqueKey(index)}
-                option={option} 
-                index={index}
-                onUpdate={handleUpdateOption}
-                onRemove={handleRemoveOption}
-              />
-            ))}
-          </div>
-        )}
+        <AnimatePresence>
+          {options.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center p-4 border border-dashed border-gray-300 rounded-md"
+            >
+              <p className="text-gray-500 text-sm">No options added yet</p>
+            </motion.div>
+          ) : (
+            <div className="space-y-2">
+              {options.map((option, index) => (
+                <motion.div
+                  key={getUniqueKey(index)}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <OptionItem 
+                    option={option} 
+                    index={index}
+                    onUpdate={handleUpdateOption}
+                    onRemove={handleRemoveOption}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </AnimatePresence>
         
         {/* Add New Option */}
-        <div className="flex items-center gap-2 pt-2">
-          <Input
-            value={newOption}
-            onChange={(e) => setNewOption(e.target.value)}
-            placeholder="Add new option"
-            className="flex-1 border-gray-200"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && newOption.trim()) {
-                e.preventDefault();
-                handleAddOption();
-              }
-            }}
-          />
+        <div className="pt-2">
           <Button 
             type="button"
-            onClick={handleAddOption} 
-            disabled={!newOption.trim()} 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => setNewOption("New option")}
+            className="w-full flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 border border-dashed border-blue-200 py-2 h-auto"
+            variant="ghost"
           >
-            <PlusCircle size={18} className="mr-1" />
-            Add
+            <Plus size={16} className="mr-2" />
+            Add option
           </Button>
+          
+          {/* Option input appears when adding a new option */}
+          <AnimatePresence>
+            {newOption !== "" && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden mt-2"
+              >
+                <Card className="p-3 flex items-center gap-2 border-blue-200 bg-blue-50">
+                  <div className="text-blue-400">
+                    <Circle className="h-5 w-5" />
+                  </div>
+                  <Input
+                    value={newOption}
+                    onChange={(e) => setNewOption(e.target.value)}
+                    placeholder="Option text"
+                    className="flex-1 border-blue-200 focus:border-blue-300 focus:ring-blue-300 bg-white"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newOption.trim()) {
+                        e.preventDefault();
+                        handleAddOption();
+                      } else if (e.key === 'Escape') {
+                        setNewOption("");
+                      }
+                    }}
+                  />
+                  <div className="flex gap-1">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-blue-100"
+                      onClick={() => setNewOption("")}
+                    >
+                      <X size={16} />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-8 px-3 text-white bg-blue-600 hover:bg-blue-700"
+                      onClick={handleAddOption}
+                      disabled={!newOption.trim()}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       
       {/* Help text */}
       <p className="text-xs text-gray-500 italic">
-        Enter option text and click Add to add more options.
+        Click "Add option" to add more choices to your question.
       </p>
     </div>
   );
@@ -176,10 +243,30 @@ function OptionItem({
   onUpdate: (index: number, text: string) => void;
   onRemove: (index: number) => void;
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(option);
+  
   // Memoize this to prevent losing focus on input
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdate(index, e.target.value);
-  }, [index, onUpdate]);
+    setEditValue(e.target.value);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    if (editValue.trim()) {
+      onUpdate(index, editValue);
+    }
+    setIsEditing(false);
+  }, [editValue, index, onUpdate]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && editValue.trim()) {
+      onUpdate(index, editValue);
+      setIsEditing(false);
+    } else if (e.key === 'Escape') {
+      setEditValue(option);
+      setIsEditing(false);
+    }
+  }, [editValue, index, onUpdate, option]);
 
   const handleRemove = useCallback(() => {
     onRemove(index);
@@ -190,16 +277,33 @@ function OptionItem({
       <div className="text-gray-400">
         <GripVertical size={18} />
       </div>
-      {/* Custom radio button styled element */}
-      <div className="h-4 w-4 rounded-full border border-blue-500 flex items-center justify-center">
-        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+      
+      <div className="h-5 w-5 text-blue-500">
+        <Circle className="h-full w-full" />
       </div>
-      <Input
-        value={option}
-        onChange={handleChange}
-        className="flex-1 border-gray-200 focus:border-blue-300 focus:ring-blue-300"
-        placeholder="Option text"
-      />
+      
+      {isEditing ? (
+        <Input
+          value={editValue}
+          onChange={handleChange}
+          className="flex-1 border-blue-200 focus:border-blue-300 focus:ring-blue-300"
+          placeholder="Option text"
+          autoFocus
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+        />
+      ) : (
+        <div 
+          className="flex-1 py-1 px-2 text-sm cursor-text hover:bg-gray-50 rounded"
+          onClick={() => {
+            setIsEditing(true);
+            setEditValue(option);
+          }}
+        >
+          {option}
+        </div>
+      )}
+      
       <Button
         type="button"
         variant="ghost"
