@@ -30,6 +30,15 @@ export interface IStorage {
     photoURL?: string; 
   }): Promise<User>;
   
+  // Subscription
+  updateUserStripeInfo(userId: number, info: {
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string | null;
+    subscriptionStatus?: string;
+    trialEndsAt?: Date;
+    subscriptionEndsAt?: Date;
+  }): Promise<User>;
+  
   // Form
   getForms(userId: number): Promise<Form[]>;
   getForm(id: number): Promise<Form | undefined>;
@@ -266,6 +275,10 @@ export class DatabaseStorage implements IStorage {
     const username = firebaseData.email.split('@')[0] + '-' + 
       Math.random().toString(36).substring(2, 7);
       
+    // Set a trial end date 7 days from now for new users
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+      
     const [newUser] = await db
       .insert(users)
       .values({
@@ -274,11 +287,40 @@ export class DatabaseStorage implements IStorage {
         firebaseId: firebaseData.firebaseId,
         displayName: firebaseData.displayName,
         photoURL: firebaseData.photoURL,
-        lastLogin: new Date()
+        lastLogin: new Date(),
+        subscriptionStatus: 'trial',
+        trialEndsAt: trialEndsAt
       })
       .returning();
       
     return newUser;
+  }
+  
+  // Subscription methods
+  async updateUserStripeInfo(userId: number, info: {
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string | null;
+    subscriptionStatus?: string;
+    trialEndsAt?: Date;
+    subscriptionEndsAt?: Date;
+  }): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        stripeCustomerId: info.stripeCustomerId !== undefined ? info.stripeCustomerId : undefined,
+        stripeSubscriptionId: info.stripeSubscriptionId !== undefined ? info.stripeSubscriptionId : undefined,
+        subscriptionStatus: info.subscriptionStatus !== undefined ? info.subscriptionStatus : undefined,
+        trialEndsAt: info.trialEndsAt !== undefined ? info.trialEndsAt : undefined,
+        subscriptionEndsAt: info.subscriptionEndsAt !== undefined ? info.subscriptionEndsAt : undefined,
+      })
+      .where(eq(users.id, userId))
+      .returning();
+      
+    if (!updatedUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return updatedUser;
   }
 
   // Form methods

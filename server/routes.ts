@@ -7,6 +7,14 @@ import { setupAuth } from "./auth";
 import fileUpload from "express-fileupload";
 import path from "path";
 import fs from "fs";
+import { 
+  createTrialSubscription, 
+  createPaymentSubscription, 
+  cancelSubscription, 
+  reactivateSubscription,
+  handleStripeWebhook
+} from "./stripe-service";
+import Stripe from "stripe";
 
 // Middleware to check if a user is authenticated
 function isAuthenticated(req: Request, res: Response, next: NextFunction) {
