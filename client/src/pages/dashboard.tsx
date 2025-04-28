@@ -10,23 +10,13 @@ export default function Dashboard() {
   const [location] = useLocation();
   const [activeTab, setActiveTab] = useState("forms");
   
-  // Get tab from URL query parameter or sessionStorage
+  // Get tab from URL query parameter if exists
   useEffect(() => {
-    // First check URL params
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get("tab");
     
     if (tabParam === "events" || tabParam === "forms") {
       setActiveTab(tabParam);
-      return;
-    }
-    
-    // Then check sessionStorage (for redirects from empty states)
-    const storedTab = sessionStorage.getItem('dashboard_active_tab');
-    if (storedTab === "events" || storedTab === "forms") {
-      setActiveTab(storedTab);
-      // Clear the storage to avoid persisting across page refreshes
-      sessionStorage.removeItem('dashboard_active_tab');
     }
   }, [location]);
   
@@ -49,7 +39,7 @@ export default function Dashboard() {
               Create Form
             </Button>
           </Link>
-          <Link href="/event-builder-weekly/new">
+          <Link href="/event-builder/new">
             <Button className="bg-black hover:bg-gray-800">
               <CalendarDays className="h-4 w-4 mr-2 text-white" />
               Create Event

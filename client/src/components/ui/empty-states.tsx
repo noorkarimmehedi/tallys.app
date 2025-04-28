@@ -40,10 +40,7 @@ export function EmptyStateForEvents() {
       icons={[Calendar, Clock, MessageSquare]}
       action={{
         label: "Create Event",
-        onClick: () => {
-          window.history.pushState({}, '', '/dashboard?tab=events');
-          setLocation("/event-builder-weekly/new");
-        }
+        onClick: () => setLocation("/event-builder/new")
       }}
     />
   )
