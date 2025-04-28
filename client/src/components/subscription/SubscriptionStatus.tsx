@@ -25,7 +25,7 @@ const getStatusBadge = (status: string | undefined) => {
     'trial': { color: 'bg-blue-500', icon: <Clock className="h-4 w-4 mr-1" /> },
     'trialing': { color: 'bg-blue-500', icon: <Clock className="h-4 w-4 mr-1" /> },
     'active': { color: 'bg-green-500', icon: <CheckCircle className="h-4 w-4 mr-1" /> },
-    'incomplete': { color: 'bg-yellow-500', icon: <AlertCircle className="h-4 w-4 mr-1" /> },
+    'incomplete': { color: 'bg-black', icon: <AlertCircle className="h-4 w-4 mr-1" /> },
     'past_due': { color: 'bg-red-500', icon: <AlertCircle className="h-4 w-4 mr-1" /> },
     'canceled': { color: 'bg-gray-500', icon: <AlertCircle className="h-4 w-4 mr-1" /> },
     'unpaid': { color: 'bg-red-500', icon: <AlertCircle className="h-4 w-4 mr-1" /> },
@@ -220,7 +220,7 @@ const SubscriptionStatus: React.FC = () => {
         
         {isIncomplete && (
           <div className="space-y-4">
-            <p className="text-yellow-500">Your subscription is incomplete.</p>
+            <p className="text-red-600 font-medium">Your subscription is incomplete.</p>
             <p>Please complete the payment process to activate your subscription.</p>
           </div>
         )}
