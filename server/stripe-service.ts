@@ -111,94 +111,68 @@ export async function createPaymentSubscription(userId: number): Promise<{
       });
     }
 
-    // If user already has a subscription, return the payment intent for that
+    // If user already has a subscription, check its status
     if (user.stripeSubscriptionId) {
-      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-      
-      // If subscription is active, no need to pay again
-      if (subscription.status === 'active') {
-        return {
-          subscriptionId: subscription.id,
-          clientSecret: 'subscription_already_active'
-        };
-      }
-      
-      // If subscription is past due or incomplete, get the payment intent
-      if (typeof subscription.latest_invoice === 'string') {
-        const latestInvoice = await stripe.invoices.retrieve(subscription.latest_invoice);
-        // Use type assertion to handle payment_intent property
-        const invoice = latestInvoice as unknown as { payment_intent?: string };
-        if (typeof invoice.payment_intent === 'string') {
-          const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent);
-          
+      try {
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        
+        // If subscription is active, no need to pay again
+        if (subscription.status === 'active') {
           return {
             subscriptionId: subscription.id,
-            clientSecret: paymentIntent.client_secret!
+            clientSecret: 'subscription_already_active'
           };
         }
+        
+        // Cancel the existing subscription if it's not active
+        await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+        
+      } catch (error) {
+        console.log('Error retrieving existing subscription:', error);
+        // Subscription might not exist anymore, continue with creating a new one
       }
-      
-      // If we can't get a payment intent, create a new subscription
-      await stripe.subscriptions.cancel(subscription.id);
     }
 
-    // Create a new subscription with default payment settings
-    const subscription = await stripe.subscriptions.create({
+    // We know PRICE_ID is valid from our earlier check
+    if (!PRICE_ID) {
+      throw new Error('Missing PRICE_ID environment variable');
+    }
+    
+    // Get the price from Stripe to confirm it exists
+    try {
+      await stripe.prices.retrieve(PRICE_ID);
+    } catch (error) {
+      console.error('Error retrieving price:', error);
+      throw new Error(`Invalid price ID: ${PRICE_ID}`);
+    }
+
+    // Create a payment intent directly
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 2000, // Will be replaced by the subscription amount
+      currency: 'usd',
       customer: user.stripeCustomerId!,
-      items: [{ price: PRICE_ID }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: {
-        save_default_payment_method: 'on_subscription'
-      },
-      expand: ['latest_invoice'],
+      setup_future_usage: 'off_session',
       metadata: {
         userId: userId.toString()
       }
     });
 
-    // Get client secret from the payment intent
-    let clientSecret: string;
-    
-    // Get invoice ID from the subscription
-    let invoiceId: string;
-    
-    if (typeof subscription.latest_invoice === 'object' && 
-        subscription.latest_invoice !== null &&
-        'id' in subscription.latest_invoice &&
-        subscription.latest_invoice.id) {
-      invoiceId = subscription.latest_invoice.id as string;
-    } else if (typeof subscription.latest_invoice === 'string') {
-      invoiceId = subscription.latest_invoice;
-    } else {
-      throw new Error('Unable to get latest invoice from subscription');
-    }
-    
-    // Double-check that we have a valid invoice ID
-    if (!invoiceId) {
-      throw new Error('Invalid invoice ID from subscription');
-    }
-    
-    // Retrieve the invoice with payment intent expanded
-    const invoiceResponse = await stripe.invoices.retrieve(invoiceId, {
-      expand: ['payment_intent']
+    // Create a new subscription without attaching the payment method yet
+    const subscription = await stripe.subscriptions.create({
+      customer: user.stripeCustomerId!,
+      items: [{ price: PRICE_ID }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: {
+        payment_method_types: ['card'],
+        save_default_payment_method: 'on_subscription'
+      },
+      metadata: {
+        userId: userId.toString(),
+        paymentIntentId: paymentIntent.id
+      }
     });
-    
-    // We need to cast the response to access expanded properties
-    type InvoiceWithPaymentIntent = {
-      payment_intent?: {
-        client_secret?: string;
-      };
-    };
-    
-    // Cast the invoice response to our custom type
-    const invoice = invoiceResponse as unknown as InvoiceWithPaymentIntent;
-    
-    // Check if payment intent exists and has a client secret
-    if (invoice.payment_intent?.client_secret) {
-      clientSecret = invoice.payment_intent.client_secret;
-    } else {
-      throw new Error('Unable to get client secret from invoice payment intent');
-    }
+
+    const clientSecret = paymentIntent.client_secret!;
 
     // Update user with subscription information
     await storage.updateUserStripeInfo(userId, {
