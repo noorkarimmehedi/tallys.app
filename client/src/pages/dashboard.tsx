@@ -49,7 +49,7 @@ export default function Dashboard() {
               Create Form
             </Button>
           </Link>
-          <Link href="/event-builder/new">
+          <Link href="/event-builder-weekly/new">
             <Button className="bg-black hover:bg-gray-800">
               <CalendarDays className="h-4 w-4 mr-2 text-white" />
               Create Event
