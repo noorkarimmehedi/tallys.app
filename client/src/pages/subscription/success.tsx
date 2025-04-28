@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, Home, List } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useQueryClient } from '@tanstack/react-query';
+import { ParticleButton } from '@/components/ui/particle-button';
 
 const SubscriptionSuccessPage = () => {
   const [, navigate] = useLocation();
@@ -71,13 +72,13 @@ const SubscriptionSuccessPage = () => {
               <Home className="h-4 w-4 mr-2" />
               Go to Dashboard
             </Button>
-            <Button
+            <ParticleButton
               onClick={() => navigate('/account/subscription')}
-              className="flex items-center"
+              className="flex items-center bg-black text-white hover:bg-black/90"
             >
               <List className="h-4 w-4 mr-2" />
               Manage Subscription
-            </Button>
+            </ParticleButton>
           </CardFooter>
         </Card>
       </div>

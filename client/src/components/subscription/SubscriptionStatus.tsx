@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import { ParticleButton } from '@/components/ui/particle-button';
 
 // Helper function to get status badge color
 const getStatusBadge = (status: string | undefined) => {
@@ -233,9 +234,10 @@ const SubscriptionStatus: React.FC = () => {
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
         {(!user.subscriptionStatus || user.subscriptionStatus === 'canceled') && (
-          <Button
+          <ParticleButton
             onClick={() => startTrialMutation.mutate()}
             disabled={hasPendingActions}
+            className="bg-black text-white hover:bg-black/90"
           >
             {startTrialMutation.isPending ? (
               <>
@@ -245,13 +247,14 @@ const SubscriptionStatus: React.FC = () => {
             ) : (
               'Start Free Trial'
             )}
-          </Button>
+          </ParticleButton>
         )}
         
         {isTrialing && (
-          <Button
+          <ParticleButton
             onClick={() => startPaymentMutation.mutate()}
             disabled={hasPendingActions}
+            className="bg-black text-white hover:bg-black/90"
           >
             {startPaymentMutation.isPending ? (
               <>
@@ -261,7 +264,7 @@ const SubscriptionStatus: React.FC = () => {
             ) : (
               'Subscribe Now'
             )}
-          </Button>
+          </ParticleButton>
         )}
         
         {isActive && (
@@ -282,9 +285,10 @@ const SubscriptionStatus: React.FC = () => {
         )}
         
         {isCanceling && (
-          <Button
+          <ParticleButton
             onClick={() => reactivateSubscriptionMutation.mutate()}
             disabled={hasPendingActions}
+            className="bg-black text-white hover:bg-black/90"
           >
             {reactivateSubscriptionMutation.isPending ? (
               <>
@@ -294,13 +298,14 @@ const SubscriptionStatus: React.FC = () => {
             ) : (
               'Reactivate Subscription'
             )}
-          </Button>
+          </ParticleButton>
         )}
         
         {(isPastDue || isIncomplete) && (
-          <Button
+          <ParticleButton
             onClick={() => startPaymentMutation.mutate()}
             disabled={hasPendingActions}
+            className="bg-black text-white hover:bg-black/90"
           >
             {startPaymentMutation.isPending ? (
               <>
@@ -308,9 +313,9 @@ const SubscriptionStatus: React.FC = () => {
                 Processing...
               </>
             ) : (
-              'Update Payment'
+              'Complete Payment'
             )}
-          </Button>
+          </ParticleButton>
         )}
       </CardFooter>
     </Card>

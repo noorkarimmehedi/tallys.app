@@ -13,6 +13,7 @@ import MainLayout from '@/components/layouts/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Shield } from 'lucide-react';
+import { ParticleButton } from '@/components/ui/particle-button';
 
 // Load Stripe outside of component render to avoid recreating the Stripe object on every render
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -103,9 +104,9 @@ const CheckoutForm = () => {
           Go Back
         </Button>
         
-        <Button 
+        <ParticleButton 
           type="submit" 
-          className="flex-1" 
+          className="flex-1 bg-black text-white hover:bg-black/90" 
           disabled={!stripe || isLoading}
         >
           {isLoading ? (
@@ -116,7 +117,7 @@ const CheckoutForm = () => {
           ) : (
             'Complete Subscription'
           )}
-        </Button>
+        </ParticleButton>
       </div>
     </form>
   );
