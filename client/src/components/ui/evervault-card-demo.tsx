@@ -1,5 +1,6 @@
 import React from "react";
 import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
+import logoImage from "@assets/lgoooo.png";
 
 export function EvervaultCardDemo() {
   return (
@@ -11,7 +12,7 @@ export function EvervaultCardDemo() {
 
       <div className="w-full md:min-h-[240px] min-h-[120px] flex items-center justify-center">
         <EvervaultCard 
-          text="tallys" 
+          logoSrc={logoImage}
           className="md:h-[240px] h-28" 
         />
       </div>
