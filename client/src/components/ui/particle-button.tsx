@@ -1,9 +1,9 @@
 "use client" 
 
 import * as React from "react"
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ButtonProps } from "@/components/ui/button";
 import { MousePointerClick } from "lucide-react";
@@ -13,39 +13,70 @@ interface ParticleButtonProps extends ButtonProps {
     successDuration?: number;
 }
 
+function ParticleItem({ 
+    index, 
+    centerX, 
+    centerY 
+}: { 
+    index: number, 
+    centerX: number, 
+    centerY: number 
+}) {
+    const controls = useAnimationControls();
+    
+    useEffect(() => {
+        controls.start({
+            scale: [0, 1, 0],
+            x: [0, (index % 2 ? 1 : -1) * (Math.random() * 50 + 20)],
+            y: [0, -Math.random() * 50 - 20],
+            transition: {
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: "easeOut",
+            }
+        });
+    }, [controls, index]);
+
+    return (
+        <motion.div
+            key={index}
+            className="fixed w-1 h-1 bg-black dark:bg-white rounded-full"
+            style={{ left: centerX, top: centerY }}
+            initial={{
+                scale: 0,
+                x: 0,
+                y: 0,
+            }}
+            animate={controls}
+        />
+    );
+}
+
 function SuccessParticles({
     buttonRef,
 }: {
     buttonRef: React.RefObject<HTMLButtonElement>;
 }) {
-    const rect = buttonRef.current?.getBoundingClientRect();
-    if (!rect) return null;
-
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    
+    useEffect(() => {
+        const rect = buttonRef.current?.getBoundingClientRect();
+        if (rect) {
+            setPosition({
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+            });
+        }
+    }, [buttonRef]);
 
     return (
         <AnimatePresence>
             {[...Array(6)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="fixed w-1 h-1 bg-black dark:bg-white rounded-full"
-                    style={{ left: centerX, top: centerY }}
-                    initial={{
-                        scale: 0,
-                        x: 0,
-                        y: 0,
-                    }}
-                    animate={{
-                        scale: [0, 1, 0],
-                        x: [0, (i % 2 ? 1 : -1) * (Math.random() * 50 + 20)],
-                        y: [0, -Math.random() * 50 - 20],
-                    }}
-                    transition={{
-                        duration: 0.6,
-                        delay: i * 0.1,
-                        ease: "easeOut",
-                    }}
+                <ParticleItem 
+                    key={i} 
+                    index={i} 
+                    centerX={position.x} 
+                    centerY={position.y} 
                 />
             ))}
         </AnimatePresence>
