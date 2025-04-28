@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import FormBuilder from "@/pages/form-builder";
 import FormPreview from "@/pages/form-preview";
+import FormDetails from "@/pages/form-details";
 import EventBuilder from "@/pages/event-builder-weekly";
 import EventBuilderNew from "@/pages/event-builder-new";
 import EventBooking from "@/pages/event-booking";
@@ -55,6 +56,8 @@ function Router() {
           <FormPreview />
         </MainLayout>
       )} />
+      
+      <ProtectedRoute path="/form-details/:id" component={FormDetails} />
       
       <ProtectedRoute path="/inbox" component={() => (
         <MainLayout>

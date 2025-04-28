@@ -27,8 +27,8 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { createFormUrl } from "@/lib/utils";
 
 export default function FormDetails() {
-  const [params] = useParams();
-  const formId = params.id;
+  const params = useParams();
+  const formId = params?.id;
   const [location, setLocation] = useLocation();
   const [currentTab, setCurrentTab] = useState("summary");
 
@@ -41,8 +41,9 @@ export default function FormDetails() {
   });
 
   // Format date for display
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDate = (dateString: string | Date | null | undefined) => {
+    if (!dateString) return '';
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',

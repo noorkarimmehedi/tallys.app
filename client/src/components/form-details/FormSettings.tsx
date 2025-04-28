@@ -180,7 +180,7 @@ export default function FormSettings({ form }: FormSettingsProps) {
                   Delete Form
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete this form? This will permanently delete the form and all of its {responses?.length || 0} responses. This action cannot be undone.
+                  Are you sure you want to delete this form? This will permanently delete the form and all of its responses. This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

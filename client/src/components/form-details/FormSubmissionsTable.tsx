@@ -38,8 +38,9 @@ export default function FormSubmissionsTable({
   }, [form.questions]);
 
   // Format date for display
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDate = (dateString: string | Date | null | undefined) => {
+    if (!dateString) return '';
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',

@@ -8,9 +8,10 @@ import { ChevronRight, Eye, BarChart2, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import MainLayout from "@/components/layouts/MainLayout";
 import { createFormUrl } from "@/lib/utils";
+import { Form, Response } from "@shared/schema";
 
 export default function Inbox() {
-  const { data: forms, isLoading: formsLoading } = useQuery({
+  const { data: forms, isLoading: formsLoading } = useQuery<Form[]>({
     queryKey: ['/api/forms'],
   });
   
@@ -124,7 +125,7 @@ interface FormCardProps {
 }
 
 function FormCard({ formId, formTitle, shortId, views = 0, published = false }: FormCardProps) {
-  const { data: responses, isLoading } = useQuery({
+  const { data: responses, isLoading } = useQuery<Response[]>({
     queryKey: [`/api/forms/${formId}/responses`],
   });
   
