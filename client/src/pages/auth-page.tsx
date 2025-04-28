@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { GoogleAuthCard } from "@/components/ui/google-auth-card";
-import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage } from "@/components/ui/chat-bubble";
+import { EvervaultCardDemo } from "@/components/ui/evervault-card-demo";
 
 export default function AuthPage() {
   const [location, navigate] = useLocation();
@@ -51,31 +51,7 @@ export default function AuthPage() {
           <div className="flex flex-col items-center mb-4 text-center">
             
             <div className="flex flex-col items-center justify-center mb-6 w-full max-w-lg">
-              <div className="w-full max-w-md mx-auto">
-                <ChatBubble variant="received">
-                  <ChatBubbleAvatar fallback="U" />
-                  <ChatBubbleMessage>
-                    <p className="text-sm sm:text-base font-medium">What is tallys?</p>
-                  </ChatBubbleMessage>
-                </ChatBubble>
-                
-                <div className="flex flex-row-reverse items-end gap-2 mb-4">
-                  <ChatBubbleAvatar fallback="T" />
-                  <ChatBubbleMessage variant="sent" className="text-sm sm:text-base leading-relaxed bg-black text-white">
-                    <div className="text-left">
-                      <p>
-                        tallys is an all-in-one platform designed to simplify form creation and event scheduling.
-                      </p>
-                      <p className="mt-2">
-                        It lets you build beautiful interactive forms, organize questions into customizable sections, and easily schedule appointments with clients.
-                      </p>
-                      <p className="mt-2">
-                        With tallys, you can brand your forms with your company logo, share them via simple links, and manage responses all in one place.
-                      </p>
-                    </div>
-                  </ChatBubbleMessage>
-                </div>
-              </div>
+              <EvervaultCardDemo />
             </div>
           </div>
 
