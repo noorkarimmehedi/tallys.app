@@ -15,13 +15,32 @@ export const EvervaultCard = ({
   let mouseY = useMotionValue(0);
 
   const [randomString, setRandomString] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    let str = generateRandomString(1500);
+    // Check if we're on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Setup listener for resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Generate initial random string
+    let str = generateRandomString(isMobile ? 500 : 1500);
     setRandomString(str);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   function onMouseMove({ currentTarget, clientX, clientY }: any) {
+    // Don't update on mobile to save performance
+    if (isMobile) return;
+    
     let { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -33,12 +52,13 @@ export const EvervaultCard = ({
   return (
     <div
       className={cn(
-        "p-0.5 bg-transparent aspect-square flex items-center justify-center w-full h-full relative",
+        "p-0.5 bg-transparent md:aspect-square flex items-center justify-center w-full h-full relative",
         className
       )}
     >
       <div
         onMouseMove={onMouseMove}
+        onTouchMove={isMobile ? undefined : onMouseMove}
         className="group/card rounded-3xl w-full relative overflow-hidden bg-transparent flex items-center justify-center h-full"
       >
         <CardPattern
@@ -47,7 +67,7 @@ export const EvervaultCard = ({
           randomString={randomString}
         />
         <div className="relative z-10 flex items-center justify-center">
-          <div className="relative h-44 w-44 rounded-full flex items-center justify-center text-white font-bold text-4xl">
+          <div className="relative md:h-44 md:w-44 h-24 w-24 rounded-full flex items-center justify-center text-white font-bold md:text-4xl text-2xl">
             <div className="absolute w-full h-full bg-white/[0.8] dark:bg-black/[0.8] blur-sm rounded-full" />
             <span className="dark:text-white text-black z-20">{text}</span>
           </div>
@@ -65,14 +85,14 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
     <div className="pointer-events-none">
       <div className="absolute inset-0 rounded-2xl [mask-image:linear-gradient(white,transparent)] group-hover/card:opacity-50"></div>
       <motion.div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 to-blue-700 opacity-0 group-hover/card:opacity-100 backdrop-blur-xl transition duration-500"
+        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 to-blue-700 opacity-0 md:group-hover/card:opacity-100 group-active/card:opacity-100 backdrop-blur-xl transition duration-500"
         style={style}
       />
       <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay group-hover/card:opacity-100"
+        className="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay md:group-hover/card:opacity-100 group-active/card:opacity-100"
         style={style}
       >
-        <p className="absolute inset-x-0 text-xs h-full break-words whitespace-pre-wrap text-white font-mono font-bold transition duration-500">
+        <p className="absolute inset-x-0 text-[8px] md:text-xs h-full break-words whitespace-pre-wrap text-white font-mono font-bold transition duration-500">
           {randomString}
         </p>
       </motion.div>
@@ -82,7 +102,8 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
 
 const characters =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-export const generateRandomString = (length: number) => {
+// Changed from export to const to avoid fast refresh issues
+const generateRandomString = (length: number) => {
   let result = "";
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
