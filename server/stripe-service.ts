@@ -144,13 +144,13 @@ export async function createPaymentSubscription(userId: number): Promise<{
 
     // Create a new subscription with default payment settings
     const subscription = await stripe.subscriptions.create({
-      customer: user.stripeCustomerId,
+      customer: user.stripeCustomerId!,
       items: [{ price: PRICE_ID }],
       payment_behavior: 'default_incomplete',
       payment_settings: {
         save_default_payment_method: 'on_subscription'
       },
-      expand: ['latest_invoice.payment_intent'],
+      expand: ['latest_invoice'],
       metadata: {
         userId: userId.toString()
       }
@@ -159,21 +159,45 @@ export async function createPaymentSubscription(userId: number): Promise<{
     // Get client secret from the payment intent
     let clientSecret: string;
     
-    // Use type assertion to safely access the payment_intent property
-    const latestInvoice = subscription.latest_invoice as unknown as { 
-      payment_intent?: { 
-        client_secret: string 
-      } 
+    // Get invoice ID from the subscription
+    let invoiceId: string;
+    
+    if (typeof subscription.latest_invoice === 'object' && 
+        subscription.latest_invoice !== null &&
+        'id' in subscription.latest_invoice &&
+        subscription.latest_invoice.id) {
+      invoiceId = subscription.latest_invoice.id as string;
+    } else if (typeof subscription.latest_invoice === 'string') {
+      invoiceId = subscription.latest_invoice;
+    } else {
+      throw new Error('Unable to get latest invoice from subscription');
+    }
+    
+    // Double-check that we have a valid invoice ID
+    if (!invoiceId) {
+      throw new Error('Invalid invoice ID from subscription');
+    }
+    
+    // Retrieve the invoice with payment intent expanded
+    const invoiceResponse = await stripe.invoices.retrieve(invoiceId, {
+      expand: ['payment_intent']
+    });
+    
+    // We need to cast the response to access expanded properties
+    type InvoiceWithPaymentIntent = {
+      payment_intent?: {
+        client_secret?: string;
+      };
     };
     
-    if (typeof latestInvoice === 'object' && 
-        latestInvoice !== null &&
-        typeof latestInvoice.payment_intent === 'object' &&
-        latestInvoice.payment_intent !== null &&
-        'client_secret' in latestInvoice.payment_intent) {
-      clientSecret = latestInvoice.payment_intent.client_secret;
+    // Cast the invoice response to our custom type
+    const invoice = invoiceResponse as unknown as InvoiceWithPaymentIntent;
+    
+    // Check if payment intent exists and has a client secret
+    if (invoice.payment_intent?.client_secret) {
+      clientSecret = invoice.payment_intent.client_secret;
     } else {
-      throw new Error('Unable to get client secret from subscription');
+      throw new Error('Unable to get client secret from invoice payment intent');
     }
 
     // Update user with subscription information
