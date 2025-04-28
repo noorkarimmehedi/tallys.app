@@ -23,27 +23,27 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
           data-aos="fade-down"
         >
           <HighlighterItem className="rounded-3xl p-4">
-            <div className="relative z-20 h-full overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-black">
+            <div className="relative z-20 overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-black md:h-[340px] h-auto">
               <Particles
                 className="absolute inset-0 -z-10 opacity-10 transition-opacity duration-1000 ease-in-out group-hover/item:opacity-100"
                 quantity={200}
                 color={"#3b82f6"} // Using primary blue color
                 vy={-0.2}
               />
-              <div className="flex justify-center">
-                <div className="flex h-full flex-col justify-center gap-6 p-4">
+              <div className="flex h-full justify-center">
+                <div className="flex h-full flex-col justify-center gap-6 p-6 md:py-24">
                   <div className="flex flex-col items-center">
                     <h3 className="mt-4 pb-1 font-bold">
-                      <span className="text-2xl">
+                      <span className="text-2xl md:text-3xl">
                         Sign in with Google
                       </span>
                     </h3>
-                    <p className="mb-4 text-sm text-slate-500 text-center">
+                    <p className="mb-4 text-sm text-slate-500 text-center md:mt-2">
                       Create and manage your forms and events
                     </p>
                   </div>
                   
-                  <div className="flex justify-center">
+                  <div className="flex justify-center md:mt-8">
                     <Button 
                       onClick={onGoogleSignIn} 
                       disabled={isLoading} 
@@ -58,7 +58,7 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
                     </Button>
                   </div>
                   
-                  <p className="text-xs text-slate-500 text-center pb-2">
+                  <p className="text-xs text-slate-500 text-center pb-2 md:mt-6">
                     By continuing, you agree to our Terms of Service and Privacy Policy.
                   </p>
                 </div>

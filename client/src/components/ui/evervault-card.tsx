@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 
 export const EvervaultCard = ({
   text,
+  description,
   className,
 }: {
   text?: string;
+  description?: string;
   className?: string;
 }) => {
   let mouseX = useMotionValue(0);
@@ -66,11 +68,21 @@ export const EvervaultCard = ({
           mouseY={mouseY}
           randomString={randomString}
         />
-        <div className="relative z-10 flex items-center justify-center">
-          <div className="relative md:h-44 md:w-44 h-24 w-24 rounded-full flex items-center justify-center text-white font-bold md:text-4xl text-2xl">
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-6">
+          <div className="relative md:h-28 md:w-28 h-24 w-24 rounded-full flex items-center justify-center text-white font-bold md:text-4xl text-2xl">
             <div className="absolute w-full h-full bg-white/[0.8] dark:bg-black/[0.8] blur-sm rounded-full" />
             <span className="dark:text-white text-black z-20">{text}</span>
           </div>
+          
+          {description && !isMobile && (
+            <div className="mt-8 max-w-md hidden md:block text-center z-20">
+              {description.split('\n\n').map((paragraph, idx) => (
+                <p key={idx} className="text-sm font-light text-black dark:text-white mb-3 opacity-80 backdrop-blur-sm px-2 py-1 rounded">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
