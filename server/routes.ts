@@ -768,6 +768,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update booking status" });
     }
   });
+  
+  // Subscription routes
+  app.post('/api/subscription/trial', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const { email, username } = req.user!;
+      
+      if (!email) {
+        return res.status(400).json({ message: 'User email is required' });
+      }
+      
+      const result = await createTrialSubscription(userId, email, username);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error creating trial subscription:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.post('/api/subscription/payment', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      const result = await createPaymentSubscription(userId);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error creating payment subscription:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.post('/api/subscription/cancel', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      const result = await cancelSubscription(userId);
+      res.json({ success: result });
+    } catch (error: any) {
+      console.error('Error canceling subscription:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.post('/api/subscription/reactivate', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      const result = await reactivateSubscription(userId);
+      res.json({ success: result });
+    } catch (error: any) {
+      console.error('Error reactivating subscription:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Stripe webhook endpoint
+  app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    
+    if (!process.env.STRIPE_WEBHOOK_SECRET || !signature) {
+      return res.status(400).json({ message: 'Missing Stripe webhook secret or signature' });
+    }
+    
+    try {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+        apiVersion: '2023-08-16',
+      });
+      
+      const event = stripe.webhooks.constructEvent(
+        req.body.toString(),
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+      
+      await handleStripeWebhook(event);
+      
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error('Error handling Stripe webhook:', error);
+      res.status(400).json({ message: `Webhook Error: ${error.message}` });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
