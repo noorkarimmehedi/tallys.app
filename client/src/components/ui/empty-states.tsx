@@ -1,7 +1,7 @@
 import { EmptyState } from "@/components/ui/empty-state"
 import { 
   FileText, 
-  Link as LinkIcon, 
+  ExternalLink, 
   Files, 
   Search, 
   MessageSquare, 
@@ -12,26 +12,26 @@ import {
   Calendar,
   Clock
 } from "lucide-react"
-import { useLocation, Link } from "wouter"
+import { useLocation } from "wouter"
 
 export function EmptyStateForForms() {
-  const [, navigate] = useLocation()
+  const [, setLocation] = useLocation()
   
   return (
     <EmptyState
       title="No Forms Created"
       description="You can create a new form to collect information from your users."
-      icons={[FileText, LinkIcon, Files]}
+      icons={[FileText, ExternalLink, Files]}
       action={{
         label: "Create Form",
-        onClick: () => navigate("/form-builder/new")
+        onClick: () => setLocation("/form-builder/new")
       }}
     />
   )
 }
 
 export function EmptyStateForEvents() {
-  const [, navigate] = useLocation()
+  const [, setLocation] = useLocation()
   
   return (
     <EmptyState
@@ -40,7 +40,7 @@ export function EmptyStateForEvents() {
       icons={[Calendar, Clock, MessageSquare]}
       action={{
         label: "Create Event",
-        onClick: () => navigate("/event-builder/new")
+        onClick: () => setLocation("/event-builder/new")
       }}
     />
   )
@@ -77,16 +77,16 @@ export function EmptyStateForSearch() {
 }
 
 export function EmptyStateWelcome() {
-  const navigate = useNavigate()[1]
+  const [, setLocation] = useLocation()
   
   return (
     <EmptyState
       title="Welcome to tallys!"
       description="Get started by creating your first form or event. tallys makes it easy to collect information and manage bookings."
-      icons={[FileText, Calendar, Link]}
+      icons={[FileText, Calendar, ExternalLink]}
       action={{
         label: "Create Form",
-        onClick: () => navigate("/form-builder")
+        onClick: () => setLocation("/form-builder/new")
       }}
       className="mx-auto"
     />

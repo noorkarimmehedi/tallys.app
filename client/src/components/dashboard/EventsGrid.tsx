@@ -30,16 +30,12 @@ export default function EventsGrid() {
   }
 
   if (!events || events.length === 0) {
+    // Import EmptyStateForEvents from the components/ui/empty-states.tsx
+    const { EmptyStateForEvents } = require("@/components/ui/empty-states");
+    
     return (
-      <div className="text-center py-10">
-        <h3 className="text-lg font-medium text-gray-900 mb-1">No events yet</h3>
-        <p className="text-gray-500 mb-4">Create your first event to start collecting bookings</p>
-        <Link href="/event-builder/new">
-          <Button variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Create an event
-          </Button>
-        </Link>
+      <div className="flex justify-center py-8">
+        <EmptyStateForEvents />
       </div>
     );
   }
