@@ -35,7 +35,7 @@ export function QuestionEditor({ question, onChange, onDelete, sections = [] }: 
     const baseProps = {
       value: "",
       onChange: () => {},
-      preview: true
+      preview: false // Set to false so options editing is enabled
     };
     
     switch (question.type) {
@@ -50,7 +50,10 @@ export function QuestionEditor({ question, onChange, onDelete, sections = [] }: 
           <MultipleChoice 
             {...baseProps} 
             options={question.options || []}
-            onOptionsChange={(options) => handleChange('options', options)} 
+            onOptionsChange={(options) => {
+              console.log("Options updated:", options);
+              handleChange('options', options);
+            }} 
           />
         );
       case "fileUpload":
