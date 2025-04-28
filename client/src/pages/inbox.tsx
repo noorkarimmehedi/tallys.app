@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Eye, BarChart2, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
-import MainLayout from "@/components/layouts/MainLayout";
 import { createFormUrl } from "@/lib/utils";
 import { Form, Response } from "@shared/schema";
 
@@ -17,102 +16,98 @@ export default function Inbox() {
   
   if (formsLoading) {
     return (
-      <MainLayout>
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="mb-8">
-            <Skeleton className="h-10 w-48 mb-2" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          
-          <div className="mb-4">
-            <Skeleton className="h-10 w-96" />
-          </div>
-          
-          <div className="grid gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i}>
-                <CardHeader>
-                  <Skeleton className="h-6 w-48" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-24 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="mb-8">
+          <Skeleton className="h-10 w-48 mb-2" />
+          <Skeleton className="h-4 w-64" />
         </div>
-      </MainLayout>
+        
+        <div className="mb-4">
+          <Skeleton className="h-10 w-96" />
+        </div>
+        
+        <div className="grid gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-6 w-48" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-24 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     );
   }
   
   return (
-    <MainLayout>
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">Inbox</h2>
-          <p className="mt-1 text-sm text-gray-500">View and manage form responses</p>
-        </div>
-        
-        <Tabs defaultValue="all">
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">All Forms</TabsTrigger>
-            <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="flagged">Flagged</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="all">
-            {!forms || forms.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-5xl mb-4 text-gray-300">
-                  <i className="ri-inbox-line"></i>
-                </div>
-                <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
-                  No responses yet
-                </h3>
-                <p className="text-gray-600">Responses will appear here once people fill out your forms</p>
-              </div>
-            ) : (
-              <div className="grid gap-6">
-                {forms.map((form) => (
-                  <FormCard 
-                    key={form.id} 
-                    formId={form.id} 
-                    formTitle={form.title}
-                    shortId={form.shortId}
-                    views={form.views ?? 0}
-                    published={form.published ?? false}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="unread">
-            <div className="text-center py-12">
-              <div className="text-5xl mb-4 text-gray-300">
-                <i className="ri-mail-open-line"></i>
-              </div>
-              <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
-                No unread responses
-              </h3>
-              <p className="text-gray-600">You've read all responses</p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="flagged">
-            <div className="text-center py-12">
-              <div className="text-5xl mb-4 text-gray-300">
-                <i className="ri-flag-line"></i>
-              </div>
-              <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
-                No flagged responses
-              </h3>
-              <p className="text-gray-600">Flag important responses to find them here</p>
-            </div>
-          </TabsContent>
-        </Tabs>
+    <div className="flex-1 overflow-y-auto p-6">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">Inbox</h2>
+        <p className="mt-1 text-sm text-gray-500">View and manage form responses</p>
       </div>
-    </MainLayout>
+      
+      <Tabs defaultValue="all">
+        <TabsList className="mb-6">
+          <TabsTrigger value="all">All Forms</TabsTrigger>
+          <TabsTrigger value="unread">Unread</TabsTrigger>
+          <TabsTrigger value="flagged">Flagged</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="all">
+          {!forms || forms.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-5xl mb-4 text-gray-300">
+                <i className="ri-inbox-line"></i>
+              </div>
+              <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
+                No responses yet
+              </h3>
+              <p className="text-gray-600">Responses will appear here once people fill out your forms</p>
+            </div>
+          ) : (
+            <div className="grid gap-6">
+              {forms.map((form) => (
+                <FormCard 
+                  key={form.id} 
+                  formId={form.id} 
+                  formTitle={form.title}
+                  shortId={form.shortId}
+                  views={form.views ?? 0}
+                  published={form.published ?? false}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="unread">
+          <div className="text-center py-12">
+            <div className="text-5xl mb-4 text-gray-300">
+              <i className="ri-mail-open-line"></i>
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
+              No unread responses
+            </h3>
+            <p className="text-gray-600">You've read all responses</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="flagged">
+          <div className="text-center py-12">
+            <div className="text-5xl mb-4 text-gray-300">
+              <i className="ri-flag-line"></i>
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2 font-['Alternate_Gothic', 'sans-serif']">
+              No flagged responses
+            </h3>
+            <p className="text-gray-600">Flag important responses to find them here</p>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
