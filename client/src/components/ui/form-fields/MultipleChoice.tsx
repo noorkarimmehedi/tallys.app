@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -29,34 +29,44 @@ export default function MultipleChoice({
   required = false
 }: MultipleChoiceProps) {
   const [newOption, setNewOption] = useState("");
+  const [nextId, setNextId] = useState(1);
   
-  const handleAddOption = () => {
-    if (newOption && onOptionsChange) {
-      onOptionsChange([...options, newOption]);
+  // Generate unique key for options to avoid reorder issues
+  const getUniqueKey = useCallback((index: number) => {
+    return `option-${index}-${nextId}`;
+  }, [nextId]);
+  
+  const handleAddOption = useCallback(() => {
+    if (newOption.trim() && onOptionsChange) {
+      const newOptions = [...options, newOption.trim()];
+      onOptionsChange(newOptions);
       setNewOption("");
+      setNextId(prev => prev + 1);
     }
-  };
+  }, [newOption, options, onOptionsChange]);
   
-  const handleUpdateOption = (index: number, text: string) => {
+  const handleUpdateOption = useCallback((index: number, text: string) => {
     if (onOptionsChange) {
       const newOptions = [...options];
       newOptions[index] = text;
       onOptionsChange(newOptions);
     }
-  };
+  }, [options, onOptionsChange]);
   
-  const handleRemoveOption = (index: number) => {
+  const handleRemoveOption = useCallback((index: number) => {
     if (onOptionsChange) {
       const newOptions = options.filter((_, i) => i !== index);
       onOptionsChange(newOptions);
+      setNextId(prev => prev + 1); // Update to force re-render
     }
-  };
+  }, [options, onOptionsChange]);
 
-  const handleReorder = (newOrder: string[]) => {
+  const handleReorder = useCallback((newOrder: string[]) => {
     if (onOptionsChange) {
       onOptionsChange(newOrder);
+      setNextId(prev => prev + 1); // Update to force re-render
     }
-  };
+  }, [onOptionsChange]);
 
   // If in preview mode or no options management capability, use the simple view
   if (preview || !onOptionsChange) {
@@ -107,17 +117,17 @@ export default function MultipleChoice({
             <p className="text-gray-500 text-sm">No options added yet</p>
           </div>
         ) : (
-          <Reorder.Group axis="y" values={options} onReorder={handleReorder} className="space-y-2">
+          <div className="space-y-2">
             {options.map((option, index) => (
               <OptionItem 
-                key={option} 
+                key={getUniqueKey(index)}
                 option={option} 
                 index={index}
                 onUpdate={handleUpdateOption}
                 onRemove={handleRemoveOption}
               />
             ))}
-          </Reorder.Group>
+          </div>
         )}
         
         {/* Add New Option */}
@@ -128,32 +138,33 @@ export default function MultipleChoice({
             placeholder="Add new option"
             className="flex-1 border-gray-200"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && newOption) {
+              if (e.key === 'Enter' && newOption.trim()) {
                 e.preventDefault();
                 handleAddOption();
               }
             }}
           />
           <Button 
+            type="button"
             onClick={handleAddOption} 
-            disabled={!newOption} 
+            disabled={!newOption.trim()} 
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <PlusCircle size={18} className="mr-1" />
-            Add Option
+            Add
           </Button>
         </div>
       </div>
       
       {/* Help text */}
       <p className="text-xs text-gray-500 italic">
-        Drag to reorder options. Click the + button to add more options.
+        Enter option text and click Add to add more options.
       </p>
     </div>
   );
 }
 
-// Separate component for each option item to enable drag and reorder
+// Separate component for each option item 
 function OptionItem({
   option, 
   index, 
@@ -165,41 +176,39 @@ function OptionItem({
   onUpdate: (index: number, text: string) => void;
   onRemove: (index: number) => void;
 }) {
-  const controls = useDragControls();
+  // Memoize this to prevent losing focus on input
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdate(index, e.target.value);
+  }, [index, onUpdate]);
+
+  const handleRemove = useCallback(() => {
+    onRemove(index);
+  }, [index, onRemove]);
 
   return (
-    <Reorder.Item 
-      value={option} 
-      dragControls={controls}
-      dragListener={false}
-      className="cursor-default"
-    >
-      <Card className="p-3 flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow">
-        <div 
-          className="text-gray-400 cursor-move touch-none"
-          onPointerDown={(e) => controls.start(e)}
-        >
-          <GripVertical size={18} />
-        </div>
-        {/* Replace RadioGroupItem with a custom radio button styled element */}
-        <div className="h-4 w-4 rounded-full border border-blue-500 flex items-center justify-center">
-          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-        </div>
-        <Input
-          value={option}
-          onChange={(e) => onUpdate(index, e.target.value)}
-          className="flex-1 border-gray-200 focus:border-blue-300 focus:ring-blue-300"
-          placeholder="Option text"
-        />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50"
-          onClick={() => onRemove(index)}
-        >
-          <X size={18} />
-        </Button>
-      </Card>
-    </Reorder.Item>
+    <Card className="p-3 flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow">
+      <div className="text-gray-400">
+        <GripVertical size={18} />
+      </div>
+      {/* Custom radio button styled element */}
+      <div className="h-4 w-4 rounded-full border border-blue-500 flex items-center justify-center">
+        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+      </div>
+      <Input
+        value={option}
+        onChange={handleChange}
+        className="flex-1 border-gray-200 focus:border-blue-300 focus:ring-blue-300"
+        placeholder="Option text"
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50"
+        onClick={handleRemove}
+      >
+        <X size={18} />
+      </Button>
+    </Card>
   );
 }
