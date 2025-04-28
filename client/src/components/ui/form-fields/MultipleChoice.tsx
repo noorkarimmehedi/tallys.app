@@ -181,7 +181,10 @@ function OptionItem({
         >
           <GripVertical size={18} />
         </div>
-        <RadioGroupItem value={option} id={`option-${index}`} className="text-blue-500" />
+        {/* Replace RadioGroupItem with a custom radio button styled element */}
+        <div className="h-4 w-4 rounded-full border border-blue-500 flex items-center justify-center">
+          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+        </div>
         <Input
           value={option}
           onChange={(e) => onUpdate(index, e.target.value)}

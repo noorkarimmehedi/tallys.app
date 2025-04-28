@@ -32,23 +32,30 @@ export function QuestionEditor({ question, onChange, onDelete, sections = [] }: 
   };
   
   const renderFieldEditor = () => {
-    const baseProps = {
+    // Use separate base props for different component types
+    const textBaseProps = {
       value: "",
       onChange: () => {},
       preview: false // Set to false so options editing is enabled
     };
     
+    const numberBaseProps = {
+      value: 0,
+      onChange: () => {},
+      preview: false
+    };
+    
     switch (question.type) {
       case "shortText":
-        return <ShortText {...baseProps} />;
+        return <ShortText {...textBaseProps} />;
       case "paragraph":
-        return <Paragraph {...baseProps} />;
+        return <Paragraph {...textBaseProps} />;
       case "email":
-        return <Email {...baseProps} />;
+        return <Email {...textBaseProps} />;
       case "multipleChoice":
         return (
           <MultipleChoice 
-            {...baseProps} 
+            {...textBaseProps} 
             options={question.options || []}
             onOptionsChange={(options) => {
               console.log("Options updated:", options);
@@ -57,11 +64,11 @@ export function QuestionEditor({ question, onChange, onDelete, sections = [] }: 
           />
         );
       case "fileUpload":
-        return <FileUpload {...baseProps} />;
+        return <FileUpload {...textBaseProps} />;
       case "rating":
         return (
           <Rating 
-            {...baseProps} 
+            {...numberBaseProps} 
             maxRating={question.maxRating || 5}
             onMaxRatingChange={(max) => handleChange('maxRating', max)}
           />
