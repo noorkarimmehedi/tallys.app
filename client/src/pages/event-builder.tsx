@@ -11,10 +11,22 @@ import { AppointmentPicker } from '@/components/ui/appointment-picker-new';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { TimeSlot, EventAvailability } from '@shared/schema';
-import MainLayout from '@/components/layouts/MainLayout';
+import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema';
 import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings, Eye, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+
+// Define a type to properly handle the event data from the API
+type Event = {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  location: string | null;
+  duration: number;
+  published: boolean;
+  shortId: string;
+  availableTimes?: EventAvailability[];
+};
 
 export default function EventBuilder() {
   const params = useParams();
@@ -31,9 +43,9 @@ export default function EventBuilder() {
   const [showPreview, setShowPreview] = useState(false);
   
   // Fetch event data if editing an existing event
-  const { data: event, isLoading } = useQuery({
+  const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
-    queryFn: eventId === 'new' ? undefined : undefined
+    enabled: eventId !== 'new'
   });
   
   useEffect(() => {
