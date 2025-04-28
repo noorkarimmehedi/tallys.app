@@ -182,7 +182,7 @@ const SubscriptionStatus: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Subscription Status</span>
-          {getStatusBadge(user.subscriptionStatus)}
+          {getStatusBadge(user.subscriptionStatus || undefined)}
         </CardTitle>
         <CardDescription>
           Manage your subscription to access all features

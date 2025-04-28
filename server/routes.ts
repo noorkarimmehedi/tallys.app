@@ -833,7 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-        apiVersion: '2023-08-16',
+        apiVersion: '2023-10-16',
       });
       
       const event = stripe.webhooks.constructEvent(

@@ -8,7 +8,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 // Initialize Stripe client with the API key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-08-16',
+  apiVersion: '2023-10-16',
 });
 
 // Set this to your price ID from Stripe dashboard
@@ -119,8 +119,10 @@ export async function createPaymentSubscription(userId: number): Promise<{
       // If subscription is past due or incomplete, get the payment intent
       if (typeof subscription.latest_invoice === 'string') {
         const latestInvoice = await stripe.invoices.retrieve(subscription.latest_invoice);
-        if (typeof latestInvoice.payment_intent === 'string') {
-          const paymentIntent = await stripe.paymentIntents.retrieve(latestInvoice.payment_intent);
+        // Use type assertion to handle payment_intent property
+        const invoice = latestInvoice as unknown as { payment_intent?: string };
+        if (typeof invoice.payment_intent === 'string') {
+          const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent);
           
           return {
             subscriptionId: subscription.id,
@@ -150,12 +152,19 @@ export async function createPaymentSubscription(userId: number): Promise<{
     // Get client secret from the payment intent
     let clientSecret: string;
     
-    if (typeof subscription.latest_invoice === 'object' && 
-        subscription.latest_invoice !== null &&
-        typeof subscription.latest_invoice.payment_intent === 'object' &&
-        subscription.latest_invoice.payment_intent !== null &&
-        'client_secret' in subscription.latest_invoice.payment_intent) {
-      clientSecret = subscription.latest_invoice.payment_intent.client_secret as string;
+    // Use type assertion to safely access the payment_intent property
+    const latestInvoice = subscription.latest_invoice as unknown as { 
+      payment_intent?: { 
+        client_secret: string 
+      } 
+    };
+    
+    if (typeof latestInvoice === 'object' && 
+        latestInvoice !== null &&
+        typeof latestInvoice.payment_intent === 'object' &&
+        latestInvoice.payment_intent !== null &&
+        'client_secret' in latestInvoice.payment_intent) {
+      clientSecret = latestInvoice.payment_intent.client_secret;
     } else {
       throw new Error('Unable to get client secret from subscription');
     }
