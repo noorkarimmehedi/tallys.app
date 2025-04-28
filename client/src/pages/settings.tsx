@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import SubscriptionStatus from "@/components/subscription/SubscriptionStatus";
 
 export default function Settings() {
   return (
@@ -185,24 +186,14 @@ export default function Settings() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
-                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium">Current Plan</h3>
-                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
-                      Active
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-bold">Pro Plan</p>
-                      <p className="text-sm text-gray-500">$15/month, billed monthly</p>
-                    </div>
-                    <Button variant="outline">
-                      Change Plan
-                    </Button>
-                  </div>
+                {/* Replace static billing information with the dynamic SubscriptionStatus component */}
+                <div className="mb-4">
+                  {/* Import this component at the top of the file */}
+                  <SubscriptionStatus />
                 </div>
                 
+                {/* Only show this section when user has an active subscription */}
+                {/* 
                 <div>
                   <h3 className="font-medium mb-4">Payment Method</h3>
                   <div className="flex items-center p-4 border border-gray-200 rounded-md mb-4">
@@ -226,38 +217,12 @@ export default function Settings() {
                 <div>
                   <h3 className="font-medium mb-4">Billing History</h3>
                   <div className="border border-gray-200 rounded-md overflow-hidden">
-                    <div className="p-4 border-b border-gray-200 flex justify-between">
-                      <div>
-                        <p>April 1, 2023</p>
-                        <p className="text-sm text-gray-500">Pro Plan - Monthly</p>
-                      </div>
-                      <div className="text-right">
-                        <p>$15.00</p>
-                        <p className="text-xs text-green-600">Paid</p>
-                      </div>
-                    </div>
-                    <div className="p-4 border-b border-gray-200 flex justify-between">
-                      <div>
-                        <p>March 1, 2023</p>
-                        <p className="text-sm text-gray-500">Pro Plan - Monthly</p>
-                      </div>
-                      <div className="text-right">
-                        <p>$15.00</p>
-                        <p className="text-xs text-green-600">Paid</p>
-                      </div>
-                    </div>
-                    <div className="p-4 flex justify-between">
-                      <div>
-                        <p>February 1, 2023</p>
-                        <p className="text-sm text-gray-500">Pro Plan - Monthly</p>
-                      </div>
-                      <div className="text-right">
-                        <p>$15.00</p>
-                        <p className="text-xs text-green-600">Paid</p>
-                      </div>
+                    <div className="text-center p-4 text-gray-500">
+                      No billing history available
                     </div>
                   </div>
                 </div>
+                */}
               </div>
             </CardContent>
           </Card>
