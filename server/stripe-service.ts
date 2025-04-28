@@ -11,8 +11,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-03-31.basil',
 });
 
-// Set this to your price ID from Stripe dashboard
-const PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_placeholder';
+// Get price ID from environment variables
+const PRICE_ID = process.env.STRIPE_PRICE_ID;
+if (!PRICE_ID) {
+  throw new Error('Missing STRIPE_PRICE_ID environment variable. Please set this to your Stripe price ID.');
+}
 
 // Default trial period (7 days)
 const TRIAL_DAYS = 7;
