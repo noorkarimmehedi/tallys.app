@@ -75,12 +75,14 @@ export const EvervaultCard = ({
           </div>
           
           {description && !isMobile && (
-            <div className="mt-8 max-w-md hidden md:block text-center z-20">
-              {description.split('\n\n').map((paragraph, idx) => (
-                <p key={idx} className="text-sm font-light text-black dark:text-white mb-3 opacity-80 backdrop-blur-sm px-2 py-1 rounded">
-                  {paragraph}
-                </p>
-              ))}
+            <div className="mt-8 max-w-md hidden md:block text-center z-20 pointer-events-none">
+              <div className="bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 py-3 rounded-xl shadow-sm">
+                {description.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx} className={`text-sm font-light text-black dark:text-white ${idx < description.split('\n\n').length - 1 ? 'mb-3' : ''}`}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -97,11 +99,11 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
     <div className="pointer-events-none">
       <div className="absolute inset-0 rounded-2xl [mask-image:linear-gradient(white,transparent)] group-hover/card:opacity-50"></div>
       <motion.div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 to-blue-700 opacity-0 md:group-hover/card:opacity-100 group-active/card:opacity-100 backdrop-blur-xl transition duration-500"
+        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 to-blue-700 opacity-0 md:group-hover/card:opacity-60 md:group-active/card:opacity-100 group-active/card:opacity-60 backdrop-blur-xl transition duration-500"
         style={style}
       />
       <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay md:group-hover/card:opacity-100 group-active/card:opacity-100"
+        className="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay md:group-hover/card:opacity-60 md:group-active/card:opacity-100 group-active/card:opacity-60"
         style={style}
       >
         <p className="absolute inset-x-0 text-[8px] md:text-xs h-full break-words whitespace-pre-wrap text-white font-mono font-bold transition duration-500">
