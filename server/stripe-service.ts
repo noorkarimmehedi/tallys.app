@@ -8,7 +8,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 // Initialize Stripe client with the API key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-03-31.basil',
 });
 
 // Set this to your price ID from Stripe dashboard
@@ -94,14 +94,18 @@ export async function createPaymentSubscription(userId: number): Promise<{
   clientSecret: string;
 }> {
   try {
-    const user = await storage.getUser(userId);
+    let user = await storage.getUser(userId);
     
     if (!user) {
       throw new Error('User not found');
     }
     
+    // Create Stripe customer if user doesn't have one
     if (!user.stripeCustomerId) {
-      throw new Error('User does not have a Stripe customer ID');
+      const customerId = await createCustomer(user.email, user.username);
+      user = await storage.updateUserStripeInfo(userId, { 
+        stripeCustomerId: customerId 
+      });
     }
 
     // If user already has a subscription, return the payment intent for that
