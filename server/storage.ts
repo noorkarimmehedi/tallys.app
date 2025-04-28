@@ -23,6 +23,7 @@ export interface IStorage {
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
   getUserByFirebaseId(firebaseId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(userId: number, updates: Partial<User>): Promise<User>;
   createOrUpdateFirebaseUser(firebaseData: { 
     firebaseId: string; 
     email: string; 
@@ -227,6 +228,20 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+  
+  async updateUser(userId: number, updates: Partial<User>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+      
+    if (!updatedUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return updatedUser;
   }
   
   async createOrUpdateFirebaseUser(firebaseData: { 
