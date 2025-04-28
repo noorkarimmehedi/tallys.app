@@ -41,8 +41,7 @@ export function EmptyStateForEvents() {
       action={{
         label: "Create Event",
         onClick: () => {
-          // Store the tab preference in sessionStorage so we can redirect back to events tab
-          sessionStorage.setItem('dashboard_active_tab', 'events');
+          window.history.pushState({}, '', '/dashboard?tab=events');
           setLocation("/event-builder-weekly/new");
         }
       }}
