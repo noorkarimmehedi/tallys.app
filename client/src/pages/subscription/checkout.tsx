@@ -9,7 +9,7 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { MainLayout } from '@/components/layouts/MainLayout';
+import MainLayout from '@/components/layouts/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Shield } from 'lucide-react';

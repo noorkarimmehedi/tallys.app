@@ -20,6 +20,11 @@ import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 
+// Subscription-related pages
+import CheckoutPage from "@/pages/subscription/checkout";
+import SubscriptionSuccessPage from "@/pages/subscription/success";
+import AccountSubscriptionPage from "@/pages/account/subscription";
+
 // Wrapper for protected routes with MainLayout
 const ProtectedPage = ({ component: Component }: { component: React.ComponentType }) => {
   return (
@@ -92,6 +97,11 @@ function Router() {
           <EventBuilder />
         </MainLayout>
       )} />
+      
+      {/* Subscription Routes */}
+      <ProtectedRoute path="/subscription/checkout" component={CheckoutPage} />
+      <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
+      <ProtectedRoute path="/account/subscription" component={AccountSubscriptionPage} />
       
       {/* Public Routes */}
       <Route path="/auth">
