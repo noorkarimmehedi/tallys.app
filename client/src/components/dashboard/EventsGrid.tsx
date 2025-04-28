@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Loader2, Clock, Calendar, Pencil } from 'lucide-react';
 import { Event } from '@shared/schema';
+import { EmptyStateForEvents } from '@/components/ui/empty-states';
 
 export default function EventsGrid() {
-  const { data: events, isLoading, error } = useQuery({
+  const { data: events = [], isLoading, error } = useQuery<Event[]>({
     queryKey: ['/api/events'],
     retry: false,
   });
@@ -30,9 +31,6 @@ export default function EventsGrid() {
   }
 
   if (!events || events.length === 0) {
-    // Import EmptyStateForEvents from the components/ui/empty-states.tsx
-    const { EmptyStateForEvents } = require("@/components/ui/empty-states");
-    
     return (
       <div className="flex justify-center py-8">
         <EmptyStateForEvents />

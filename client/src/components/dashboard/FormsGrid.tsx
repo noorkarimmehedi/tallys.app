@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShineBorder } from "@/components/ui/shine-border";
+import { EmptyStateForForms } from "@/components/ui/empty-states";
 
 export default function FormsGrid() {
   const { data: forms = [], isLoading } = useQuery<Form[]>({
@@ -56,9 +57,6 @@ export default function FormsGrid() {
   }
 
   if (!forms || forms.length === 0) {
-    // Import EmptyStateForForms from the components/ui/empty-states.tsx
-    const { EmptyStateForForms } = require("@/components/ui/empty-states");
-    
     return (
       <div className="flex justify-center py-8">
         <EmptyStateForForms />
