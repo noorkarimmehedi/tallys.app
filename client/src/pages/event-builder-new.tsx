@@ -184,21 +184,56 @@ export default function EventBuilder() {
         location,
         duration,
         published: isPublished,
-        availableTimes
+        availableTimes,
+        // Add theme object to match what event-builder-weekly.tsx does
+        theme: {
+          backgroundColor: '#ffffff',
+          textColor: '#000000',
+          primaryColor: '#3b82f6',
+          fontFamily: 'Inter, sans-serif',
+          logoUrl: '' // Include empty logoUrl
+        },
+        // Also include weekly schedule as it may be expected by the schema
+        weeklySchedule: JSON.stringify({
+          monday: { enabled: true, timeSlots: [] },
+          tuesday: { enabled: true, timeSlots: [] },
+          wednesday: { enabled: true, timeSlots: [] },
+          thursday: { enabled: true, timeSlots: [] },
+          friday: { enabled: true, timeSlots: [] },
+          saturday: { enabled: false, timeSlots: [] },
+          sunday: { enabled: false, timeSlots: [] }
+        })
       };
       
       console.log("Saving event with ID:", eventId, "is new:", eventId === 'new');
+      console.log("Event data being sent:", JSON.stringify(eventData, null, 2));
       
       // Always use POST for new events
       if (eventId === 'new' || !eventId) {
         console.log("Creating a new event with POST request");
-        const response = await apiRequest('POST', '/api/events', eventData);
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error creating event:", errorText);
-          throw new Error(errorText || "Failed to create event");
+        try {
+          // Use fetch directly for more control
+          const response = await fetch('/api/events', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(eventData)
+          });
+          
+          const responseText = await response.text();
+          console.log("Raw server response:", responseText);
+          
+          if (!response.ok) {
+            console.error("Error creating event, status:", response.status);
+            throw new Error(responseText || "Failed to create event");
+          }
+          
+          return JSON.parse(responseText);
+        } catch (error) {
+          console.error("Exception during event creation:", error);
+          throw error;
         }
-        return response.json();
       } else {
         // Update existing event
         console.log("Updating existing event with ID:", eventId);
