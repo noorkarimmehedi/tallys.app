@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { HighlighterItem, HighlightGroup, Particles } from "@/components/ui/highlighter";
