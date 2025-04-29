@@ -36,13 +36,13 @@ export function FormBuilder({ id }: FormBuilderProps) {
   const [infoSectionDescription, setInfoSectionDescription] = useState("This form collects the necessary information we need.");
   const [logoUrl, setLogoUrl] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  
+
   // Fetch form if id is provided
   const { data: form, isLoading: isLoadingForm } = useQuery({
     queryKey: [`/api/forms/${id}`],
     enabled: !!id,
   });
-  
+
   // Create form mutation
   const createFormMutation = useMutation({
     mutationFn: async (formData: Partial<Form>) => {
@@ -66,7 +66,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
       });
     }
   });
-  
+
   // Update form mutation
   const updateFormMutation = useMutation({
     mutationFn: async (formData: Partial<Form>) => {
@@ -79,7 +79,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
         description: "Your form has been saved successfully",
       });
       queryClient.invalidateQueries({ queryKey: [`/api/forms/${id}`] });
-      
+
       if (updatedForm.published) {
         setFormUrl(createFormUrl(updatedForm.shortId));
         setPublishDialogOpen(true);
@@ -94,36 +94,36 @@ export function FormBuilder({ id }: FormBuilderProps) {
       });
     }
   });
-  
+
   // Initialize with data if editing existing form
   useEffect(() => {
     if (form && !isLoadingForm) {
       setTitle(form.title);
       setQuestions(form.questions || []);
       setSections(form.sections || []);
-      
+
       // Get custom info description from form metadata if available
       if (form.metadata?.infoDescription) {
         setInfoSectionDescription(form.metadata.infoDescription);
       }
-      
+
       // Get logo URL from theme if available
       if (form.theme?.logoUrl) {
         setLogoUrl(form.theme.logoUrl);
       }
-      
+
       setLoading(false);
     } else if (!id) {
       // New form with default section and question
       const personalInfoSection = createSection('Personal Information', 'Please provide your contact information');
       const nameQuestion = createQuestion('shortText', "What's your name?", personalInfoSection.id);
-      
+
       setQuestions([nameQuestion]);
       setSections([personalInfoSection]);
       setLoading(false);
     }
   }, [form, isLoadingForm, id]);
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -131,25 +131,25 @@ export function FormBuilder({ id }: FormBuilderProps) {
       </div>
     );
   }
-  
+
   const currentQuestion = questions[currentQuestionIndex];
-  
+
   const addQuestion = (type: FieldType) => {
     const newQuestion = createQuestion(type);
     const newQuestions = [...questions, newQuestion];
     setQuestions(newQuestions);
     setCurrentQuestionIndex(newQuestions.length - 1);
   };
-  
+
   const updateQuestion = (questionId: string, updates: Partial<FormQuestion>) => {
     setQuestions(questions.map(q => 
       q.id === questionId ? { ...q, ...updates } : q
     ));
   };
-  
+
   const deleteQuestion = (questionId: string) => {
     const newQuestions = questions.filter(q => q.id !== questionId);
-    
+
     if (newQuestions.length === 0) {
       // Don't allow deleting all questions, add a default one
       const defaultQuestion = createQuestion('shortText');
@@ -157,49 +157,49 @@ export function FormBuilder({ id }: FormBuilderProps) {
       setCurrentQuestionIndex(0);
     } else {
       setQuestions(newQuestions);
-      
+
       // Adjust current index if needed
       if (currentQuestionIndex >= newQuestions.length) {
         setCurrentQuestionIndex(newQuestions.length - 1);
       }
     }
   };
-  
+
   const addSection = () => {
     if (!newSectionTitle.trim()) return;
-    
+
     const newSection = createSection(newSectionTitle, newSectionDescription);
     setSections([...sections, newSection]);
-    
+
     // Reset form fields
     setNewSectionTitle('');
     setNewSectionDescription('');
     setSectionDialogOpen(false);
-    
+
     toast({
       title: "Section added",
       description: "New section has been added to the form",
     });
   };
-  
+
   const deleteSection = (sectionId: string) => {
     // Remove section
     const newSections = sections.filter(s => s.id !== sectionId);
-    
+
     // Update questions that were in this section
     const updatedQuestions = questions.map(q => 
       q.sectionId === sectionId ? { ...q, sectionId: undefined } : q
     );
-    
+
     setSections(newSections);
     setQuestions(updatedQuestions);
-    
+
     toast({
       title: "Section deleted",
       description: "Section has been removed from the form",
     });
   };
-  
+
   const navigateQuestion = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -207,11 +207,11 @@ export function FormBuilder({ id }: FormBuilderProps) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
-  
+
   const saveForm = (publish = false) => {
     // Generate a unique shortId if creating a new form
     const shortId = id ? undefined : `form-${Date.now().toString(36)}`;
-    
+
     // Store the information section description as metadata in the form
     const formData: Partial<Form> = {
       title,
@@ -224,7 +224,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
         infoDescription: infoSectionDescription
       }
     };
-    
+
     console.log("Saving form with data:", {
       id: id || 'new',
       titleLength: title.length,
@@ -234,14 +234,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
       logoUrl: logoUrl,
       shortId
     });
-    
+
     if (id) {
       updateFormMutation.mutate(formData);
     } else {
       createFormMutation.mutate(formData);
     }
   };
-  
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(formUrl);
     toast({
@@ -249,7 +249,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
       description: "Form URL copied to clipboard",
     });
   };
-  
+
   // Function to get form data for saving
   const getFormDataForSave = () => {
     return {
@@ -265,15 +265,15 @@ export function FormBuilder({ id }: FormBuilderProps) {
       }
     };
   };
-  
+
   // Handle logo file upload
   const handleLogoUpload = async () => {
     if (!logoFile) return;
-    
+
     // Create a FormData object to upload the file
     const uploadFormData = new FormData();
     uploadFormData.append('file', logoFile);
-    
+
     try {
       // Upload the file to the server using fetch with credentials
       const response = await fetch('/api/upload', {
@@ -281,37 +281,36 @@ export function FormBuilder({ id }: FormBuilderProps) {
         body: uploadFormData,
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || 'Failed to upload logo');
       }
-      
+
       const result = await response.json();
-      
-      // Set the logo URL from the server response with timestamp to prevent caching issues
-      const logoUrlWithTimestamp = `${result.fileUrl}?t=${Date.now()}`;
-      setLogoUrl(logoUrlWithTimestamp);
-      
+
+      // Store and use the original URL without timestamp
+      setLogoUrl(result.fileUrl);
+
       // Also save the form immediately with the new logo URL
       const formDataToSave = getFormDataForSave();
       formDataToSave.theme = {
         ...formDataToSave.theme,
         logoUrl: result.fileUrl // Use the original URL for storage
       };
-      
+
       if (id && id !== 'new') {
         updateFormMutation.mutate(formDataToSave);
       } else {
         createFormMutation.mutate(formDataToSave);
       }
-      
+
       // Reset the file input
       setLogoFile(null);
-      
+
       // Close the dialog
       setLogoDialogOpen(false);
-      
+
       toast({
         title: "Logo uploaded",
         description: "Your company logo has been uploaded successfully",
@@ -325,14 +324,14 @@ export function FormBuilder({ id }: FormBuilderProps) {
       });
     }
   };
-  
+
   // Function to handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setLogoFile(e.target.files[0]);
     }
   };
-  
+
   return (
     <>
       {/* Form Builder Header */}
@@ -379,7 +378,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
           </Button>
         </div>
       </div>
-      
+
       {/* Form Builder Main Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Form Editor */}
@@ -397,7 +396,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               )}
             </div>
           </div>
-          
+
           {/* Question Navigation */}
           <div className="h-16 bg-white border-t border-gray-200 flex items-center justify-between px-6">
             <div className="flex items-center">
@@ -457,11 +456,11 @@ export function FormBuilder({ id }: FormBuilderProps) {
             </div>
           </div>
         </div>
-        
+
         {/* Form Components Sidebar */}
         <ElementsSidebar onAddElement={addQuestion} />
       </div>
-      
+
       {/* Publish Dialog */}
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent>
@@ -516,7 +515,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Section Management Dialog */}
       <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
         <DialogContent>
@@ -526,7 +525,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               Organize your form into sections to group related questions together.
             </DialogDescription>
           </DialogHeader>
-          
+
           {/* Current Sections */}
           {sections.length > 0 && (
             <div>
@@ -553,7 +552,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </div>
             </div>
           )}
-          
+
           {/* Add New Section */}
           <div className="mt-4">
             <h4 className="text-sm font-medium text-gray-700 mb-2">Add New Section</h4>
@@ -580,7 +579,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter className="flex flex-col sm:flex-row gap-2">
             <Button 
               variant="outline" 
@@ -599,7 +598,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Information Section Dialog */}
       <Dialog open={infoSectionDialogOpen} onOpenChange={setInfoSectionDialogOpen}>
         <DialogContent>
@@ -611,7 +610,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               This is the first section that appears on your form. It provides an overview about the form and its purpose.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="mt-4 space-y-4">
             <div>
               <Label htmlFor="info-description" className="text-sm font-medium text-gray-700">
@@ -625,7 +624,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
                 className="w-full mt-1 min-h-[120px]"
               />
             </div>
-            
+
             <div className="bg-blue-50 p-3 rounded-md border border-blue-200">
               <div className="flex items-start gap-2">
                 <i className="ri-information-line text-blue-500 mt-1"></i>
@@ -641,7 +640,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
             <Button 
               variant="outline" 
@@ -665,7 +664,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Logo Management Dialog */}
       <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
         <DialogContent>
@@ -677,7 +676,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               Add your company logo to brand your form. The logo will appear at the top of your form.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="mt-4 space-y-4">
             {logoUrl ? (
               <div className="flex flex-col items-center space-y-4">
@@ -756,7 +755,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
                 )}
               </div>
             )}
-            
+
             <div className="bg-blue-50 p-3 rounded-md border border-blue-200">
               <div className="flex items-start gap-2">
                 <i className="ri-information-line text-blue-500 mt-1"></i>
@@ -773,7 +772,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
             <Button 
               variant="outline" 

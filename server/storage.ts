@@ -378,9 +378,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateForm(id: number, updates: Partial<Form>): Promise<Form | undefined> {
+    // First get the existing form to preserve theme data
+    const [existingForm] = await db
+      .select()
+      .from(forms)
+      .where(eq(forms.id, id));
+
+    if (!existingForm) {
+      return undefined;
+    }
+
+    // Properly merge theme data to preserve logo URL
+    const updatedTheme = updates.theme ? {
+      ...existingForm.theme,
+      ...updates.theme,
+      logoUrl: updates.theme.logoUrl || existingForm.theme?.logoUrl
+    } : existingForm.theme;
+
     const [updatedForm] = await db
       .update(forms)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ 
+        ...updates,
+        theme: updatedTheme,
+        updatedAt: new Date() 
+      })
       .where(eq(forms.id, id))
       .returning();
     
