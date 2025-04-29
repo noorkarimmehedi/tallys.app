@@ -80,7 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fileUrl = `/uploads/${fileName}`;
       res.json({
         message: 'File uploaded successfully',
-        fileUrl
+        url: fileUrl,
+        filename: fileName
       });
     } catch (error) {
       console.error('Error uploading file:', error);

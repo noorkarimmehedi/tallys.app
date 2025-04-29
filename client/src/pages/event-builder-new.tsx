@@ -46,6 +46,7 @@ export default function EventBuilder() {
   const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
     queryFn: eventId === 'new' ? undefined : undefined,
+    enabled: eventId !== 'new' // Only run query if NOT creating a new event
   });
   
   useEffect(() => {
@@ -443,7 +444,7 @@ export default function EventBuilder() {
             {eventMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : null}
-            {eventId === 'new' ? 'Publish' : 'Update'}
+            {window.location.pathname.includes('/new') || eventId === 'new' ? 'Publish' : 'Update'}
           </Button>
         </div>
       </div>
