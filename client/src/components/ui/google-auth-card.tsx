@@ -16,13 +16,22 @@ interface GoogleAuthCardProps {
 export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProps) {
   const [scope, animate] = useAnimate();
   const { currentUser, loading: authLoading } = useFirebaseAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || authLoading) {
+    return null;
+  }
 
   if (currentUser) {
     return null;
   }
 
   return (
-    <section className="relative mx-auto my-4 w-full opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+    <section className="relative mx-auto my-4 w-full opacity-0 animate-fade-in" style={{ animationDelay: '50ms', animationFillMode: 'forwards' }}>
     <section className="relative mx-auto my-4 w-full">
       <HighlightGroup className="group h-full">
         <div
