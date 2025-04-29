@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { useAnimate } from "framer-motion";
+import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { Button } from "@/components/ui/button";
 import { HighlighterItem, HighlightGroup, Particles } from "@/components/ui/highlighter";
 import { FcGoogle } from "react-icons/fc";
