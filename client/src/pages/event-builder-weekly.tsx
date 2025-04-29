@@ -38,8 +38,13 @@ interface WeeklySchedule {
 
 export default function EventBuilder() {
   const params = useParams();
-  const eventId = params.id;
+  // Make sure we have a valid eventId, default to 'new' when undefined
+  const eventId = params.id === undefined ? 'new' : params.id;
   const [, navigate] = useLocation();
+  
+  // Log to help debug the event ID issue
+  console.log("Event Builder loaded with params:", params);
+  console.log("Current eventId:", eventId);
   
   const [title, setTitle] = useState('30 Minute Meeting');
   const [description, setDescription] = useState('This is a 30 minute meeting to discuss your needs.');
@@ -320,13 +325,27 @@ export default function EventBuilder() {
         }
       };
       
-      if (eventId === 'new') {
-        // Create new event
+      console.log("Saving event with ID:", eventId, "is new:", eventId === 'new');
+      
+      // Always use POST for new events
+      if (eventId === 'new' || !eventId) {
+        console.log("Creating a new event with POST request");
         const response = await apiRequest('POST', '/api/events', eventData);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error creating event:", errorText);
+          throw new Error(errorText || "Failed to create event");
+        }
         return response.json();
       } else {
         // Update existing event
+        console.log("Updating existing event with ID:", eventId);
         const response = await apiRequest('PATCH', `/api/events/${eventId}`, eventData);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error updating event:", errorText);
+          throw new Error(errorText || "Failed to update event");
+        }
         return response.json();
       }
     },

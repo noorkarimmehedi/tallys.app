@@ -187,25 +187,66 @@ export default function EventBuilder() {
         availableTimes
       };
       
-      if (eventId === 'new') {
-        // Create new event
+      console.log("Saving event with ID:", eventId, "is new:", eventId === 'new');
+      
+      // Always use POST for new events
+      if (eventId === 'new' || !eventId) {
+        console.log("Creating a new event with POST request");
         const response = await apiRequest('POST', '/api/events', eventData);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error creating event:", errorText);
+          throw new Error(errorText || "Failed to create event");
+        }
         return response.json();
       } else {
         // Update existing event
+        console.log("Updating existing event with ID:", eventId);
         const response = await apiRequest('PATCH', `/api/events/${eventId}`, eventData);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error updating event:", errorText);
+          throw new Error(errorText || "Failed to update event");
+        }
         return response.json();
       }
     },
     onSuccess: (data) => {
+      console.log("Event saved successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-      if (eventId === 'new') {
-        navigate(`/event-builder/${data.id}`);
+      
+      if (eventId === 'new' && data && data.shortId) {
+        // For newly created events, show a success message with the link
+        const eventLink = `${window.location.origin}/e/${data.shortId}`;
+        
+        toast({
+          title: 'Event published successfully!',
+          description: (
+            <div>
+              <p>Your event is now available at:</p>
+              <a 
+                href={eventLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline break-all"
+              >
+                {eventLink}
+              </a>
+            </div>
+          ),
+          duration: 5000,
+        });
+        
+        // Navigate to dashboard after a delay
+        setTimeout(() => {
+          navigate('/dashboard?tab=events');
+        }, 3000);
+      } else {
+        toast({
+          title: 'Success',
+          description: 'Event updated successfully',
+        });
       }
-      toast({
-        title: 'Success',
-        description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
-      });
     },
     onError: () => {
       toast({
@@ -303,7 +344,7 @@ export default function EventBuilder() {
             {eventMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : null}
-            {eventId === 'new' ? 'Create' : 'Update'}
+            {eventId === 'new' ? 'Publish' : 'Update'}
           </Button>
         </div>
       </div>
