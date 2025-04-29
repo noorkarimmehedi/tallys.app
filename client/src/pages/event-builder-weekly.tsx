@@ -15,7 +15,8 @@ import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema'
 import { 
   Loader2, Save, Copy, Check, Calendar, Clock, MapPin, User, ChevronLeft, 
   Globe, Eye, Upload, Pencil as PencilIcon, Trash2 as Trash2Icon, 
-  Image as ImageIcon, Upload as UploadIcon, FileImage as FileImageIcon, X as XIcon 
+  Image as ImageIcon, Upload as UploadIcon, FileImage as FileImageIcon, X as XIcon,
+  Mail, Code2, ExternalLink, Share2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -752,6 +753,176 @@ export default function EventBuilder() {
                           )}
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Share Event Section */}
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="text-base font-medium mb-2">Share Event</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Share your event with others via link, email, or social media.
+                      </p>
+                      
+                      <Tabs defaultValue="link" className="w-full">
+                        <TabsList className="mb-4 grid w-full grid-cols-3">
+                          <TabsTrigger value="link">
+                            <Copy className="h-3.5 w-3.5 mr-1.5" />
+                            Link
+                          </TabsTrigger>
+                          <TabsTrigger value="social">
+                            <Globe className="h-3.5 w-3.5 mr-1.5" />
+                            Social
+                          </TabsTrigger>
+                          <TabsTrigger value="embed">
+                            <Code2 className="h-3.5 w-3.5 mr-1.5" />
+                            Embed
+                          </TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="link" className="space-y-4">
+                          <div>
+                            <div className="flex items-center mb-2">
+                              <p className="text-sm font-medium">Event Link</p>
+                              {!isPublished && (
+                                <div className="ml-2 px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded">
+                                  Draft
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center">
+                              <Input
+                                value={event?.shortId ? getShareableLink() : "Publish the event to get a shareable link"}
+                                readOnly
+                                disabled={!event?.shortId}
+                                className="text-sm flex-1 bg-gray-50"
+                              />
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="ml-2"
+                                disabled={!event?.shortId}
+                                onClick={handleCopyLink}
+                              >
+                                {copySuccess ? (
+                                  <Check className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                              {isPublished
+                                ? "This event is published and accessible to anyone with the link."
+                                : "This event is currently in draft mode. Enable publishing to make it accessible."}
+                            </p>
+                          </div>
+                          
+                          {event?.shortId && (
+                            <div className="pt-4">
+                              <Button 
+                                variant="outline"
+                                onClick={() => window.open(getShareableLink(), '_blank')} 
+                                className="w-full sm:w-auto"
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                Preview Event Page
+                              </Button>
+                            </div>
+                          )}
+                        </TabsContent>
+                        
+                        <TabsContent value="social" className="space-y-4">
+                          <p className="text-sm text-gray-500 mb-2">Share directly to these platforms:</p>
+                          <div className="flex flex-wrap gap-2">
+                            <Button variant="outline" size="sm" disabled={!event?.shortId} onClick={() => {
+                              if (event?.shortId) {
+                                window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareableLink())}&text=${encodeURIComponent(title)}`, '_blank');
+                              }
+                            }}>
+                              <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                              </svg>
+                              Twitter
+                            </Button>
+                            <Button variant="outline" size="sm" disabled={!event?.shortId} onClick={() => {
+                              if (event?.shortId) {
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareableLink())}`, '_blank');
+                              }
+                            }}>
+                              <svg className="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor">
+                                <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
+                              </svg>
+                              Facebook
+                            </Button>
+                            <Button variant="outline" size="sm" disabled={!event?.shortId} onClick={() => {
+                              if (event?.shortId) {
+                                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareableLink())}`, '_blank');
+                              }
+                            }}>
+                              <svg className="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
+                                <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/>
+                              </svg>
+                              LinkedIn
+                            </Button>
+                            <Button variant="outline" size="sm" disabled={!event?.shortId} onClick={() => {
+                              if (event?.shortId) {
+                                window.open(`mailto:?subject=${encodeURIComponent(`Book a ${title} meeting`)}&body=${encodeURIComponent(`I'd like to invite you to book a meeting with me: ${getShareableLink()}`)}`, '_blank');
+                              }
+                            }}>
+                              <Mail className="h-4 w-4 mr-2" />
+                              Email
+                            </Button>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="embed" className="space-y-4">
+                          <div>
+                            <Label className="text-sm font-medium">Embed Code</Label>
+                            <div className="mt-2 relative">
+                              <Textarea 
+                                className="font-mono text-xs bg-gray-50 resize-none h-24"
+                                readOnly
+                                disabled={!event?.shortId}
+                                value={event?.shortId ? 
+                                  `<iframe src="${getShareableLink()}" width="100%" height="600" frameborder="0"></iframe>` : 
+                                  "Publish the event to get the embed code"
+                                }
+                              />
+                              {event?.shortId && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-2 top-2"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(`<iframe src="${getShareableLink()}" width="100%" height="600" frameborder="0"></iframe>`);
+                                    toast({
+                                      title: "Copied",
+                                      description: "Embed code copied to clipboard",
+                                    });
+                                  }}
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                              Copy this code to embed your event booking page on your website.
+                            </p>
+                          </div>
+                          
+                          {event?.shortId && (
+                            <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
+                              <h4 className="text-sm font-medium mb-2">Preview</h4>
+                              <div className="border border-gray-300 rounded bg-white p-4 h-32 flex items-center justify-center text-gray-500 text-sm">
+                                <div className="text-center">
+                                  <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                                  <p>Event booking widget will appear here</p>
+                                  <p className="text-xs mt-1">(Actual appearance may vary)</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </div>
                 </TabsContent>
