@@ -289,14 +289,21 @@ export function FormBuilder({ id }: FormBuilderProps) {
 
       const result = await response.json();
 
+      // Get the URL from the response (handle both fileUrl and url formats)
+      const uploadedUrl = result.fileUrl || result.url;
+      
+      if (!uploadedUrl) {
+        throw new Error('No URL returned from server');
+      }
+
       // Store and use the original URL without timestamp
-      setLogoUrl(result.fileUrl);
+      setLogoUrl(uploadedUrl);
 
       // Also save the form immediately with the new logo URL
       const formDataToSave = getFormDataForSave();
       formDataToSave.theme = {
         ...formDataToSave.theme,
-        logoUrl: result.fileUrl // Use the original URL for storage
+        logoUrl: uploadedUrl // Use the original URL for storage
       };
 
       if (id && id !== 'new') {

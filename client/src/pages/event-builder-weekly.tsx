@@ -187,8 +187,8 @@ export default function EventBuilder() {
       const data = await response.json();
       console.log("Logo uploaded successfully:", data);
       
-      // Make sure we use the correct property - server response has fileUrl
-      const logoUrl = data.fileUrl || data.path;
+      // Make sure we use the correct property from response (handle both fileUrl and url)
+      const logoUrl = data.fileUrl || data.url;
       console.log("Using logo URL for save:", logoUrl);
       
       if (!logoUrl) {

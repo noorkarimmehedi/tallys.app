@@ -92,6 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         message: 'File uploaded successfully',
         url: fileUrl,
+        fileUrl: fileUrl, // Add fileUrl for backwards compatibility
         filename: fileName
       });
     } catch (error) {
