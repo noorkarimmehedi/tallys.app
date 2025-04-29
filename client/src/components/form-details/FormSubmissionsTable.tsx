@@ -29,6 +29,9 @@ import {
   Download,
   Filter,
   Search,
+  FileText,
+  FileImage,
+  File
 } from "lucide-react";
 import { Form, Response } from "@shared/schema";
 
@@ -82,6 +85,43 @@ export default function FormSubmissionsTable({
         return formatDate(answer);
       } catch (e) {
         return answer;
+      }
+    }
+    
+    // Handle file uploads
+    if (type === "fileUpload" && typeof answer === "string") {
+      // Check if it's a URL to a file (either full URL or path starting with /)
+      if (answer.startsWith('http') || answer.startsWith('/')) {
+        const fileName = answer.split('/').pop() || 'file';
+        const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+        
+        // Choose icon based on file extension
+        let FileIcon = File; // Default icon
+        if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(fileExt)) {
+          FileIcon = FileImage;
+        } else if (['pdf'].includes(fileExt)) {
+          FileIcon = FileText; // Use FileText for PDF files
+        } else if (['doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx'].includes(fileExt)) {
+          FileIcon = FileText;
+        }
+        
+        return (
+          <a 
+            href={answer} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-600 hover:underline flex items-center"
+            download
+          >
+            <FileIcon className="h-4 w-4 mr-1" />
+            {fileName}
+          </a>
+        );
+      }
+      
+      // Handle temporary file:// format used during form filling
+      if (answer.startsWith('file://')) {
+        return answer.replace('file://', '');
       }
     }
     
