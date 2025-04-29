@@ -17,17 +17,12 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
   const [scope, animate] = useAnimate();
   const { currentUser, loading: authLoading } = useFirebaseAuth();
 
-  // Don't show anything while Firebase auth is initializing
-  if (authLoading) {
-    return null;
-  }
-
-  // If user is already authenticated, don't show the card
   if (currentUser) {
     return null;
   }
 
   return (
+    <section className="relative mx-auto my-4 w-full opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
     <section className="relative mx-auto my-4 w-full">
       <HighlightGroup className="group h-full">
         <div
