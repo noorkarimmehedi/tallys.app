@@ -481,7 +481,7 @@ export default function EventBuilder() {
             {eventMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : null}
-            Publish
+            {eventId === 'new' ? 'Publish' : 'Update'}
           </Button>
         </div>
       </div>
