@@ -59,11 +59,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const file = req.files.file as fileUpload.UploadedFile;
       
-      // Check file type (allow only images)
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+      // Check file type (allow images, PDFs, and common document formats)
+      const allowedTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 
+        'application/pdf',
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word docs
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel
+        'text/plain', 'text/csv'
+      ];
       if (!allowedTypes.includes(file.mimetype)) {
         return res.status(400).json({ 
-          message: 'Invalid file type. Only JPG, PNG, GIF, and SVG files are allowed'
+          message: 'Invalid file type. Allowed files: JPG, PNG, GIF, SVG, PDF, DOC, DOCX, XLS, XLSX, TXT, CSV'
         });
       }
       
