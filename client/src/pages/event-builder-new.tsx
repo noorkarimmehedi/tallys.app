@@ -38,6 +38,9 @@ export default function EventBuilder() {
   const [activeTab, setActiveTab] = useState('what');
   const [date, setDate] = useState<Date>(new Date());
   const [selectedTimes, setSelectedTimes] = useState<{[key: string]: string[]}>({});
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
   
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery<Event>({
@@ -51,7 +54,15 @@ export default function EventBuilder() {
       setDescription(event.description || '');
       setLocation(event.location || '');
       setDuration(event.duration);
-      setIsPublished(event.published);
+      setIsPublished(event.published || false);
+      
+      // Get logo URL if available
+      if (event.metadata && typeof event.metadata === 'object' && event.metadata.theme) {
+        const theme = event.metadata.theme;
+        if (theme.logoUrl) {
+          setLogoUrl(theme.logoUrl);
+        }
+      }
       
       // Convert availableTimes to selectedTimes format
       if (event.availableTimes && event.availableTimes.length > 0) {
@@ -192,7 +203,7 @@ export default function EventBuilder() {
           textColor: '#000000',
           primaryColor: '#3b82f6',
           fontFamily: 'Inter, sans-serif',
-          logoUrl: '' // Include empty logoUrl
+          logoUrl: logoUrl // Use the actual logo URL
         },
         // Also include weekly schedule as it may be expected by the schema
         weeklySchedule: JSON.stringify({
@@ -306,6 +317,58 @@ export default function EventBuilder() {
       navigator.clipboard.writeText(getShareableLink());
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
+  
+  // Handle logo file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          title: "File too large",
+          description: "Logo image must be less than 2MB",
+          variant: "destructive"
+        });
+        return;
+      }
+      setLogoFile(file);
+    }
+  };
+  
+  // Handle logo upload
+  const handleLogoUpload = async () => {
+    if (!logoFile) return;
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', logoFile);
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      const data = await response.json();
+      setLogoUrl(data.url);
+      setLogoFile(null);
+      setLogoDialogOpen(false);
+      
+      toast({
+        title: "Logo uploaded",
+        description: "Your logo has been uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload logo. Please try again.",
+        variant: "destructive"
+      });
     }
   };
   
@@ -570,6 +633,66 @@ export default function EventBuilder() {
                       />
                     </div>
                     
+                    {/* Logo Section */}
+                    <div className="py-2 border-b border-gray-200">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-medium text-gray-900">Company Logo</h3>
+                          <p className="text-sm text-gray-500">Add your brand identity to customize the event booking experience</p>
+                        </div>
+                      </div>
+                      
+                      {logoUrl ? (
+                        <div className="group relative">
+                          <div className="overflow-hidden border border-gray-200 rounded-lg bg-white p-4 transition-all duration-300 shadow-sm hover:shadow-md">
+                            <div className="flex justify-center items-center py-3">
+                              <img 
+                                src={logoUrl} 
+                                alt="Company logo" 
+                                className="max-h-16 object-contain"
+                              />
+                            </div>
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="bg-white shadow-md"
+                                  onClick={() => setLogoDialogOpen(true)}
+                                >
+                                  <PencilIcon className="h-3 w-3 mr-1" /> 
+                                  Change
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="bg-white shadow-md text-red-600 hover:text-red-700"
+                                  onClick={() => setLogoUrl("")}
+                                >
+                                  <Trash2 className="h-3 w-3 mr-1" /> 
+                                  Remove
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 text-center mt-1">
+                            Recommended size: 427px × 118px
+                          </p>
+                        </div>
+                      ) : (
+                        <div 
+                          className="border-2 border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                          onClick={() => setLogoDialogOpen(true)}
+                        >
+                          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                            <ImageIcon className="h-6 w-6 text-primary" />
+                          </div>
+                          <p className="font-medium text-sm">Upload your logo</p>
+                          <p className="text-xs text-gray-500 mt-1">Recommended size: 427px × 118px</p>
+                        </div>
+                      )}
+                    </div>
+                    
                     {event?.shortId && (
                       <div className="flex flex-col py-2 border-b border-gray-200">
                         <h3 className="font-medium text-gray-900">Public event link</h3>
@@ -648,6 +771,125 @@ export default function EventBuilder() {
           </Card>
         </div>
       </div>
+      
+      {/* Logo Upload Dialog */}
+      <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Company Logo</DialogTitle>
+            <p className="text-sm text-gray-500">
+              Add your brand identity to customize the event booking experience
+            </p>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Current logo preview */}
+            {logoUrl && !logoFile && (
+              <div className="rounded-lg overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                <div className="px-4 py-3 bg-gray-100 border-b border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700">Current Logo</h3>
+                </div>
+                <div className="p-6 flex items-center justify-center">
+                  <img 
+                    src={logoUrl} 
+                    alt="Current logo" 
+                    className="max-h-24 max-w-full object-contain" 
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Selected file preview */}
+            {logoFile ? (
+              <div className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700">Selected File</h3>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="mr-4">
+                        <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileImageIcon className="h-7 w-7 text-primary" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{logoFile.name}</p>
+                        <p className="text-sm text-gray-500 mt-1">{(logoFile.size / 1024).toFixed(1)} KB</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={() => setLogoFile(null)}
+                    >
+                      <XIcon className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
+                  <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <ImageIcon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">
+                    Drop your image here
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-6">
+                    SVG, PNG, JPG or GIF (max. 800x400px)
+                  </p>
+                  
+                  <label htmlFor="logo-upload" className="relative inline-block">
+                    <Input
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <Button variant="outline" className="pointer-events-none">
+                      <UploadIcon className="h-4 w-4 mr-2" />
+                      Select File
+                    </Button>
+                  </label>
+                  
+                  <p className="text-xs text-gray-500 mt-6">
+                    Recommended size: 427px × 118px
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter className="flex space-x-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setLogoDialogOpen(false)}
+              className="flex-1 sm:flex-none"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleLogoUpload}
+              disabled={!logoFile}
+              className="flex-1 sm:flex-none bg-black hover:bg-gray-800 text-white"
+            >
+              {logoFile ? (
+                <>
+                  <UploadIcon className="h-4 w-4 mr-2" />
+                  Upload Logo
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
