@@ -13,19 +13,17 @@ interface GoogleAuthCardProps {
 }
 
 export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProps) {
-  const [initialLoading, setInitialLoading] = useState(true);
   const [scope, animate] = useAnimate();
+  const { currentUser, loading: authLoading } = useFirebaseAuth();
 
-  useEffect(() => {
-    // Add a small delay to prevent flickering
-    const timer = setTimeout(() => {
-      setInitialLoading(false);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  // Don't show anything while Firebase auth is initializing
+  if (authLoading) {
+    return null;
+  }
 
-  if (initialLoading) {
-    return null; // Don't show anything during initial load
+  // If user is already authenticated, don't show the card
+  if (currentUser) {
+    return null;
   }
 
   return (
