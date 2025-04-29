@@ -102,7 +102,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     
       {/* Sidebar */}
       <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex md:flex-shrink-0 fixed inset-0 z-50 md:relative md:z-auto`}>
-        <div className="flex flex-col w-52 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden">
+        <div className="flex flex-col w-52 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden font-sidebar">
           {/* Grid Tiles Background for sidebar */}
           <div className="absolute inset-0 overflow-hidden z-0">
             <Tiles 

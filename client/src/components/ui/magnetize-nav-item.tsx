@@ -200,7 +200,7 @@ export function MagnetizeNavItem({
                 {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
             </span>
             <span className={cn(
-                "font-['Alternate_Gothic', 'sans-serif'] tracking-wide text-sm relative",
+                "font-sidebar tracking-wide text-sm relative",
                 isActive ? "text-blue-900" : "group-hover:text-blue-700"
             )}>
                 {label}
