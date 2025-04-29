@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Tiles } from "@/components/ui/tiles";
-import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { GoogleAuthCard } from "@/components/ui/google-auth-card";
 import { EvervaultCardDemo } from "@/components/ui/evervault-card-demo";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function AuthPage() {
   const [location, navigate] = useLocation();
   const { currentUser, loading, signInWithGoogle } = useFirebaseAuth();
   const { toast } = useToast();
+  // Use state to manage UI components visibility with smooth transitions
+  const [showTallyCard, setShowTallyCard] = useState(true);
 
   // If already logged in, redirect to home
   useEffect(() => {
@@ -47,12 +49,21 @@ export default function AuthPage() {
 
       <div className="w-full max-w-6xl mx-auto px-4 pt-2 sm:pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center">
-          {/* App Logo & Title with Typewriter Effect */}
+          {/* App Logo & Title with Animation */}
           <div className="flex flex-col items-center mb-4 text-center">
-            
-            <div className="flex flex-col items-center justify-center mb-1 md:mb-3 w-full max-w-lg">
-              <EvervaultCardDemo />
-            </div>
+            <AnimatePresence>
+              {showTallyCard && (
+                <motion.div 
+                  className="flex flex-col items-center justify-center mb-1 md:mb-3 w-full max-w-lg"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <EvervaultCardDemo />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Modern Auth Card with Particles */}

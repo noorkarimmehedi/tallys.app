@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { useAnimate } from "framer-motion";
+import { useAnimate, motion } from "framer-motion";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { Button } from "@/components/ui/button";
 import { HighlighterItem, HighlightGroup, Particles } from "@/components/ui/highlighter";
@@ -16,6 +16,16 @@ interface GoogleAuthCardProps {
 export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProps) {
   const [scope, animate] = useAnimate();
   const { currentUser, loading: authLoading } = useFirebaseAuth();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Smoothly fade in the auth card after a short delay
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 0); // Immediate mount but with animation
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Don't show anything while Firebase auth is initializing
   if (authLoading) {
@@ -28,7 +38,19 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
   }
 
   return (
-    <section className="relative mx-auto my-4 w-full">
+    <motion.section 
+      className="relative mx-auto my-4 w-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ 
+        opacity: isVisible ? 1 : 0,
+        y: isVisible ? 0 : 20
+      }}
+      transition={{ 
+        duration: 0.6,
+        ease: "easeInOut",
+        delay: 0.2
+      }}
+    >
       <HighlightGroup className="group h-full">
         <div
           className="group/item h-full"
@@ -79,6 +101,6 @@ export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProp
           </HighlighterItem>
         </div>
       </HighlightGroup>
-    </section>
+    </motion.section>
   );
 }
