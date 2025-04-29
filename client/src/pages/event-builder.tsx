@@ -98,6 +98,10 @@ export default function EventBuilder() {
   // Create or update event mutation
   const eventMutation = useMutation({
     mutationFn: async () => {
+      if (!eventId) {
+        throw new Error('Event ID is required');
+      }
+
       const eventData = {
         title,
         description,
@@ -118,9 +122,6 @@ export default function EventBuilder() {
           return response.json();
         } else {
           // Update existing event
-          if (!eventId) {
-            throw new Error('Event ID is required for updates');
-          }
           const response = await apiRequest('PATCH', `/api/events/${eventId}`, eventData);
           if (!response.ok) {
             const error = await response.json();
@@ -129,6 +130,7 @@ export default function EventBuilder() {
           return response.json();
         }
       } catch (error: any) {
+        console.error('Event mutation error:', error);
         throw new Error(error.message || 'Failed to save event');
       }
     },
