@@ -107,14 +107,29 @@ export default function EventBuilder() {
         availableTimes
       };
       
-      if (eventId === 'new') {
-        // Create new event
-        const response = await apiRequest('POST', '/api/events', eventData);
-        return response.json();
-      } else {
-        // Update existing event
-        const response = await apiRequest('PATCH', `/api/events/${eventId}`, eventData);
-        return response.json();
+      try {
+        if (eventId === 'new') {
+          // Create new event
+          const response = await apiRequest('POST', '/api/events', eventData);
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to create event');
+          }
+          return response.json();
+        } else {
+          // Update existing event
+          if (!eventId) {
+            throw new Error('Event ID is required for updates');
+          }
+          const response = await apiRequest('PATCH', `/api/events/${eventId}`, eventData);
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to update event');
+          }
+          return response.json();
+        }
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to save event');
       }
     },
     onSuccess: (data) => {
@@ -127,10 +142,10 @@ export default function EventBuilder() {
         description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
       });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: 'Error',
-        description: 'Failed to save event. Please try again.',
+        description: error.message || 'Failed to save event. Please try again.',
         variant: 'destructive'
       });
     }
