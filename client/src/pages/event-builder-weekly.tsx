@@ -74,14 +74,19 @@ export default function EventBuilder() {
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
-    queryFn: eventId === 'new' ? undefined : async () => {
+    queryFn: async () => {
+      // Skip API call for new events
+      if (eventId === 'new') {
+        return null;
+      }
+      
       const res = await fetch(`/api/events/${eventId}`);
       if (!res.ok) {
         throw new Error('Failed to fetch event');
       }
       return res.json();
     },
-    enabled: eventId !== 'new'
+    enabled: eventId !== 'new' && eventId !== undefined
   });
   
   // Handle logo file change
@@ -329,15 +334,38 @@ export default function EventBuilder() {
       console.log("Event saved successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       
-      toast({
-        title: 'Success',
-        description: eventId === 'new' ? 'Event created successfully' : 'Event updated successfully',
-      });
+      if (eventId === 'new' && data && data.shortId) {
+        // For newly created events, show a success message with the link
+        const eventLink = `${window.location.origin}/e/${data.shortId}`;
+        
+        toast({
+          title: 'Event published successfully!',
+          description: (
+            <div>
+              <p>Your event is now available at:</p>
+              <a 
+                href={eventLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline break-all"
+              >
+                {eventLink}
+              </a>
+            </div>
+          ),
+          duration: 5000,
+        });
+      } else {
+        toast({
+          title: 'Success',
+          description: 'Event updated successfully',
+        });
+      }
       
       // Navigate to the dashboard events section after creating/updating
       setTimeout(() => {
         navigate('/dashboard?tab=events');
-      }, 1000);
+      }, 3000);
     },
     onError: () => {
       toast({
@@ -434,7 +462,7 @@ export default function EventBuilder() {
             {eventMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : null}
-            {eventId === 'new' ? 'Publish' : 'Update'}
+            Publish
           </Button>
         </div>
       </div>
