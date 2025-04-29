@@ -13,7 +13,20 @@ interface GoogleAuthCardProps {
 }
 
 export function GoogleAuthCard({ onGoogleSignIn, isLoading }: GoogleAuthCardProps) {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [scope, animate] = useAnimate();
+
+  useEffect(() => {
+    // Add a small delay to prevent flickering
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (initialLoading) {
+    return null; // Don't show anything during initial load
+  }
 
   return (
     <section className="relative mx-auto my-4 w-full">
