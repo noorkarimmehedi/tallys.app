@@ -908,19 +908,6 @@ export default function EventBuilder() {
                               Copy this code to embed your event booking page on your website.
                             </p>
                           </div>
-                          
-                          {event?.shortId && (
-                            <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
-                              <h4 className="text-sm font-medium mb-2">Preview</h4>
-                              <div className="border border-gray-300 rounded bg-white p-4 h-32 flex items-center justify-center text-gray-500 text-sm">
-                                <div className="text-center">
-                                  <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                                  <p>Event booking widget will appear here</p>
-                                  <p className="text-xs mt-1">(Actual appearance may vary)</p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </TabsContent>
                       </Tabs>
                     </div>
