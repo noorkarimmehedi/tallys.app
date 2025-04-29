@@ -11,8 +11,20 @@ export default function AuthPage() {
   const [location, navigate] = useLocation();
   const { currentUser, loading, signInWithGoogle } = useFirebaseAuth();
   const { toast } = useToast();
-  // Use state to manage UI components visibility with smooth transitions
-  const [showTallyCard, setShowTallyCard] = useState(true);
+  
+  // Animation state management
+  const [allComponentsReady, setAllComponentsReady] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
+
+  // Animation sequence control
+  useEffect(() => {
+    // Start overall animation sequence
+    const timer = setTimeout(() => {
+      setAllComponentsReady(true);
+    }, 100); // Small delay for initial render
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // If already logged in, redirect to home
   useEffect(() => {
@@ -33,6 +45,11 @@ export default function AuthPage() {
     }
   };
 
+  // Track animation completion
+  const handleAnimationComplete = () => {
+    setAnimationComplete(true);
+  };
+
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
       {/* Beautiful Animated Grid Background */}
@@ -49,30 +66,56 @@ export default function AuthPage() {
 
       <div className="w-full max-w-6xl mx-auto px-4 pt-2 sm:pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center">
-          {/* App Logo & Title with Animation */}
-          <div className="flex flex-col items-center mb-4 text-center">
-            <AnimatePresence>
-              {showTallyCard && (
-                <motion.div 
-                  className="flex flex-col items-center justify-center mb-1 md:mb-3 w-full max-w-lg"
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <EvervaultCardDemo />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Animated Page Content Container */}
+          <motion.div
+            className="w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              duration: 0.5,
+              ease: "easeOut" 
+            }}
+            onAnimationComplete={handleAnimationComplete}
+          >
+            {/* App Logo & Title with Animation */}
+            <div className="flex flex-col items-center mb-4 text-center">
+              <motion.div 
+                className="flex flex-col items-center justify-center mb-1 md:mb-3 w-full max-w-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ 
+                  opacity: allComponentsReady ? 1 : 0,
+                  y: allComponentsReady ? 0 : -10
+                }}
+                transition={{ 
+                  duration: 0.7,
+                  ease: "easeInOut",
+                  delay: 0.1
+                }}
+              >
+                <EvervaultCardDemo />
+              </motion.div>
+            </div>
 
-          {/* Modern Auth Card with Particles */}
-          <div className="w-full max-w-lg mx-auto">
-            <GoogleAuthCard
-              onGoogleSignIn={handleGoogleSignIn}
-              isLoading={loading}
-            />
-          </div>
+            {/* Modern Auth Card with Particles */}
+            <motion.div 
+              className="w-full max-w-lg mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ 
+                opacity: allComponentsReady ? 1 : 0,
+                y: allComponentsReady ? 0 : 20
+              }}
+              transition={{ 
+                duration: 0.7,
+                ease: "easeOut",
+                delay: 0.3 // Create a sequence by delaying this slightly
+              }}
+            >
+              <GoogleAuthCard
+                onGoogleSignIn={handleGoogleSignIn}
+                isLoading={loading}
+              />
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>
