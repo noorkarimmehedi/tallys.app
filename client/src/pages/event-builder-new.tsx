@@ -395,7 +395,7 @@ export default function EventBuilder() {
             variant="ghost" 
             size="sm" 
             className="mr-2"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard?tab=events')}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -435,7 +435,7 @@ export default function EventBuilder() {
             variant="outline"
             size="sm"
             className="text-gray-700"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard?tab=events')}
           >
             Cancel
           </Button>
