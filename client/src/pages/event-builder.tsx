@@ -98,10 +98,6 @@ export default function EventBuilder() {
   // Create or update event mutation
   const eventMutation = useMutation({
     mutationFn: async () => {
-      if (!eventId) {
-        throw new Error('Event ID is required');
-      }
-
       const eventData = {
         title,
         description,
