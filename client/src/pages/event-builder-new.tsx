@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams, useLocation } from 'wouter';
 import { queryClient, apiRequest } from '@/lib/queryClient';
@@ -218,11 +218,11 @@ export default function EventBuilder() {
         })
       };
       
-      console.log("Saving event with ID:", eventId, "is new:", eventId === 'new');
+      console.log("Saving event with ID:", eventId, "is new:", isNewEvent);
       console.log("Event data being sent:", JSON.stringify(eventData, null, 2));
       
-      // Always use POST for new events
-      if (eventId === 'new' || !eventId) {
+      // Use isNewEvent to determine if we're creating a new event
+      if (isNewEvent) {
         console.log("Creating a new event with POST request");
         try {
           // Use fetch directly for more control
@@ -263,7 +263,7 @@ export default function EventBuilder() {
       console.log("Event saved successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       
-      if (eventId === 'new' && data && data.shortId) {
+      if (isNewEvent && data && data.shortId) {
         // For newly created events, show a success message with the link
         const eventLink = `${window.location.origin}/e/${data.shortId}`;
         
@@ -304,6 +304,11 @@ export default function EventBuilder() {
       });
     }
   });
+  
+  // Use useMemo to determine if we're creating a new event
+  const isNewEvent = useMemo(() => {
+    return eventId === 'new' || window.location.pathname.includes('/new');
+  }, [eventId, window.location.pathname]);
   
   const handleSave = () => {
     eventMutation.mutate();
@@ -396,10 +401,10 @@ export default function EventBuilder() {
           </Button>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              {eventId === 'new' ? 'New Event Type' : (title || 'Edit Event Type')}
+              {isNewEvent ? 'New Event Type' : (title || 'Edit Event Type')}
             </h1>
             <p className="text-sm text-gray-500">
-              {eventId === 'new' ? 'Create a new event type' : 'Update your event type'}
+              {isNewEvent ? 'Create a new event type' : 'Update your event type'}
             </p>
           </div>
         </div>
@@ -444,7 +449,7 @@ export default function EventBuilder() {
             {eventMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : null}
-            {window.location.pathname.includes('/new') || eventId === 'new' ? 'Publish' : 'Update'}
+            {isNewEvent ? 'Publish' : 'Update'}
           </Button>
         </div>
       </div>
