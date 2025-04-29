@@ -34,8 +34,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     createParentPath: true, // Create the uploads directory if it doesn't exist
     abortOnLimit: true,
     responseOnLimit: "File size limit has been reached (2MB)",
-    useTempFiles: true,
-    tempFileDir: '/tmp/'
+    useTempFiles: false, // Don't use temp files to prevent cleanup issues
+    preserveExtension: true, // Preserve file extensions
+    safeFileNames: true // Sanitize filenames
   }));
   
   // Make sure uploads directory exists
@@ -44,8 +45,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
   
-  // Serve static files from public/uploads directory
-  app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+  // Serve static files from public/uploads directory with long cache expiration
+  app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
+    maxAge: '30d', // Cache for 30 days
+    etag: true,
+    lastModified: true
+  }));
   
   // API routes
   const apiRouter = app.route('/api');
