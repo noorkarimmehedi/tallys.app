@@ -207,7 +207,7 @@ export default function EventBuilder() {
                 ) : (
                   <Save className="mr-2 h-4 w-4" />
                 )}
-                {eventId === 'new' ? 'Create' : 'Update'}
+                {eventId === 'new' ? 'Publish' : 'Update'}
               </Button>
             </div>
           </div>
