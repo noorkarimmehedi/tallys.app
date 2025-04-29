@@ -32,7 +32,7 @@ export default function EventBuilder() {
   const params = useParams();
   const eventId = params.id;
   const [, navigate] = useLocation();
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
@@ -41,13 +41,13 @@ export default function EventBuilder() {
   const [availableTimes, setAvailableTimes] = useState<EventAvailability[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  
+
   // Fetch event data if editing an existing event
   const { data: event, isLoading } = useQuery<Event>({
     queryKey: ['/api/events', eventId],
     enabled: eventId !== 'new'
   });
-  
+
   useEffect(() => {
     if (event) {
       setTitle(event.title);
@@ -58,20 +58,20 @@ export default function EventBuilder() {
       setAvailableTimes(event.availableTimes || []);
     }
   }, [event]);
-  
+
   // Handle date selection in AppointmentPicker
   const handleDateTimeSelected = (date: Date, time: string) => {
     console.log("Selected date and time:", date, time);
     const dateString = date.toISOString().split('T')[0];
     const newAvailableTimes = [...availableTimes];
-    
+
     // Find if we already have this date
     const dateIndex = newAvailableTimes.findIndex(at => at.date === dateString);
-    
+
     if (dateIndex >= 0) {
       // Update existing date's time slots
       const timeIndex = newAvailableTimes[dateIndex].timeSlots.findIndex(ts => ts.time === time);
-      
+
       if (timeIndex >= 0) {
         // Toggle available status
         newAvailableTimes[dateIndex].timeSlots[timeIndex].available = 
@@ -90,11 +90,11 @@ export default function EventBuilder() {
         timeSlots: [{ time, available: true }]
       });
     }
-    
+
     console.log("Updated available times:", newAvailableTimes);
     setAvailableTimes(newAvailableTimes);
   };
-  
+
   // Create or update event mutation
   const eventMutation = useMutation({
     mutationFn: async () => {
@@ -110,7 +110,7 @@ export default function EventBuilder() {
         published: isPublished,
         availableTimes
       };
-      
+
       try {
         if (eventId === 'new') {
           // Create new event
@@ -152,15 +152,15 @@ export default function EventBuilder() {
       });
     }
   });
-  
+
   const handleSave = () => {
     eventMutation.mutate();
   };
-  
+
   const getShareableLink = () => {
     return event ? `${window.location.origin}/e/${event.shortId}` : '';
   };
-  
+
   const handleCopyLink = () => {
     if (event?.shortId) {
       navigator.clipboard.writeText(getShareableLink());
@@ -168,7 +168,7 @@ export default function EventBuilder() {
       setTimeout(() => setCopySuccess(false), 2000);
     }
   };
-  
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -176,7 +176,7 @@ export default function EventBuilder() {
       </div>
     );
   }
-  
+
   return (
       <div className="container max-w-3xl mx-auto py-8 px-4 sm:px-6">
         <div className="flex flex-col gap-6">
@@ -211,7 +211,7 @@ export default function EventBuilder() {
               </Button>
             </div>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Event Details</CardTitle>
@@ -227,7 +227,7 @@ export default function EventBuilder() {
                   placeholder="Enter event title"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea 
@@ -238,7 +238,7 @@ export default function EventBuilder() {
                   rows={4}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <Input 
@@ -248,7 +248,7 @@ export default function EventBuilder() {
                   placeholder="Add a location (optional)"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="duration">Duration (minutes)</Label>
                 <Select 
@@ -268,7 +268,7 @@ export default function EventBuilder() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="pt-4 flex items-center justify-between">
                 <div>
                   <Label htmlFor="published">Published</Label>
@@ -284,7 +284,7 @@ export default function EventBuilder() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Available Times</CardTitle>
@@ -300,7 +300,7 @@ export default function EventBuilder() {
                   availableTimeSlots={availableTimes.length > 0 ? availableTimes[0].timeSlots : []}
                 />
               </div>
-              
+
               {availableTimes.length > 0 && (
                 <div className="mt-6 pt-6 border-t">
                   <h3 className="text-base font-medium mb-3">Selected Availability</h3>
@@ -324,7 +324,7 @@ export default function EventBuilder() {
               )}
             </CardContent>
           </Card>
-          
+
           {event?.shortId && (
             <Card>
               <CardHeader>
@@ -353,7 +353,7 @@ export default function EventBuilder() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col space-y-3">
                   <Button 
                     variant="outline" 
@@ -363,7 +363,7 @@ export default function EventBuilder() {
                     <Calendar className="mr-2 h-4 w-4" />
                     View Booking Page
                   </Button>
-                  
+
                   <Button 
                     variant="outline" 
                     className="w-full"
@@ -376,7 +376,7 @@ export default function EventBuilder() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Event preview section */}
           {showPreview && (
             <Card>
@@ -396,7 +396,7 @@ export default function EventBuilder() {
                         <p className="text-sm text-muted-foreground">Tallys Calendar</p>
                       </div>
                     </div>
-                    
+
                     <h3 className="text-xl font-bold mb-2">{title || "Event Title"}</h3>
                     <div className="flex items-center text-sm text-muted-foreground mb-4">
                       <Clock className="mr-2 h-4 w-4" />
@@ -408,11 +408,11 @@ export default function EventBuilder() {
                         </>
                       )}
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mb-6">
                       {description || "No description provided"}
                     </p>
-                    
+
                     <div className="mt-6">
                       <AppointmentPicker 
                         availableTimeSlots={
