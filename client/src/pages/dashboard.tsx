@@ -8,9 +8,17 @@ import EventsGrid from "@/components/dashboard/EventsGrid";
 
 export default function Dashboard() {
   const [location] = useLocation();
-  const [activeTab, setActiveTab] = useState("forms");
   
-  // Get tab from URL query parameter if exists
+  // Initialize the active tab directly from URL if present
+  const getInitialTab = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get("tab");
+    return (tabParam === "events" || tabParam === "forms") ? tabParam : "forms";
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+  
+  // Update tab when URL changes
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get("tab");
