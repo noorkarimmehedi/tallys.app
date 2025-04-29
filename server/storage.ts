@@ -459,6 +459,8 @@ export class DatabaseStorage implements IStorage {
       published: insertEvent.published || false
     };
     
+    console.log("Creating event with data:", JSON.stringify(eventData, null, 2));
+    
     const [event] = await db.insert(events).values({
       userId: eventData.userId,
       title: eventData.title,
@@ -467,7 +469,9 @@ export class DatabaseStorage implements IStorage {
       duration: eventData.duration,
       location: eventData.location || '',
       published: eventData.published || false,
-      availableTimes: eventData.availableTimes || []
+      availableTimes: eventData.availableTimes || [],
+      weeklySchedule: eventData.weeklySchedule || null,
+      theme: eventData.theme || undefined
     }).returning();
     
     return event;
