@@ -12,11 +12,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TimeSlot, EventAvailability, Event as EventType } from '@shared/schema';
-import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings, Eye, User, ChevronLeft, Globe } from 'lucide-react';
+import { Loader2, Save, Share2, Copy, Check, Calendar, Clock, MapPin, Info, Users, Link as LinkIcon, Settings, Eye, User, ChevronLeft, Globe, Image as ImageIcon, Upload as UploadIcon, Trash2, X as XIcon, FileImage as FileImageIcon, Pencil as PencilIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar-new';
 import { format } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Event extends EventType {
   availableTimes?: EventAvailability[];
