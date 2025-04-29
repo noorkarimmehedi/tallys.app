@@ -88,7 +88,7 @@ function Router() {
       
       <ProtectedRoute path="/event-builder/new" component={() => (
         <MainLayout>
-          <EventBuilderNew />
+          <EventBuilder />
         </MainLayout>
       )} />
 
