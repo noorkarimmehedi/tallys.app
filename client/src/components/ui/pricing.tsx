@@ -74,20 +74,20 @@ export function Pricing({
       </div>
 
       <div className="flex justify-center mb-10">
-        <div className="bg-gray-100 p-6 px-8 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-          <span className={`font-semibold text-lg ${isMonthly ? 'text-black' : 'text-gray-400'}`}>Monthly</span>
-          <label className="relative inline-flex items-center cursor-pointer">
+        <div className="bg-gray-100 p-6 px-8 rounded-xl border border-gray-200 shadow-md flex items-center gap-4">
+          <span className={`font-semibold text-lg ${isMonthly ? 'text-black font-bold' : 'text-gray-400'}`}>Monthly</span>
+          <div className="relative inline-flex items-center cursor-pointer bg-black p-2 rounded-xl border border-gray-300">
             <PricingSwitch
               ref={switchRef as any}
               checked={!isMonthly}
               onCheckedChange={handleToggle}
             />
-          </label>
+          </div>
           <div className="flex flex-col items-start">
-            <span className={`font-semibold text-lg ${!isMonthly ? 'text-black' : 'text-gray-400'}`}>
+            <span className={`font-semibold text-lg ${!isMonthly ? 'text-black font-bold' : 'text-gray-400'}`}>
               Annual billing
             </span>
-            <span className="text-sm text-green-600 font-medium">Save 20%</span>
+            <span className="text-sm text-green-600 font-bold">Save 20%</span>
           </div>
         </div>
       </div>
