@@ -128,10 +128,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             {/* Original Navigation Items */}
             <div className="px-3 space-y-0.5 font-medium mb-3">
-              {/* Home Navigation Item */}
+              {/* Home Navigation Item with Dashboard Icon */}
               <MagnetizeNavItem
                 href="/"
-                icon={<Home />}
+                icon={<img src="/assets/icons/dashboard-icon.svg" alt="Dashboard" className="w-5 h-5" />}
                 label="Home"
                 isActive={location === "/"}
                 particleCount={12}
