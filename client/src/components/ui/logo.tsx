@@ -1,13 +1,13 @@
 import React from "react";
 
 // Updated to use the latest SVG logo for immediate loading
-export const LogoSVG: React.FC<{ className?: string }> = ({ className = "h-10" }) => {
+export const LogoSVG: React.FC<{ className?: string }> = ({ className = "h-9" }) => {
   return (
     <svg 
       version="1.0" 
       xmlns="http://www.w3.org/2000/svg"
-      width="180" 
-      height="46" 
+      width="170" 
+      height="43" 
       viewBox="0 0 694.000000 178.000000"
       preserveAspectRatio="xMidYMid meet" 
       className={className}

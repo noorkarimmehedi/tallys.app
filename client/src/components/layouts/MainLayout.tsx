@@ -117,11 +117,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
           
           {/* Logo - using your updated SVG for immediate rendering without any loading delay */}
-          <div className="flex items-center h-16 px-4 border-b border-gray-200 relative z-10">
-            <Link href="/" className="flex items-center -ml-1">
+          <div className="flex items-center h-16 px-2 border-b border-gray-200 relative z-10">
+            <Link href="/" className="flex items-center -ml-3">
               <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                width="180" height="46" viewBox="0 0 694.000000 178.000000"
-                preserveAspectRatio="xMidYMid meet" className="h-10">
+                width="170" height="43" viewBox="0 0 694.000000 178.000000"
+                preserveAspectRatio="xMidYMid meet" className="h-9">
                 <g transform="translate(0.000000,178.000000) scale(0.100000,-0.100000)"
                 fill="#000000" stroke="none">
                   <path d="M1762 1558 c3 -7 23 -14 46 -16 l42 -3 0 -515 0 -514 -40 0 c-29 0
@@ -373,11 +373,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation Bar - with your updated SVG for instant logo rendering */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
-          <div className="-ml-1">
+        <div className="flex items-center justify-between h-16 px-2 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
+          <div className="-ml-3">
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-              width="140" height="35" viewBox="0 0 694.000000 178.000000"
-              preserveAspectRatio="xMidYMid meet" className="h-8">
+              width="130" height="33" viewBox="0 0 694.000000 178.000000"
+              preserveAspectRatio="xMidYMid meet" className="h-7">
               <g transform="translate(0.000000,178.000000) scale(0.100000,-0.100000)"
               fill="#000000" stroke="none">
                 <path d="M1762 1558 c3 -7 23 -14 46 -16 l42 -3 0 -515 0 -514 -40 0 c-29 0
