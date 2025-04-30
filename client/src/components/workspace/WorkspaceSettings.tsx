@@ -129,6 +129,11 @@ export function WorkspaceSettings({
         title: 'Workspace updated',
         description: 'Workspace details have been updated successfully.'
       });
+      
+      // Invalidate workspaces query to refresh the sidebar
+      queryClient.invalidateQueries({ queryKey: ['/api/workspaces'] });
+      
+      // Update local state
       if (onUpdate) onUpdate(data);
     },
     onError: () => {
