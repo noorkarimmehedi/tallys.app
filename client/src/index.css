@@ -106,13 +106,26 @@
   width: 100% !important;
   border: 1px solid hsl(var(--border)) !important;
   font-family: 'Familjen Grotesk', ui-sans-serif, system-ui !important;
-  padding: 0.65rem 0.75rem 0.65rem 3.2rem !important;
+  padding: 0.7rem 0.75rem 0.7rem 4rem !important; /* More padding for flag */
   border-radius: 0.5rem !important;
-  height: 44px !important;
-  font-size: 0.95rem !important;
+  height: 48px !important; /* Taller input */
+  font-size: 1rem !important; /* Larger font */
   transition: all 0.15s ease-in-out !important;
   letter-spacing: 0.01em !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  color: #333 !important;
+}
+
+/* Custom button styling */
+.phone-input .flag-dropdown {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.phone-input .selected-flag {
+  width: 60px !important; /* Wider flag area */
+  padding: 0 0 0 15px !important;
+  background-color: transparent !important;
 }
 
 /* Custom search icon positioning */
@@ -151,14 +164,6 @@
   box-shadow: 0 0 0 3px hsla(var(--primary), 0.15) !important;
 }
 
-/* Flag button */
-.phone-input .selected-flag {
-  border-radius: 0.4rem 0 0 0.4rem !important;
-  background-color: transparent !important;
-  padding: 0 0.6rem 0 0.8rem !important;
-  transition: background-color 0.15s ease-in-out !important;
-}
-
 .phone-input .selected-flag:hover,
 .phone-input .selected-flag.open {
   background-color: rgba(0, 0, 0, 0.03) !important;
@@ -182,14 +187,18 @@
 .modern-dropdown {
   font-family: 'Familjen Grotesk', ui-sans-serif, system-ui !important;
   border-radius: 0.6rem !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
   margin-top: 8px !important;
-  max-height: 300px !important;
+  max-height: 400px !important; /* Increased height */
   scrollbar-width: thin !important;
   background-color: #fff !important;
   overflow-x: hidden !important;
   animation: dropdownFadeIn 0.2s ease-out !important;
+  width: 350px !important; /* Wider dropdown */
+  max-width: 90vw !important; /* Responsive on mobile */
+  z-index: 99 !important;
+  left: 0 !important; /* Reset any automatic positioning */
 }
 
 @keyframes dropdownFadeIn {
@@ -249,11 +258,15 @@
 
 /* Country items */
 .phone-input .country-list .country {
-  padding: 12px 16px !important;
+  padding: 14px 18px !important;
   transition: all 0.15s ease-in-out !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: flex-start !important;
+  height: auto !important;
+  min-height: 54px !important;
+  cursor: pointer !important;
 }
 
 .phone-input .country-list .country:hover {
@@ -263,6 +276,29 @@
 .phone-input .country-list .country.highlight {
   background-color: hsla(var(--primary), 0.08) !important;
   font-weight: 500 !important;
+}
+
+/* Country name wrapper */
+.phone-input .country-list .country-name {
+  margin-left: 12px !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  display: inline-block !important;
+  width: auto !important;
+  max-width: 150px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Dial code */
+.phone-input .country-list .dial-code {
+  font-size: 0.875rem !important;
+  color: #666 !important;
+  margin-left: auto !important;
+  font-weight: 400 !important;
+  padding-left: 8px !important;
+  opacity: 0.9 !important;
 }
 
 /* No results */
@@ -275,9 +311,16 @@
 
 /* Flags */
 .phone-input .flag {
-  transform: scale(1.2) !important;
+  transform: scale(1.5) !important; /* Larger flags */
   border-radius: 2px !important;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  margin-right: 10px !important;
+}
+
+/* Flag in the main button - make it more visible */
+.phone-input .selected-flag .flag {
+  transform: scale(1.8) !important;
+  margin-left: 5px !important;
 }
 
 /* Country name and dial code */
@@ -322,6 +365,58 @@
     animation: accordion-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: height, opacity;
     transform: translateZ(0);
+  }
+}
+
+/* Mobile specific phone input styles */
+@media (max-width: 767px) {
+  /* Make country dropdown take more screen space on mobile */
+  .phone-input .country-list {
+    max-height: 70vh !important; /* Use more vertical space on mobile */
+    width: 100% !important; /* Full width on mobile */
+    max-width: 100% !important;
+    border-radius: 0.8rem !important;
+    border: none !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2) !important;
+    position: fixed !important; /* Fixed position for better mobile UX */
+    top: 15vh !important; /* Position from top */
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    width: 94% !important; /* Not completely full width */
+    z-index: 9999 !important;
+  }
+  
+  /* Make country name and dial code better on mobile */
+  .phone-input .country-list .country-name {
+    font-size: 1.1rem !important;
+    max-width: none !important; /* Let it take space needed on mobile */
+    flex: 1 !important;
+  }
+  
+  .phone-input .country-list .dial-code {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Better flag spacing on mobile */
+  .phone-input .flag {
+    transform: scale(1.6) !important;
+  }
+  
+  .phone-input .selected-flag .flag {
+    transform: scale(2) !important;
+  }
+  
+  /* Bigger search box on mobile */
+  .phone-input .country-list .search-box {
+    height: 46px !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Large touch targets for items */
+  .phone-input .country-list .country {
+    min-height: 60px !important;
   }
 }
 
