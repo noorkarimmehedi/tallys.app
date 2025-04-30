@@ -29,7 +29,7 @@
 
 /* Modern phone country select styles */
 .phone-country-select {
-  font-family: 'Chivo', sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 .phone-country-item {
@@ -105,7 +105,8 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Alternate Gothic No2 BT', sans-serif;
+    @apply antialiased bg-background text-foreground;
   }
 }
 
