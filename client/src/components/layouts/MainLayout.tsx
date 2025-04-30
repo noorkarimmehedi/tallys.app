@@ -131,7 +131,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
               {/* Home Navigation Item with Dashboard Icon */}
               <MagnetizeNavItem
                 href="/"
-                icon={<img src="/assets/icons/dashboard-icon.svg" alt="Dashboard" className="w-5 h-5" />}
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 14H22V4H4V14ZM4 28H22V18H4V28ZM4 42H22V32H4V42ZM26 42H44V32H26V42ZM26 28H44V18H26V28ZM26 4V14H44V4H26Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                  </svg>
+                }
                 label="Home"
                 isActive={location === "/"}
                 particleCount={12}
