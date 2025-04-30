@@ -128,12 +128,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             {/* Original Navigation Items */}
             <div className="px-3 space-y-0.5 font-medium mb-3">
-              {/* Home Navigation Item with Dashboard Icon */}
+              {/* Home Navigation Item with Modern Dashboard Icon */}
               <MagnetizeNavItem
                 href="/"
                 icon={
-                  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 14H22V4H4V14ZM4 28H22V18H4V28ZM4 42H22V32H4V42ZM26 42H44V32H26V42ZM26 28H44V18H26V28ZM26 4V14H44V4H26Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 }
                 label="Home"
