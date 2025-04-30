@@ -12,6 +12,31 @@
   --tile: rgba(255, 255, 255, 0.1);
 }
 
+/* Modern phone country select styles */
+.phone-country-select {
+  font-family: 'Familjen Grotesk', sans-serif;
+}
+
+.phone-country-item {
+  @apply py-3 px-2;
+}
+
+.phone-country-item-flag {
+  @apply mr-3 text-lg;
+}
+
+.phone-country-item-code {
+  @apply ml-auto px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-sm;
+}
+
+.phone-country-preferred {
+  @apply border-b border-slate-100 mb-1;
+}
+
+.phone-content {
+  @apply max-h-[300px];
+}
+
 :root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;
