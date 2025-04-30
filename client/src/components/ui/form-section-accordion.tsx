@@ -222,38 +222,43 @@ function FormSectionAccordion({
       type="single" 
       collapsible
       defaultValue={undefined} // No section is opened by default
-      className="w-full max-w-full"
+      className="w-full max-w-full overflow-hidden"
+      style={{ maxWidth: '100%', overflowX: 'hidden' }}
     >
       {groupedQuestions.map((section, index) => (
         <AccordionItem 
           key={section.sectionId || `section-${index}`} 
           value={section.sectionId || `section-${index}`}
-          className={`mb-2 rounded-md border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu ${isMobile ? 'accordion-item' : ''}`}
+          className={`mb-2 rounded-md border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all will-change-transform transform-gpu ${isMobile ? 'accordion-item' : ''} max-w-full`}
           style={{ 
             WebkitTransformStyle: 'preserve-3d',
             WebkitBackfaceVisibility: 'hidden',
+            maxWidth: '100%',
+            width: '100%',
             ...(isMobile && {
               WebkitTransform: 'translate3d(0,0,0)',
               WebkitTransition: 'transform 0.1ms',
               transformTranslate: '0.1ms',
-              WebkitTapHighlightColor: 'transparent'
+              WebkitTapHighlightColor: 'transparent',
+              overflowX: 'hidden'
             })
           }}
         >
           <AccordionTrigger 
-            className="group px-3 sm:px-4 py-3 hover:no-underline hover:bg-muted/20"
+            className="group px-2 sm:px-4 py-3 hover:no-underline hover:bg-muted/20 w-full"
             style={isMobile ? { 
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
               WebkitUserSelect: 'none',
-              transition: 'none'
+              transition: 'none',
+              maxWidth: '100%'
             } : { touchAction: 'manipulation' }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full overflow-hidden">
               {getSectionIcon(section)}
-              <span className="font-medium">{section.sectionTitle}</span>
+              <span className="font-medium truncate">{section.sectionTitle}</span>
               {isSectionComplete(section.questions) && (
-                <span className="ml-2 text-sm text-green-500">✓</span>
+                <span className="ml-2 text-sm text-green-500 flex-shrink-0">✓</span>
               )}
             </div>
           </AccordionTrigger>
@@ -274,7 +279,7 @@ function FormSectionAccordion({
               maxWidth: '100%'
             } : undefined}
           >
-            <div className="py-2 space-y-4">
+            <div className="py-2 space-y-4 max-w-full overflow-hidden">
               {section.sectionDescription && (
                 <p className="text-sm text-muted-foreground mb-4">{section.sectionDescription}</p>
               )}
@@ -282,10 +287,12 @@ function FormSectionAccordion({
               {section.questions.map(question => (
                 <div 
                   key={question.id} 
-                  className="mb-4"
+                  className="mb-4 max-w-full"
                   style={{ 
                     WebkitTapHighlightColor: 'transparent',
-                    WebkitUserSelect: 'none'
+                    WebkitUserSelect: 'none',
+                    overflowX: 'hidden',
+                    wordBreak: 'break-word'
                   }}
                 >
                   {renderField(question)}
