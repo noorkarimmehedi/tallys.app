@@ -24,6 +24,7 @@ function WorkspaceAddButton() {
   const [showDialog, setShowDialog] = useState(false);
   const { workspaces, setCurrentWorkspace } = useWorkspace();
   const [isHovered, setIsHovered] = useState(false);
+  const [, navigate] = useLocation();
   
   return (
     <>
@@ -41,12 +42,13 @@ function WorkspaceAddButton() {
       
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-[500px]">
-          <div className="text-lg font-semibold mb-2">Create Workspace</div>
+          <DialogTitle>Create Workspace</DialogTitle>
           <CreateWorkspace 
             open={showDialog} 
             onOpenChange={setShowDialog}
             onSuccess={() => {
               setShowDialog(false);
+              navigate("/workspace");
             }}
           />
         </DialogContent>
@@ -58,9 +60,9 @@ function WorkspaceAddButton() {
 // Component to display the list of workspaces in the sidebar
 function WorkspaceList() {
   const { workspaces, currentWorkspace, setCurrentWorkspace } = useWorkspace();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   
-  // Handle selecting a workspace
+  // Handle selecting a workspace and navigate to workspace page
   const handleSelectWorkspace = (workspace: {
     id: number;
     name: string;
@@ -71,6 +73,7 @@ function WorkspaceList() {
     isDefault: boolean;
   }) => {
     setCurrentWorkspace(workspace);
+    navigate("/workspace");
   };
   
   // If there's no workspaces yet, return default workspace nav item
