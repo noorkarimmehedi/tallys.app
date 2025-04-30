@@ -1,5 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Sans:wght@300;400;500;600;700&display=swap');
+/* Using Apfel Grotezk font */
+@font-face {
+  font-family: 'Apfel Grotezk';
+  src: url('https://cdn.fontshare.com/wf/XRBASXBG7LHRF7OC6AKPU46MRZ7X442L/I52MTKSCHCAXBODX7ZBVFKGKY7JBMIBY/QIGPOMCPWPNMW3GO3QDZ5LCUSD6B2KZW.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/XRBASXBG7LHRF7OC6AKPU46MRZ7X442L/I52MTKSCHCAXBODX7ZBVFKGKY7JBMIBY/QIGPOMCPWPNMW3GO3QDZ5LCUSD6B2KZW.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Apfel Grotezk';
+  src: url('https://cdn.fontshare.com/wf/XNEBDTWONUFPNSFGDLPXAFK57EWGRPIJ/YB4TPSIVSL6AWF4AMGAVZSHGTVAPQIWF/HPFEOFJLT37SSFPXHLCVVNNJB7GG6TKI.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/XNEBDTWONUFPNSFGDLPXAFK57EWGRPIJ/YB4TPSIVSL6AWF4AMGAVZSHGTVAPQIWF/HPFEOFJLT37SSFPXHLCVVNNJB7GG6TKI.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Apfel Grotezk';
+  src: url('https://cdn.fontshare.com/wf/43WDRJIBX5LHSYETEMXUQYLM6ENBEIGF/KXKGNXXNBSJJ7DVRZFJFJBNMCRP65OIK/Y6TKO5SGUBIPLUGJSS2NPDWSTTBTRWDI.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/43WDRJIBX5LHSYETEMXUQYLM6ENBEIGF/KXKGNXXNBSJJ7DVRZFJFJBNMCRP65OIK/Y6TKO5SGUBIPLUGJSS2NPDWSTTBTRWDI.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
 
 @tailwind base;
 @tailwind components;
