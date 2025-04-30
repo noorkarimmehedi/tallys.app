@@ -133,6 +133,17 @@ button,
   color: black !important;
 }
 
+/* Make all button icons black */
+button svg,
+[type="button"] svg, 
+[type="reset"] svg, 
+[type="submit"] svg,
+.btn-prototype svg {
+  color: black !important;
+  fill: black !important;
+  stroke: black !important;
+}
+
 /* Custom Buy Now style button */
 .buy-now-button {
   font-family: Arial, Helvetica, sans-serif;
