@@ -499,14 +499,19 @@ button svg,
   position: relative;
   z-index: 1;
   margin: 1px; /* Add slight margin to ensure border visibility */
-  border: none !important; /* No default border */
+  border: 1px solid #ddd !important; /* Light default border */
+  transition: border-color 0.2s ease;
 }
 
-/* Force black border on selected/focused state */
+/* Add hover effect to select elements */
+[data-radix-select-trigger]:hover {
+  border-color: #999 !important; /* Darker border on hover */
+}
+
+/* Selected/focused state for select elements */
 [data-radix-select-trigger][data-state="open"] {
-  outline: 3px solid black !important; /* Only 3px black border when open */
-  outline-offset: 2px !important; /* Add space around the outline */
-  border: none !important; /* No other border */
+  border-color: #000 !important; /* Black border when open */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Fix for select content to ensure borders render properly */
@@ -537,11 +542,11 @@ select:focus,
 input:focus,
 textarea:focus,
 *:focus-visible:not([data-radix-select-trigger][data-state="open"]) {
-  outline: 3px solid black !important; /* Only 3px black border */
-  outline-offset: 2px !important; /* Add space around the outline */
-  border: none !important; /* No other border */
+  outline: none !important; /* No black outline */
+  border-color: #000 !important; /* Black border color instead */
   position: relative !important;
   z-index: 2 !important; /* Ensure the focused element appears above others */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important; /* Light shadow for depth */
 }
 
 /* Form field container fixes */
