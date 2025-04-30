@@ -1,13 +1,12 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { Check, Star } from "lucide-react";
 import { useState, useRef } from "react";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
-import { ButtonPrototype, buttonVariants } from "@/components/ui/button-prototype";
+import { ButtonPrototype } from "@/components/ui/button-prototype";
+import { PricingSwitch } from "@/components/ui/pricing-switch";
 
 interface PricingPlan {
   name: string;
@@ -75,19 +74,22 @@ export function Pricing({
       </div>
 
       <div className="flex justify-center mb-10">
-        <label className="relative inline-flex items-center cursor-pointer">
-          <Label>
-            <Switch
+        <div className="bg-gray-100 p-6 px-8 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <span className={`font-semibold text-lg ${isMonthly ? 'text-black' : 'text-gray-400'}`}>Monthly</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <PricingSwitch
               ref={switchRef as any}
               checked={!isMonthly}
               onCheckedChange={handleToggle}
-              className="relative"
             />
-          </Label>
-        </label>
-        <span className="ml-2 font-semibold">
-          Annual billing <span className="text-primary">(Save 20%)</span>
-        </span>
+          </label>
+          <div className="flex flex-col items-start">
+            <span className={`font-semibold text-lg ${!isMonthly ? 'text-black' : 'text-gray-400'}`}>
+              Annual billing
+            </span>
+            <span className="text-sm text-green-600 font-medium">Save 20%</span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 sm:2 gap-4">
