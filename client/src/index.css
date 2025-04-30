@@ -91,6 +91,51 @@
   }
 }
 
+/* Phone input custom styling */
+.phone-input-container {
+  position: relative;
+}
+
+.phone-input {
+  width: 100%;
+}
+
+.phone-input .form-control {
+  width: 100% !important;
+  border: 1px solid hsl(var(--border)) !important;
+  font-family: 'Familjen Grotesk', ui-sans-serif, system-ui !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  border-radius: 0.375rem !important;
+  height: 40px !important;
+}
+
+.phone-input .form-control:focus {
+  border-color: hsl(var(--ring)) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)) !important;
+}
+
+.phone-input .selected-flag {
+  border-radius: 0.375rem 0 0 0.375rem !important;
+  background-color: transparent !important;
+}
+
+.phone-input .country-list {
+  font-family: 'Familjen Grotesk', ui-sans-serif, system-ui !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.phone-input .country-list .country:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+.phone-input .country-list .country.highlight {
+  background-color: hsl(var(--primary)) !important;
+}
+
 /* Desktop animations - unchanged */
 @media (min-width: 768px) {
   .animate-accordion-down {
