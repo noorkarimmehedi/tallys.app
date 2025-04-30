@@ -12,11 +12,105 @@ import { useAuth } from "@/hooks/use-auth";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { CreateWorkspace } from "@/components/workspace/CreateWorkspace";
 
 interface MainLayoutProps {
   children: React.ReactNode;
+}
+
+// Component for adding a workspace via the sidebar
+function WorkspaceAddButton() {
+  const [showDialog, setShowDialog] = useState(false);
+  const { workspaces, setCurrentWorkspace } = useWorkspace();
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <>
+      <button
+        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-blue-100 rounded-sm"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setShowDialog(true)}
+        aria-label="Create new workspace"
+      >
+        <Plus 
+          className={`h-3.5 w-3.5 ${isHovered ? 'text-blue-600' : 'text-gray-400'}`} 
+        />
+      </button>
+      
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <div className="text-lg font-semibold mb-2">Create Workspace</div>
+          <CreateWorkspace 
+            open={showDialog} 
+            onOpenChange={setShowDialog}
+            onSuccess={(workspace: any) => {
+              setCurrentWorkspace(workspace);
+              setShowDialog(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+// Component to display the list of workspaces in the sidebar
+function WorkspaceList() {
+  const { workspaces, currentWorkspace, setCurrentWorkspace } = useWorkspace();
+  const [location] = useLocation();
+  
+  // Handle selecting a workspace
+  const handleSelectWorkspace = (workspace: any) => {
+    setCurrentWorkspace(workspace);
+  };
+  
+  // If there's no workspaces yet, return default workspace nav item
+  if (!workspaces || workspaces.length === 0) {
+    return (
+      <MagnetizeNavItem
+        href="/workspace"
+        icon={<Briefcase className="text-blue-500" />}
+        label={<span className="flex items-center"><span className="text-blue-500 mr-1">›</span> My workspace</span>}
+        isActive={location === "/workspace"}
+        particleCount={12}
+        attractRadius={40}
+      />
+    );
+  }
+  
+  return (
+    <>
+      {workspaces.map((workspace) => (
+        <MagnetizeNavItem
+          key={workspace.id}
+          href="/workspace"
+          icon={
+            <div 
+              className="w-3 h-3 rounded-sm" 
+              style={{ backgroundColor: workspace.color || '#4f46e5' }}
+            />
+          }
+          label={
+            <span 
+              className="flex items-center"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSelectWorkspace(workspace);
+              }}
+            >
+              <span className={`mr-1 ${currentWorkspace?.id === workspace.id ? 'text-blue-500' : 'text-gray-400'}`}>›</span> 
+              {workspace.name}
+            </span>
+          }
+          isActive={location === "/workspace" && currentWorkspace?.id === workspace.id}
+          particleCount={12}
+          attractRadius={40}
+        />
+      ))}
+    </>
+  );
 }
 
 // User Profile Section component
@@ -296,15 +390,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 <WorkspaceAddButton />
               </div>
               <div className="space-y-0.5 font-medium">
-                <MagnetizeNavItem
-                  href="/workspace"
-                  icon={<Briefcase className="text-blue-500" />}
-                  label={<span className="flex items-center"><span className="text-blue-500 mr-1">›</span> My workspace</span>}
-                  isActive={location === "/workspace"}
-                  particleCount={12}
-                  attractRadius={40}
-                />
-                {/* Additional workspaces will be dynamically added here */}
+                {/* Dynamic Workspace List */}
+                <WorkspaceList />
               </div>
             </div>
             
