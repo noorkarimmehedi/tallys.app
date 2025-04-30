@@ -20,6 +20,9 @@ import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import PlaceholderPage from "@/pages/placeholder-page";
+import Members from "@/pages/members";
+import Domains from "@/pages/domains-fixed";
+import Upgrade from "@/pages/upgrade";
 
 // Subscription-related pages
 import CheckoutPage from "@/pages/subscription/checkout";
@@ -102,19 +105,19 @@ function Router() {
       {/* Account Section Routes */}
       <ProtectedRoute path="/members" component={() => (
         <MainLayout>
-          <PlaceholderPage title="Members" description="Manage team members and permissions" />
+          <Members />
         </MainLayout>
       )} />
       
       <ProtectedRoute path="/domains" component={() => (
         <MainLayout>
-          <PlaceholderPage title="Domains" description="Configure custom domains for your forms and events" />
+          <Domains />
         </MainLayout>
       )} />
       
       <ProtectedRoute path="/upgrade" component={() => (
         <MainLayout>
-          <PlaceholderPage title="Upgrade Plan" description="Explore premium features and subscription options" />
+          <Upgrade />
         </MainLayout>
       )} />
       
