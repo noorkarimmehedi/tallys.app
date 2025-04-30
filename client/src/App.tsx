@@ -197,14 +197,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <WorkspaceProvider>
-          <TooltipProvider>
-            <Router />
-            <Toaster />
-          </TooltipProvider>
-        </WorkspaceProvider>
-      </AuthProvider>
+      <FirebaseAuthProvider>
+        <AuthProvider>
+          <WorkspaceProvider>
+            <TooltipProvider>
+              <Router />
+              <Toaster />
+            </TooltipProvider>
+          </WorkspaceProvider>
+        </AuthProvider>
+      </FirebaseAuthProvider>
     </QueryClientProvider>
   );
 }

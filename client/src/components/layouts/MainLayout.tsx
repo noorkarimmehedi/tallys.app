@@ -45,8 +45,7 @@ function WorkspaceAddButton() {
           <CreateWorkspace 
             open={showDialog} 
             onOpenChange={setShowDialog}
-            onSuccess={(workspace: any) => {
-              setCurrentWorkspace(workspace);
+            onSuccess={() => {
               setShowDialog(false);
             }}
           />
@@ -62,7 +61,15 @@ function WorkspaceList() {
   const [location] = useLocation();
   
   // Handle selecting a workspace
-  const handleSelectWorkspace = (workspace: any) => {
+  const handleSelectWorkspace = (workspace: {
+    id: number;
+    name: string;
+    description: string;
+    ownerId: number;
+    icon: string;
+    color: string;
+    isDefault: boolean;
+  }) => {
     setCurrentWorkspace(workspace);
   };
   
