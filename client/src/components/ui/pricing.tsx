@@ -6,6 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { Check, Star } from "lucide-react";
 import { useState, useRef } from "react";
+import confetti from "canvas-confetti";
+import { motion } from "framer-motion";
 
 interface PricingPlan {
   name: string;
@@ -35,6 +37,30 @@ export function Pricing({
 
   const handleToggle = (checked: boolean) => {
     setIsMonthly(!checked);
+    if (checked && switchRef.current) {
+      const rect = switchRef.current.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: {
+            x: x / window.innerWidth,
+            y: y / window.innerHeight,
+          },
+          colors: ["#000", "#333", "#666"],
+          ticks: 200,
+          gravity: 1.2,
+          decay: 0.94,
+          startVelocity: 30,
+          shapes: ["circle"],
+        });
+      } catch (e) {
+        console.log("Confetti animation not available");
+      }
+    }
   };
 
   return (
@@ -66,13 +92,34 @@ export function Pricing({
 
       <div className="grid grid-cols-1 md:grid-cols-3 sm:2 gap-4">
         {plans.map((plan, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={{ y: 50, opacity: 1 }}
+            whileInView={{
+              y: plan.isPopular ? -20 : 0,
+              opacity: 1,
+              x: index === 2 ? -30 : index === 0 ? 30 : 0,
+              scale: index === 0 || index === 2 ? 0.94 : 1.0,
+            }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 1.6,
+              type: "spring",
+              stiffness: 100,
+              damping: 30,
+              delay: 0.4,
+              opacity: { duration: 0.5 },
+            }}
             className={cn(
-              `rounded-2xl border-[1px] p-6 bg-background text-center relative`,
+              `rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative`,
               plan.isPopular ? "border-primary border-2" : "border-border",
               "flex flex-col",
-              !plan.isPopular && "mt-5"
+              !plan.isPopular && "mt-5",
+              index === 0 || index === 2
+                ? "z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]"
+                : "z-10",
+              index === 0 && "origin-right",
+              index === 2 && "origin-left"
             )}
           >
             {plan.isPopular && (
@@ -132,7 +179,7 @@ export function Pricing({
                 {plan.description}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
