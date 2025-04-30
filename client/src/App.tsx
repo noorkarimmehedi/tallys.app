@@ -19,6 +19,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider as FirebaseAuthProvider } from "@/hooks/use-firebase-auth";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import PlaceholderPage from "@/pages/placeholder-page";
 import WorkspacePage from "@/pages/workspace-page";
