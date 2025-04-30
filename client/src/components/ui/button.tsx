@@ -10,20 +10,20 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "text-black bg-white border border-gray-200 shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+          "bg-white text-black border border-gray-200 shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
         destructive:
           "bg-red-50 text-red-600 border border-red-200 shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
         outline:
-          "border border-gray-200 bg-white hover:bg-gray-50 hover:text-gray-900",
+          "border border-gray-200 bg-white text-black hover:bg-gray-50 hover:text-gray-900",
         secondary:
           "bg-gray-100 text-gray-900 border border-gray-300 shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
-        ghost: "hover:bg-gray-50 hover:text-gray-900",
-        link: "text-primary underline-offset-4 hover:underline",
-        noShadow: "text-black bg-white border border-gray-200",
+        ghost: "text-gray-800 hover:bg-gray-50 hover:text-gray-900",
+        link: "text-blue-600 underline-offset-4 hover:underline",
+        noShadow: "bg-white text-black border border-gray-200",
         neutral:
           "bg-white text-black border border-gray-200 shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
         reverse:
-          "text-black bg-white border border-gray-200 hover:translate-x-reverseBoxShadowX hover:translate-y-reverseBoxShadowY hover:shadow-shadow",
+          "bg-white text-black border border-gray-200 hover:translate-x-reverseBoxShadowX hover:translate-y-reverseBoxShadowY hover:shadow-shadow",
       },
       size: {
         default: "h-10 px-4 py-2",
