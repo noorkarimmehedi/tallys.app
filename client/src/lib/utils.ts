@@ -48,7 +48,7 @@ export function getFieldLabel(type: FieldType): string {
 
 // Function to create a form URL
 export function createFormUrl(shortId: string): string {
-  return `${window.location.origin}/f/form-${shortId}`;
+  return `${window.location.origin}/f/${shortId}`;
 }
 
 // Function to create a section
