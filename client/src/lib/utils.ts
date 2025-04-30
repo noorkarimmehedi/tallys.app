@@ -87,29 +87,71 @@ export function getDefaultFormTheme(logoUrl?: string): FormTheme {
 // Function to group questions by sections
 export function getQuestionsGroupedBySections({ 
   questions, 
-  sections 
+  sections,
+  infoDescription 
 }: { 
   questions: FormQuestion[]; 
-  sections: FormSection[] 
-}): Record<string, FormQuestion[]> {
-  const result: Record<string, FormQuestion[]> = {};
+  sections: FormSection[];
+  infoDescription?: string;
+}): Array<{
+  sectionId: string;
+  sectionTitle: string;
+  sectionDescription?: string;
+  questions: FormQuestion[];
+}> {
+  const tempResult: Record<string, FormQuestion[]> = {};
+  const sectionsMap: Record<string, { title: string; description?: string }> = {};
   
-  // Initialize with empty arrays for each section
+  // Initialize with empty arrays for each section and build sections map
   sections.forEach(section => {
-    result[section.id] = [];
+    tempResult[section.id] = [];
+    sectionsMap[section.id] = { 
+      title: section.title,
+      description: section.description
+    };
   });
   
   // Add a group for questions without section
-  result['unsectioned'] = [];
+  tempResult['unsectioned'] = [];
   
   // Group questions by section
   questions.forEach(question => {
-    if (question.sectionId && result[question.sectionId]) {
-      result[question.sectionId].push(question);
+    if (question.sectionId && tempResult[question.sectionId]) {
+      tempResult[question.sectionId].push(question);
     } else {
-      result['unsectioned'].push(question);
+      tempResult['unsectioned'].push(question);
     }
   });
+  
+  // Convert to array format
+  const result = Object.entries(tempResult)
+    .filter(([_, questionList]) => questionList.length > 0) // Only include sections with questions
+    .map(([sectionId, questions]) => {
+      if (sectionId === 'unsectioned') {
+        return {
+          sectionId: 'unsectioned',
+          sectionTitle: 'Questions',
+          questions
+        };
+      } else {
+        return {
+          sectionId,
+          sectionTitle: sectionsMap[sectionId]?.title || 'Section',
+          sectionDescription: sectionsMap[sectionId]?.description,
+          questions
+        };
+      }
+    });
+    
+  // Add information section if description is provided
+  if (infoDescription) {
+    result.unshift({
+      sectionId: 'information',
+      sectionTitle: 'Information',
+      sectionDescription: infoDescription,
+      questions: []
+    });
+  }
   
   return result;
 }
