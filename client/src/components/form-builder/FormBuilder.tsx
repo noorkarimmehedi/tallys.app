@@ -496,7 +496,7 @@ export function FormBuilder({ id }: FormBuilderProps) {
             <h4 className="text-sm font-medium text-gray-700 mb-2">Sharing Options</h4>
             <div className="flex space-x-3">
               <Button variant="outline" size="icon" className="p-2">
-                <i className="ri-twitter-x-line"></i>
+                <i className="ri-twitter-line"></i>
               </Button>
               <Button variant="outline" size="icon" className="p-2">
                 <i className="ri-facebook-circle-line"></i>
