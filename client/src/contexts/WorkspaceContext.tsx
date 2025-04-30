@@ -82,6 +82,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         // Otherwise use the first workspace
         setCurrentWorkspace(workspaces[0]);
       }
+    } else if (workspaces?.length > 0 && currentWorkspace) {
+      // If we have a currentWorkspace, check if it needs updating
+      const updatedWorkspace = workspaces.find(
+        (workspace: Workspace) => workspace.id === currentWorkspace.id
+      );
+      
+      // Update current workspace with latest data from the API if needed
+      if (updatedWorkspace && 
+          (updatedWorkspace.name !== currentWorkspace.name ||
+           updatedWorkspace.description !== currentWorkspace.description ||
+           updatedWorkspace.color !== currentWorkspace.color ||
+           updatedWorkspace.icon !== currentWorkspace.icon)) {
+        setCurrentWorkspace(updatedWorkspace);
+      }
     }
   }, [workspaces, currentWorkspace]);
 
@@ -100,7 +114,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useWorkspace() {
+// Define useWorkspace as a named constant function instead of a function declaration
+// This helps with Fast Refresh compatibility
+export const useWorkspace = () => {
   const context = useContext(WorkspaceContext);
   if (context === undefined) {
     throw new Error('useWorkspace must be used within a WorkspaceProvider');
