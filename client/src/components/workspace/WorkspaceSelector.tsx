@@ -78,23 +78,25 @@ export function WorkspaceSelector({
       }
       return response.json();
     },
-    retry: 1,
-    onError: () => {
-      toast({
-        title: 'Failed to load workspaces',
-        description: 'Please try again later.',
-        variant: 'destructive',
-      });
-    }
+    retry: 1
   });
 
   // Create workspace mutation
   const createWorkspaceMutation = useMutation({
     mutationFn: async (data: { name: string; description: string }) => {
-      return apiRequest('/api/workspaces', {
+      const response = await fetch('/api/workspaces', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create workspace');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({

@@ -110,10 +110,19 @@ export function WorkspaceSettings({
   // Update workspace
   const updateWorkspaceMutation = useMutation({
     mutationFn: async (data: Partial<Workspace>) => {
-      return apiRequest(`/api/workspaces/${workspace.id}`, {
+      const response = await fetch(`/api/workspaces/${workspace.id}`, {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update workspace');
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       toast({
@@ -134,9 +143,15 @@ export function WorkspaceSettings({
   // Delete workspace
   const deleteWorkspaceMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest(`/api/workspaces/${workspace.id}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/workspaces/${workspace.id}`, {
+        method: 'DELETE'
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete workspace');
+      }
+      
+      return true;
     },
     onSuccess: () => {
       toast({
@@ -163,10 +178,19 @@ export function WorkspaceSettings({
   // Add member
   const addMemberMutation = useMutation({
     mutationFn: async (data: { email: string; role: string }) => {
-      return apiRequest(`/api/workspaces/${workspace.id}/members`, {
+      const response = await fetch(`/api/workspaces/${workspace.id}/members`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add member');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -192,9 +216,15 @@ export function WorkspaceSettings({
   // Remove member
   const removeMemberMutation = useMutation({
     mutationFn: async (memberId: number) => {
-      return apiRequest(`/api/workspaces/${workspace.id}/members/${memberId}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/workspaces/${workspace.id}/members/${memberId}`, {
+        method: 'DELETE'
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to remove member');
+      }
+      
+      return true;
     },
     onSuccess: () => {
       toast({
@@ -219,10 +249,19 @@ export function WorkspaceSettings({
   // Update member role
   const updateMemberRoleMutation = useMutation({
     mutationFn: async ({ memberId, role }: { memberId: number; role: string }) => {
-      return apiRequest(`/api/workspaces/${workspace.id}/members/${memberId}`, {
+      const response = await fetch(`/api/workspaces/${workspace.id}/members/${memberId}`, {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ role }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update member role');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({

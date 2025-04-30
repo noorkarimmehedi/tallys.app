@@ -2,7 +2,14 @@ import express, { type Express, Request, Response, NextFunction } from "express"
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertFormSchema, insertResponseSchema, insertEventSchema, insertBookingSchema } from "@shared/schema";
+import { 
+  insertFormSchema, 
+  insertResponseSchema, 
+  insertEventSchema, 
+  insertBookingSchema,
+  insertWorkspaceSchema,
+  insertWorkspaceMemberSchema
+} from "@shared/schema";
 import { setupAuth, comparePasswords, hashPassword } from "./auth";
 import fileUpload from "express-fileupload";
 import path from "path";
@@ -319,6 +326,323 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid response data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to submit response" });
+    }
+  });
+
+  // Workspace API Routes
+  app.get("/api/workspaces", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const workspaces = await storage.getWorkspaces(userId);
+      res.json(workspaces);
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+      res.status(500).json({ message: "Failed to fetch workspaces" });
+    }
+  });
+
+  app.get("/api/workspaces/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid workspace ID" });
+      }
+
+      const workspace = await storage.getWorkspace(id);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Check if user has access to this workspace
+      const userId = req.user!.id;
+      const userWorkspaces = await storage.getWorkspaces(userId);
+      const hasAccess = userWorkspaces.some(w => w.id === workspace.id);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "You do not have access to this workspace" });
+      }
+
+      res.json(workspace);
+    } catch (error) {
+      console.error("Error fetching workspace:", error);
+      res.status(500).json({ message: "Failed to fetch workspace" });
+    }
+  });
+
+  app.post("/api/workspaces", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      const workspaceData = {
+        ...req.body,
+        ownerId: userId
+      };
+      
+      const validatedData = insertWorkspaceSchema.parse(workspaceData);
+      const workspace = await storage.createWorkspace(validatedData);
+      
+      res.status(201).json(workspace);
+    } catch (error) {
+      console.error("Error creating workspace:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid workspace data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create workspace" });
+    }
+  });
+
+  app.put("/api/workspaces/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid workspace ID" });
+      }
+
+      const workspace = await storage.getWorkspace(id);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Only workspace owner can update it
+      const userId = req.user!.id;
+      if (workspace.ownerId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to update this workspace" });
+      }
+
+      const updatedWorkspace = await storage.updateWorkspace(id, req.body);
+      res.json(updatedWorkspace);
+    } catch (error) {
+      console.error("Error updating workspace:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid workspace data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update workspace" });
+    }
+  });
+
+  app.delete("/api/workspaces/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid workspace ID" });
+      }
+
+      const workspace = await storage.getWorkspace(id);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Only workspace owner can delete it
+      const userId = req.user!.id;
+      if (workspace.ownerId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to delete this workspace" });
+      }
+
+      const success = await storage.deleteWorkspace(id);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete workspace" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting workspace:", error);
+      res.status(500).json({ message: "Failed to delete workspace" });
+    }
+  });
+
+  // Workspace Members API Routes
+  app.get("/api/workspaces/:id/members", isAuthenticated, async (req, res) => {
+    try {
+      const workspaceId = parseInt(req.params.id);
+      if (isNaN(workspaceId)) {
+        return res.status(400).json({ message: "Invalid workspace ID" });
+      }
+
+      const workspace = await storage.getWorkspace(workspaceId);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Check if user has access to this workspace
+      const userId = req.user!.id;
+      const userWorkspaces = await storage.getWorkspaces(userId);
+      const hasAccess = userWorkspaces.some(w => w.id === workspace.id);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "You do not have access to this workspace" });
+      }
+
+      const members = await storage.getWorkspaceMembers(workspaceId);
+      
+      // Fetch user details for each member
+      const membersWithUsers = await Promise.all(members.map(async (member) => {
+        const user = await storage.getUser(member.userId);
+        return {
+          ...member,
+          user: user ? {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          } : undefined
+        };
+      }));
+
+      res.json(membersWithUsers);
+    } catch (error) {
+      console.error("Error fetching workspace members:", error);
+      res.status(500).json({ message: "Failed to fetch workspace members" });
+    }
+  });
+
+  app.post("/api/workspaces/:id/members", isAuthenticated, async (req, res) => {
+    try {
+      const workspaceId = parseInt(req.params.id);
+      if (isNaN(workspaceId)) {
+        return res.status(400).json({ message: "Invalid workspace ID" });
+      }
+
+      const workspace = await storage.getWorkspace(workspaceId);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Only workspace owner can add members
+      const userId = req.user!.id;
+      if (workspace.ownerId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to add members to this workspace" });
+      }
+
+      // Get user by email
+      const email = req.body.email;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found with that email" });
+      }
+
+      // Create workspace member
+      const memberData = {
+        workspaceId,
+        userId: user.id,
+        role: req.body.role || "viewer"
+      };
+
+      const validatedData = insertWorkspaceMemberSchema.parse(memberData);
+      const member = await storage.addWorkspaceMember(validatedData);
+
+      // Fetch user details for the member
+      const memberWithUser = {
+        ...member,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        }
+      };
+
+      res.status(201).json(memberWithUser);
+    } catch (error) {
+      console.error("Error adding workspace member:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid member data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to add workspace member" });
+    }
+  });
+
+  app.put("/api/workspaces/:workspaceId/members/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const workspaceId = parseInt(req.params.workspaceId);
+      const memberId = parseInt(req.params.userId);
+      
+      if (isNaN(workspaceId) || isNaN(memberId)) {
+        return res.status(400).json({ message: "Invalid workspace or member ID" });
+      }
+
+      const workspace = await storage.getWorkspace(workspaceId);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Only workspace owner can update member roles
+      const userId = req.user!.id;
+      if (workspace.ownerId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to update member roles" });
+      }
+
+      // Can't update the owner's role
+      if (memberId === workspace.ownerId) {
+        return res.status(400).json({ message: "Cannot change the workspace owner's role" });
+      }
+
+      const role = req.body.role;
+      if (!role) {
+        return res.status(400).json({ message: "Role is required" });
+      }
+
+      const updatedMember = await storage.updateWorkspaceMemberRole(workspaceId, memberId, role);
+      
+      // Fetch user details for the member
+      const user = await storage.getUser(memberId);
+      const memberWithUser = {
+        ...updatedMember,
+        user: user ? {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        } : undefined
+      };
+
+      res.json(memberWithUser);
+    } catch (error) {
+      console.error("Error updating workspace member:", error);
+      res.status(500).json({ message: "Failed to update workspace member" });
+    }
+  });
+
+  app.delete("/api/workspaces/:workspaceId/members/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const workspaceId = parseInt(req.params.workspaceId);
+      const memberId = parseInt(req.params.userId);
+      
+      if (isNaN(workspaceId) || isNaN(memberId)) {
+        return res.status(400).json({ message: "Invalid workspace or member ID" });
+      }
+
+      const workspace = await storage.getWorkspace(workspaceId);
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      // Only workspace owner can remove members
+      const userId = req.user!.id;
+      if (workspace.ownerId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to remove members" });
+      }
+
+      // Can't remove the workspace owner
+      if (memberId === workspace.ownerId) {
+        return res.status(400).json({ message: "Cannot remove the workspace owner" });
+      }
+
+      const success = await storage.removeWorkspaceMember(workspaceId, memberId);
+      if (!success) {
+        return res.status(404).json({ message: "Member not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error removing workspace member:", error);
+      res.status(500).json({ message: "Failed to remove workspace member" });
     }
   });
 
