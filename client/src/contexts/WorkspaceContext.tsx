@@ -75,7 +75,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (workspaces?.length > 0 && !currentWorkspace) {
       // Look for default workspace first
-      const defaultWorkspace = workspaces.find(workspace => workspace.isDefault);
+      const defaultWorkspace = workspaces.find((workspace: Workspace) => workspace.isDefault);
       if (defaultWorkspace) {
         setCurrentWorkspace(defaultWorkspace);
       } else {
