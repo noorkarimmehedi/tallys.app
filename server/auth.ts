@@ -40,12 +40,14 @@ export async function verifyFirebaseAuthToken(req: Request, res: Response, next:
   // Check for Authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No Authorization header found or not Bearer token');
     return next(); // No token, proceed to next middleware
   }
 
   // Extract the token
   const idToken = authHeader.split('Bearer ')[1];
   if (!idToken) {
+    console.log('No ID token found in Authorization header');
     return next();
   }
 
@@ -53,8 +55,11 @@ export async function verifyFirebaseAuthToken(req: Request, res: Response, next:
     // Verify the token
     const decodedToken = await verifyFirebaseToken(idToken);
     if (!decodedToken) {
+      console.log('Token verification failed');
       return next();
     }
+
+    console.log('Firebase token verified for user:', decodedToken.email);
 
     // Create or update user in our database
     const user = await storage.createOrUpdateFirebaseUser({
@@ -64,11 +69,14 @@ export async function verifyFirebaseAuthToken(req: Request, res: Response, next:
       photoURL: decodedToken.picture
     });
 
+    console.log('User created or updated in database:', user.id);
+
     // Log the user in
     req.login(user, (err) => {
       if (err) {
         console.error('Error logging in Firebase user:', err);
       }
+      console.log('User logged in successfully:', user.id);
       next();
     });
   } catch (error) {
@@ -156,8 +164,11 @@ export function setupAuth(app: Express) {
   // Firebase token authentication endpoint
   app.post("/api/firebase-auth", async (req, res, next) => {
     try {
+      console.log('Processing Firebase authentication request');
+      
       // Check if Firebase Admin is initialized
       if (!firebaseInitialized) {
+        console.log('Firebase Admin not initialized');
         return res.status(503).json({ 
           message: "Firebase authentication is not available at this time"
         });
@@ -165,14 +176,19 @@ export function setupAuth(app: Express) {
       
       const { idToken } = req.body;
       if (!idToken) {
+        console.log('No idToken provided in request body');
         return res.status(400).json({ message: "ID token is required" });
       }
       
+      console.log('Verifying Firebase token');
       // Verify the token
       const decodedToken = await verifyFirebaseToken(idToken);
       if (!decodedToken) {
+        console.log('Token verification failed');
         return res.status(401).json({ message: "Invalid or expired Firebase token" });
       }
+      
+      console.log('Token verified for user:', decodedToken.email);
       
       // Create or update user in our database
       const user = await storage.createOrUpdateFirebaseUser({
@@ -182,9 +198,20 @@ export function setupAuth(app: Express) {
         photoURL: decodedToken.picture
       });
       
-      // Log the user in
+      console.log('User created or updated with ID:', user.id);
+      
+      // Log the user in with Passport.js
       req.login(user, (err) => {
-        if (err) return next(err);
+        if (err) {
+          console.error('Error in req.login:', err);
+          return next(err);
+        }
+        console.log('User successfully logged in via req.login:', user.id);
+        
+        // Check session data
+        console.log('Session after login:', req.session.id, 
+          req.isAuthenticated() ? 'Authenticated' : 'Not authenticated');
+        
         res.status(200).json(user);
       });
     } catch (error) {
@@ -204,7 +231,16 @@ export function setupAuth(app: Express) {
   app.use(verifyFirebaseAuthToken);
 
   app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
+    console.log('GET /api/user - Session ID:', req.session.id);
+    console.log('GET /api/user - Authenticated:', req.isAuthenticated());
+    console.log('GET /api/user - Session passport:', req.session.passport);
+    
+    if (!req.isAuthenticated()) {
+      console.log('GET /api/user - Authentication check failed');
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    console.log('GET /api/user - User is authenticated, returning user data for ID:', req.user?.id);
     res.json(req.user);
   });
   

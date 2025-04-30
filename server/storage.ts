@@ -80,11 +80,14 @@ export class DatabaseStorage implements IStorage {
       createTableIfMissing: true
     });
     
-    // Create sample data if the database is empty
-    this.seedDatabase();
+    // We don't need to seed demo data anymore
+    // Empty databases will show proper empty states in the UI
+    // this.seedDatabase();
   }
   
+  // We keep this method but don't call it in the constructor
   private async seedDatabase() {
+    // For admin use only - this method is kept for reference but not used
     // Check if users table is empty
     const existingUsers = await db.select().from(users);
     if (existingUsers.length === 0) {
