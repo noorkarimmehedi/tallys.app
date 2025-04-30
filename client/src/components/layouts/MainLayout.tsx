@@ -128,15 +128,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             {/* Original Navigation Items */}
             <div className="px-3 space-y-0.5 font-medium mb-3">
-              {/* Home Navigation Item with Layout Grid Icon */}
+              {/* Home Navigation Item with Layout Dashboard Icon */}
               <MagnetizeNavItem
                 href="/"
                 icon={
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-layout-grid">
-                    <rect width="7" height="7" x="3" y="3" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect width="7" height="7" x="14" y="3" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect width="7" height="7" x="14" y="14" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect width="7" height="7" x="3" y="14" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-layout-dashboard">
+                    <rect width="7" height="9" x="3" y="3" rx="1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect width="7" height="5" x="14" y="3" rx="1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect width="7" height="9" x="14" y="12" rx="1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect width="7" height="5" x="3" y="16" rx="1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 }
                 label="Home"
