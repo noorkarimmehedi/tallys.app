@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
 import { 
@@ -9,8 +9,6 @@ import {
 import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { useAuth } from "@/hooks/use-auth";
-// Import SVG logo component for instant loading
-import LogoSVG from "@/components/ui/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -118,10 +116,43 @@ export default function MainLayout({ children }: MainLayoutProps) {
             />
           </div>
           
-          {/* Logo - using SVG for instant loading */}
+          {/* Logo - using inline SVG for immediate rendering without any loading delay */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 relative z-10">
             <Link href="/" className="flex items-center">
-              <LogoSVG className="h-8" />
+              <svg
+                width="160"
+                height="40"
+                viewBox="0 0 640 160"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8"
+              >
+                <path
+                  d="M140 20H40C28.9543 20 20 28.9543 20 40V120C20 131.046 28.9543 140 40 140H140C151.046 140 160 131.046 160 120V40C160 28.9543 151.046 20 140 20Z"
+                  fill="black"
+                />
+                <path d="M100 60H80V100H100V60Z" fill="white" />
+                <path d="M60 60H40V80H60V60Z" fill="white" />
+                <path d="M140 60H120V80H140V60Z" fill="white" />
+                <path d="M120 100H100V120H120V100Z" fill="white" />
+                <path d="M60 100H40V120H60V100Z" fill="white" />
+                <path d="M220 50H200V110H220V50Z" fill="black" />
+                <path d="M280 50H240V70H280V50Z" fill="black" />
+                <path d="M280 70H260V110H280V70Z" fill="black" />
+                <path d="M340 50H300V70H340V50Z" fill="black" />
+                <path d="M340 90H300V110H340V90Z" fill="black" />
+                <path d="M320 70H300V90H320V70Z" fill="black" />
+                <path d="M400 50H360V110H400V50Z" fill="black" />
+                <path d="M380 50H360V110H380V50Z" fill="black" />
+                <path d="M440 50H420V110H440V50Z" fill="black" />
+                <path d="M500 50H460V70H500V50Z" fill="black" />
+                <path d="M480 70H460V110H480V70Z" fill="black" />
+                <path d="M560 50H520V110H560V50Z" fill="black" />
+                <path d="M540 50H520V110H540V50Z" fill="black" />
+                <path d="M620 50H580V110H620V50Z" fill="black" />
+                <path d="M620 50H580V70H620V50Z" fill="black" />
+                <path d="M620 90H580V110H620V90Z" fill="black" />
+              </svg>
             </Link>
           </div>
           
@@ -324,9 +355,42 @@ export default function MainLayout({ children }: MainLayoutProps) {
       
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top Navigation Bar */}
+        {/* Top Navigation Bar - with inline SVG for instant logo rendering */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
-          <LogoSVG className="h-6" />
+          <svg
+            width="120"
+            height="30"
+            viewBox="0 0 640 160"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6"
+          >
+            <path
+              d="M140 20H40C28.9543 20 20 28.9543 20 40V120C20 131.046 28.9543 140 40 140H140C151.046 140 160 131.046 160 120V40C160 28.9543 151.046 20 140 20Z"
+              fill="black"
+            />
+            <path d="M100 60H80V100H100V60Z" fill="white" />
+            <path d="M60 60H40V80H60V60Z" fill="white" />
+            <path d="M140 60H120V80H140V60Z" fill="white" />
+            <path d="M120 100H100V120H120V100Z" fill="white" />
+            <path d="M60 100H40V120H60V100Z" fill="white" />
+            <path d="M220 50H200V110H220V50Z" fill="black" />
+            <path d="M280 50H240V70H280V50Z" fill="black" />
+            <path d="M280 70H260V110H280V70Z" fill="black" />
+            <path d="M340 50H300V70H340V50Z" fill="black" />
+            <path d="M340 90H300V110H340V90Z" fill="black" />
+            <path d="M320 70H300V90H320V70Z" fill="black" />
+            <path d="M400 50H360V110H400V50Z" fill="black" />
+            <path d="M380 50H360V110H380V50Z" fill="black" />
+            <path d="M440 50H420V110H440V50Z" fill="black" />
+            <path d="M500 50H460V70H500V50Z" fill="black" />
+            <path d="M480 70H460V110H480V70Z" fill="black" />
+            <path d="M560 50H520V110H560V50Z" fill="black" />
+            <path d="M540 50H520V110H540V50Z" fill="black" />
+            <path d="M620 50H580V110H620V50Z" fill="black" />
+            <path d="M620 50H580V70H620V50Z" fill="black" />
+            <path d="M620 90H580V110H620V90Z" fill="black" />
+          </svg>
           <button 
             type="button" 
             className="text-gray-600 hover:text-gray-900"
