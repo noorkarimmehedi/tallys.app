@@ -122,7 +122,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           
           {/* Navigation */}
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
-            <div className="px-3 space-y-0.5 font-medium">
+            <div className="px-3 space-y-0.5 font-semibold">
               {/* Home Navigation Item */}
               <MagnetizeNavItem
                 href="/"
