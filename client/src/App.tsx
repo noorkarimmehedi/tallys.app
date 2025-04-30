@@ -19,6 +19,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
+import PlaceholderPage from "@/pages/placeholder-page";
 
 // Subscription-related pages
 import CheckoutPage from "@/pages/subscription/checkout";
@@ -95,6 +96,64 @@ function Router() {
       <ProtectedRoute path="/event-builder/:id" component={() => (
         <MainLayout>
           <EventBuilder />
+        </MainLayout>
+      )} />
+      
+      {/* Account Section Routes */}
+      <ProtectedRoute path="/members" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Members" description="Manage team members and permissions" />
+        </MainLayout>
+      )} />
+      
+      <ProtectedRoute path="/domains" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Domains" description="Configure custom domains for your forms and events" />
+        </MainLayout>
+      )} />
+      
+      <ProtectedRoute path="/upgrade" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Upgrade Plan" description="Explore premium features and subscription options" />
+        </MainLayout>
+      )} />
+      
+      {/* Workspace Section Routes */}
+      <ProtectedRoute path="/workspace" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="My Workspace" description="Manage your personal workspace settings and preferences" />
+        </MainLayout>
+      )} />
+      
+      {/* Product Section Routes */}
+      <ProtectedRoute path="/templates" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Templates" description="Browse and use pre-designed templates for forms and events" />
+        </MainLayout>
+      )} />
+      
+      <ProtectedRoute path="/whats-new" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="What's New" description="Discover the latest features and updates" />
+        </MainLayout>
+      )} />
+      
+      <ProtectedRoute path="/feature-requests" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Feature Requests" description="Submit and vote on feature requests for the platform" />
+        </MainLayout>
+      )} />
+      
+      <ProtectedRoute path="/trash" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Trash" description="View and restore deleted items" />
+        </MainLayout>
+      )} />
+      
+      {/* Help Section Routes */}
+      <ProtectedRoute path="/support" component={() => (
+        <MainLayout>
+          <PlaceholderPage title="Contact Support" description="Get help from our support team" />
         </MainLayout>
       )} />
       
