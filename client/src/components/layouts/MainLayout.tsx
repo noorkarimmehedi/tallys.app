@@ -145,30 +145,47 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 attractRadius={40}
               />
               
-              {/* Inbox Navigation Item */}
+              {/* Inbox Navigation Item with Lucide Icon */}
               <MagnetizeNavItem
                 href="/inbox"
-                icon={<Inbox />}
+                icon={
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-inbox">
+                    <rect width="18" height="14" x="3" y="5" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                }
                 label="Inbox"
                 isActive={location === "/inbox"}
                 particleCount={12}
                 attractRadius={40}
               />
               
-              {/* Calendar Navigation Item */}
+              {/* Calendar Navigation Item with Lucide Icon */}
               <MagnetizeNavItem
                 href="/calendar"
-                icon={<CalendarDays />}
+                icon={
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-calendar">
+                    <rect width="18" height="16" x="3" y="4" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                }
                 label="Calendar"
                 isActive={location === "/calendar"}
                 particleCount={12}
                 attractRadius={40}
               />
               
-              {/* Settings Navigation Item */}
+              {/* Settings Navigation Item with Lucide Icon */}
               <MagnetizeNavItem
                 href="/settings"
-                icon={<Settings />}
+                icon={
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-settings">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                }
                 label="Settings"
                 isActive={location === "/settings"}
                 particleCount={12}
