@@ -20,6 +20,7 @@ import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import PlaceholderPage from "@/pages/placeholder-page";
+import WorkspacePage from "@/pages/workspace-page";
 import Members from "@/pages/members";
 import Domains from "@/pages/domains-fixed";
 import Upgrade from "@/pages/upgrade";
@@ -124,7 +125,7 @@ function Router() {
       {/* Workspace Section Routes */}
       <ProtectedRoute path="/workspace" component={() => (
         <MainLayout>
-          <PlaceholderPage title="My Workspace" description="Manage your personal workspace settings and preferences" />
+          <WorkspacePage />
         </MainLayout>
       )} />
       
