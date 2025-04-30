@@ -110,6 +110,31 @@
   }
 }
 
+/* Custom Buy Now style button */
+.buy-now-button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  color: #000;
+  background: linear-gradient(#fff, #f1f1f1);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.buy-now-button:hover {
+  background: linear-gradient(#f1f1f1, #eaeaea);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.buy-now-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
 @keyframes accordion-down {
   from {
     height: 0;

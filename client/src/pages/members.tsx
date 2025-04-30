@@ -158,10 +158,10 @@ const Members = () => {
         
         <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
+            <button className="buy-now-button flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
               <span>Invite Member</span>
-            </Button>
+            </button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -235,9 +235,12 @@ const Members = () => {
               <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
                 Invite team members to collaborate on your workspace. They'll receive an email invitation.
               </p>
-              <Button onClick={() => setIsInviteDialogOpen(true)}>
+              <button 
+                className="buy-now-button"
+                onClick={() => setIsInviteDialogOpen(true)}
+              >
                 Invite Your First Team Member
-              </Button>
+              </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
