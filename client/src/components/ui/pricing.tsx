@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Check, Star } from "lucide-react";
 import { useState, useRef } from "react";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PricingPlan {
   name: string;
@@ -135,9 +135,18 @@ export function Pricing({
                 {plan.name}
               </p>
               <div className="mt-6 flex items-center justify-center gap-x-2">
-                <span className="text-5xl font-bold tracking-tight text-foreground">
-                  ${isMonthly ? plan.price : plan.yearlyPrice}
-                </span>
+                <AnimatePresence mode="wait">
+                  <motion.span 
+                    key={isMonthly ? plan.price : plan.yearlyPrice}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-5xl font-bold tracking-tight text-foreground flex items-center"
+                  >
+                    ${isMonthly ? plan.price : plan.yearlyPrice}
+                  </motion.span>
+                </AnimatePresence>
                 {plan.period !== "Next 3 months" && (
                   <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
                     / {plan.period}
