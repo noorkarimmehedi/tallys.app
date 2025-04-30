@@ -20,9 +20,33 @@ export const users = pgTable("users", {
   subscriptionEndsAt: timestamp("subscription_ends_at"),
 });
 
+// Workspaces table for organizing forms and events
+export const workspaces = pgTable("workspaces", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  ownerId: integer("owner_id").notNull(),
+  icon: text("icon").default("folder"), // Icon identifier (uses Lucide icons)
+  color: text("color").default("#4f46e5"), // Color for the workspace
+  isDefault: boolean("is_default").default(false), // Is this the default workspace
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Workspace Members table for managing access to workspaces
+export const workspaceMembers = pgTable("workspace_members", {
+  id: serial("id").primaryKey(),
+  workspaceId: integer("workspace_id").notNull(),
+  userId: integer("user_id").notNull(),
+  role: text("role").default("viewer"), // owner, admin, editor, viewer
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const forms = pgTable("forms", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
+  workspaceId: integer("workspace_id"), // Optional association with a workspace
   title: text("title").notNull(),
   shortId: text("short_id").notNull().unique(),
   published: boolean("published").default(false),
@@ -45,6 +69,7 @@ export const responses = pgTable("responses", {
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
+  workspaceId: integer("workspace_id"), // Optional association with a workspace
   title: text("title").notNull(),
   description: text("description"),
   shortId: text("short_id").notNull().unique(),
@@ -130,6 +155,9 @@ export interface EventAvailability {
   timeSlots: TimeSlot[];
 }
 
+// Workspace role type
+export type WorkspaceRole = "owner" | "admin" | "editor" | "viewer";
+
 // Insert Schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -141,6 +169,20 @@ export const insertUserSchema = createInsertSchema(users).omit({
   firebaseId: z.string().optional(),
   displayName: z.string().optional(),
   photoURL: z.string().optional(),
+});
+
+export const insertWorkspaceSchema = createInsertSchema(workspaces).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkspaceMemberSchema = createInsertSchema(workspaceMembers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  role: z.enum(["owner", "admin", "editor", "viewer"]).default("viewer"),
 });
 
 export const insertFormSchema = createInsertSchema(forms).omit({
@@ -175,6 +217,12 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export type InsertWorkspace = z.infer<typeof insertWorkspaceSchema>;
+export type Workspace = typeof workspaces.$inferSelect;
+
+export type InsertWorkspaceMember = z.infer<typeof insertWorkspaceMemberSchema>;
+export type WorkspaceMember = typeof workspaceMembers.$inferSelect;
 
 export type InsertForm = z.infer<typeof insertFormSchema>;
 export type Form = typeof forms.$inferSelect;

@@ -4,7 +4,10 @@ import {
   User, InsertUser,
   Event, InsertEvent,
   Booking, InsertBooking,
-  users, forms, responses, events, bookings
+  Workspace, InsertWorkspace,
+  WorkspaceMember, InsertWorkspaceMember,
+  WorkspaceRole,
+  users, forms, responses, events, bookings, workspaces, workspaceMembers
 } from "@shared/schema";
 import { nanoid } from "nanoid";
 import { db } from './db';
@@ -40,8 +43,24 @@ export interface IStorage {
     subscriptionEndsAt?: Date;
   }): Promise<User>;
   
+  // Workspace
+  getWorkspaces(userId: number): Promise<Workspace[]>;
+  getWorkspace(id: number): Promise<Workspace | undefined>;
+  createWorkspace(workspace: InsertWorkspace): Promise<Workspace>;
+  updateWorkspace(id: number, workspace: Partial<Workspace>): Promise<Workspace | undefined>;
+  deleteWorkspace(id: number): Promise<boolean>;
+  
+  // Workspace Members
+  getWorkspaceMembers(workspaceId: number): Promise<WorkspaceMember[]>;
+  getWorkspaceMember(workspaceId: number, userId: number): Promise<WorkspaceMember | undefined>;
+  addWorkspaceMember(member: InsertWorkspaceMember): Promise<WorkspaceMember>;
+  updateWorkspaceMemberRole(workspaceId: number, userId: number, role: WorkspaceRole): Promise<WorkspaceMember | undefined>;
+  removeWorkspaceMember(workspaceId: number, userId: number): Promise<boolean>;
+  getUserWorkspaces(userId: number): Promise<Workspace[]>;
+  
   // Form
   getForms(userId: number): Promise<Form[]>;
+  getWorkspaceForms(workspaceId: number): Promise<Form[]>;
   getForm(id: number): Promise<Form | undefined>;
   getFormByShortId(shortId: string): Promise<Form | undefined>;
   createForm(form: InsertForm): Promise<Form>;
@@ -55,6 +74,7 @@ export interface IStorage {
   
   // Event
   getEvents(userId: number): Promise<Event[]>;
+  getWorkspaceEvents(workspaceId: number): Promise<Event[]>;
   getEvent(id: number): Promise<Event | undefined>;
   getEventByShortId(shortId: string): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
@@ -341,11 +361,185 @@ export class DatabaseStorage implements IStorage {
     return updatedUser;
   }
 
+  // Workspace methods
+  async getWorkspaces(userId: number): Promise<Workspace[]> {
+    // Get workspaces where the user is the owner
+    const ownedWorkspaces = await db.select().from(workspaces).where(eq(workspaces.ownerId, userId));
+    
+    // Get workspace IDs where user is a member
+    const memberWorkspaceIds = await db.select({ workspaceId: workspaceMembers.workspaceId })
+      .from(workspaceMembers)
+      .where(eq(workspaceMembers.userId, userId));
+    
+    // If user is not a member of any workspaces, return only owned workspaces
+    if (memberWorkspaceIds.length === 0) {
+      return ownedWorkspaces;
+    }
+    
+    // Get all workspaces where user is a member
+    const memberWorkspaces = await db.select()
+      .from(workspaces)
+      .where(inArray(workspaces.id, memberWorkspaceIds.map(w => w.workspaceId)));
+    
+    // Combine both lists, avoiding duplicates by using a Map with workspace ID as key
+    const workspaceMap = new Map<number, Workspace>();
+    
+    [...ownedWorkspaces, ...memberWorkspaces].forEach(workspace => {
+      workspaceMap.set(workspace.id, workspace);
+    });
+    
+    return Array.from(workspaceMap.values());
+  }
+  
+  async getWorkspace(id: number): Promise<Workspace | undefined> {
+    const [workspace] = await db.select().from(workspaces).where(eq(workspaces.id, id));
+    return workspace;
+  }
+  
+  async createWorkspace(insertWorkspace: InsertWorkspace): Promise<Workspace> {
+    const [workspace] = await db.insert(workspaces).values(insertWorkspace).returning();
+    
+    // If this is the first workspace for the user, make it the default
+    const userWorkspaces = await this.getWorkspaces(insertWorkspace.ownerId);
+    if (userWorkspaces.length === 1) {
+      return this.updateWorkspace(workspace.id, { isDefault: true });
+    }
+    
+    return workspace;
+  }
+  
+  async updateWorkspace(id: number, updates: Partial<Workspace>): Promise<Workspace> {
+    const [updatedWorkspace] = await db
+      .update(workspaces)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(workspaces.id, id))
+      .returning();
+      
+    if (!updatedWorkspace) {
+      throw new Error(`Workspace with ID ${id} not found`);
+    }
+    
+    return updatedWorkspace;
+  }
+  
+  async deleteWorkspace(id: number): Promise<boolean> {
+    // First, make sure there are no forms or events in the workspace
+    const [workspace] = await db.select().from(workspaces).where(eq(workspaces.id, id));
+    if (!workspace) {
+      return false;
+    }
+    
+    // Delete all workspace members
+    await db.delete(workspaceMembers).where(eq(workspaceMembers.workspaceId, id));
+    
+    // Delete the workspace
+    const result = await db.delete(workspaces).where(eq(workspaces.id, id));
+    return !!result;
+  }
+  
+  // Workspace Members methods
+  async getWorkspaceMembers(workspaceId: number): Promise<WorkspaceMember[]> {
+    return db.select().from(workspaceMembers).where(eq(workspaceMembers.workspaceId, workspaceId));
+  }
+  
+  async getWorkspaceMember(workspaceId: number, userId: number): Promise<WorkspaceMember | undefined> {
+    const [member] = await db
+      .select()
+      .from(workspaceMembers)
+      .where(
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId)
+        )
+      );
+    return member;
+  }
+  
+  async addWorkspaceMember(insertMember: InsertWorkspaceMember): Promise<WorkspaceMember> {
+    // Check if member already exists
+    const existingMember = await this.getWorkspaceMember(
+      insertMember.workspaceId, 
+      insertMember.userId
+    );
+    
+    if (existingMember) {
+      // Update role if member already exists
+      return this.updateWorkspaceMemberRole(
+        insertMember.workspaceId,
+        insertMember.userId,
+        insertMember.role as WorkspaceRole
+      );
+    }
+    
+    const [member] = await db.insert(workspaceMembers).values(insertMember).returning();
+    return member;
+  }
+  
+  async updateWorkspaceMemberRole(workspaceId: number, userId: number, role: WorkspaceRole): Promise<WorkspaceMember> {
+    const [updatedMember] = await db
+      .update(workspaceMembers)
+      .set({
+        role,
+        updatedAt: new Date()
+      })
+      .where(
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId)
+        )
+      )
+      .returning();
+      
+    if (!updatedMember) {
+      throw new Error(`Workspace member not found for workspace ${workspaceId} and user ${userId}`);
+    }
+    
+    return updatedMember;
+  }
+  
+  async removeWorkspaceMember(workspaceId: number, userId: number): Promise<boolean> {
+    const result = await db
+      .delete(workspaceMembers)
+      .where(
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId)
+        )
+      );
+      
+    return !!result;
+  }
+  
+  async getUserWorkspaces(userId: number): Promise<Workspace[]> {
+    // Get workspace IDs where user is a member
+    const memberWorkspaceIds = await db
+      .select({ workspaceId: workspaceMembers.workspaceId })
+      .from(workspaceMembers)
+      .where(eq(workspaceMembers.userId, userId));
+      
+    if (memberWorkspaceIds.length === 0) {
+      return [];
+    }
+    
+    // Get all workspaces where user is a member
+    return db
+      .select()
+      .from(workspaces)
+      .where(inArray(workspaces.id, memberWorkspaceIds.map(w => w.workspaceId)));
+  }
+  
   // Form methods
   async getForms(userId: number): Promise<Form[]> {
     return db.select().from(forms).where(eq(forms.userId, userId));
   }
-
+  
+  async getWorkspaceForms(workspaceId: number): Promise<Form[]> {
+    return db.select().from(forms).where(eq(forms.workspaceId, workspaceId));
+  }
+  
   async getForm(id: number): Promise<Form | undefined> {
     const [form] = await db.select().from(forms).where(eq(forms.id, id));
     return form;
