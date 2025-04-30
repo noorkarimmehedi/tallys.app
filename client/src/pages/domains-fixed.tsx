@@ -3,6 +3,7 @@ import {
   Globe, CheckCircle, AlertCircle, PlusCircle, Trash2, ArrowRight, Copy, ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ButtonPrototype } from "@/components/ui/button-prototype";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -79,9 +80,9 @@ const DomainVerificationSteps = () => (
       <p className="text-xs text-muted-foreground mb-2">
         After adding the DNS records, click the "Verify Domain" button. DNS changes may take up to 24-48 hours to propagate.
       </p>
-      <Button variant="default" size="sm" className="mt-2">
+      <ButtonPrototype size="sm" className="mt-2">
         Verify Domain
-      </Button>
+      </ButtonPrototype>
     </div>
   </div>
 );
@@ -170,10 +171,10 @@ const Domains = () => {
         
         <Dialog open={isAddDomainOpen} onOpenChange={setIsAddDomainOpen}>
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
+            <ButtonPrototype className="flex items-center gap-2">
               <PlusCircle className="h-4 w-4" />
               <span>Add Domain</span>
-            </Button>
+            </ButtonPrototype>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -217,10 +218,10 @@ const Domains = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddDomainOpen(false)}>
+              <ButtonPrototype variant="neutral" onClick={() => setIsAddDomainOpen(false)}>
                 Cancel
-              </Button>
-              <Button onClick={handleAddDomain}>Add Domain</Button>
+              </ButtonPrototype>
+              <ButtonPrototype onClick={handleAddDomain}>Add Domain</ButtonPrototype>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -241,9 +242,9 @@ const Domains = () => {
               <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
                 Add your first custom domain to brand your forms and events with your own domain name.
               </p>
-              <Button onClick={() => setIsAddDomainOpen(true)}>
+              <ButtonPrototype onClick={() => setIsAddDomainOpen(true)}>
                 Add Your First Domain
-              </Button>
+              </ButtonPrototype>
             </div>
           ) : (
             <div className="divide-y">
@@ -306,15 +307,14 @@ const Domains = () => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
+                            <ButtonPrototype
                               size="sm"
                               className="gap-1"
                               onClick={() => window.open(`https://${domain.domain}`, '_blank')}
                             >
                               <ExternalLink className="h-3 w-3" />
                               <span>Visit</span>
-                            </Button>
+                            </ButtonPrototype>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Visit your domain</p>
@@ -322,15 +322,14 @@ const Domains = () => {
                         </Tooltip>
                       </TooltipProvider>
                     ) : (
-                      <Button
-                        variant="outline"
+                      <ButtonPrototype
                         size="sm"
                         className="gap-1"
                         onClick={() => handleVerifyDomain(domain.id)}
                       >
                         <ArrowRight className="h-3 w-3" />
                         <span>Verify</span>
-                      </Button>
+                      </ButtonPrototype>
                     )}
                     <Button
                       variant="ghost"
