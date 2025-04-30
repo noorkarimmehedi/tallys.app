@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   PlusCircle, UserPlus, MoreHorizontal, Search, Check, Mail, X, Shield, ArrowUpDown
 } from "lucide-react";
@@ -39,51 +39,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-// Mock team members data
-const initialMembers = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    role: "Admin",
-    avatar: null,
-    status: "active",
-    lastActive: "Today at 2:34 PM",
-  },
-  {
-    id: 2,
-    name: "Sara Williams",
-    email: "sara.williams@example.com",
-    role: "Editor",
-    avatar: null,
-    status: "active",
-    lastActive: "Yesterday at 11:20 AM",
-  },
-  {
-    id: 3,
-    name: "Marcus Chen",
-    email: "marcus.chen@example.com",
-    role: "Viewer",
-    avatar: null,
-    status: "pending",
-    lastActive: "Invite sent 2 days ago",
-  },
-  {
-    id: 4,
-    name: "Priya Sharma",
-    email: "priya.sharma@example.com",
-    role: "Editor",
-    avatar: null,
-    status: "active",
-    lastActive: "Today at 9:15 AM",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 
 type RoleType = "Admin" | "Editor" | "Viewer";
+interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  role: RoleType;
+  avatar: string | null;
+  status: "active" | "pending";
+  lastActive: string;
+}
 
 const Members = () => {
-  const [members, setMembers] = useState(initialMembers);
+  const { user } = useAuth();
+  // Start with an empty array instead of mock data
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  
+  // This empty state is what new users will see
+  const emptyState = user !== null && members.length === 0;
   const [searchQuery, setSearchQuery] = useState("");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [sortField, setSortField] = useState<"name" | "email" | "role">("name");
@@ -133,7 +109,7 @@ const Members = () => {
     }
     
     // Create new member
-    const newMember = {
+    const newMember: TeamMember = {
       id: members.length + 1,
       name: newMemberEmail.split("@")[0], // Just a placeholder name based on email
       email: newMemberEmail,
@@ -252,128 +228,141 @@ const Members = () => {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left border-b bg-muted/30">
-                  <th 
-                    className="px-6 py-3 font-medium cursor-pointer"
-                    onClick={() => handleSort("name")}
-                  >
-                    <div className="flex items-center">
-                      <span>Name</span>
-                      <ArrowUpDown className="ml-1 h-3 w-3" />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-6 py-3 font-medium cursor-pointer"
-                    onClick={() => handleSort("email")}
-                  >
-                    <div className="flex items-center">
-                      <span>Email</span>
-                      <ArrowUpDown className="ml-1 h-3 w-3" />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-6 py-3 font-medium cursor-pointer"
-                    onClick={() => handleSort("role")}
-                  >
-                    <div className="flex items-center">
-                      <span>Role</span>
-                      <ArrowUpDown className="ml-1 h-3 w-3" />
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {sortedMembers.map((member) => (
-                  <tr key={member.id} className="hover:bg-muted/30">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarImage src={member.avatar || undefined} />
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {member.name.split(" ").map(n => n[0]).join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{member.name}</div>
-                          <div className="text-xs text-muted-foreground">{member.lastActive}</div>
-                        </div>
+          {emptyState ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <UserPlus className="h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium mb-1">No team members yet</h3>
+              <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
+                Invite team members to collaborate on your workspace. They'll receive an email invitation.
+              </p>
+              <Button onClick={() => setIsInviteDialogOpen(true)}>
+                Invite Your First Team Member
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b bg-muted/30">
+                    <th 
+                      className="px-6 py-3 font-medium cursor-pointer"
+                      onClick={() => handleSort("name")}
+                    >
+                      <div className="flex items-center">
+                        <span>Name</span>
+                        <ArrowUpDown className="ml-1 h-3 w-3" />
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{member.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Select
-                        value={member.role}
-                        onValueChange={(value: RoleType) => handleRoleChange(member.id, value)}
-                        disabled={member.status === "pending"}
-                      >
-                        <SelectTrigger className="w-28 h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Admin">
-                            <div className="flex items-center">
-                              <Shield className="mr-2 h-4 w-4" />
-                              <span>Admin</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Editor">
-                            <div className="flex items-center">
-                              <PlusCircle className="mr-2 h-4 w-4" />
-                              <span>Editor</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Viewer">
-                            <div className="flex items-center">
-                              <Check className="mr-2 h-4 w-4" />
-                              <span>Viewer</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {member.status === "active" ? (
-                        <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                          Active
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
-                          Pending
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          {member.status === "pending" && (
-                            <DropdownMenuItem onClick={() => handleResendInvite(member.id)}>
-                              <Mail className="mr-2 h-4 w-4" />
-                              <span>Resend Invite</span>
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem onClick={() => handleRemoveMember(member.id)}>
-                            <X className="mr-2 h-4 w-4" />
-                            <span>{member.status === "active" ? "Remove" : "Cancel Invite"}</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+                    </th>
+                    <th 
+                      className="px-6 py-3 font-medium cursor-pointer"
+                      onClick={() => handleSort("email")}
+                    >
+                      <div className="flex items-center">
+                        <span>Email</span>
+                        <ArrowUpDown className="ml-1 h-3 w-3" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 font-medium cursor-pointer"
+                      onClick={() => handleSort("role")}
+                    >
+                      <div className="flex items-center">
+                        <span>Role</span>
+                        <ArrowUpDown className="ml-1 h-3 w-3" />
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 font-medium">Status</th>
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y">
+                  {sortedMembers.map((member) => (
+                    <tr key={member.id} className="hover:bg-muted/30">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-3">
+                          <Avatar>
+                            <AvatarImage src={member.avatar || undefined} />
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {member.name.split(" ").map(n => n[0]).join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium">{member.name}</div>
+                            <div className="text-xs text-muted-foreground">{member.lastActive}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{member.email}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Select
+                          value={member.role}
+                          onValueChange={(value: RoleType) => handleRoleChange(member.id, value)}
+                          disabled={member.status === "pending"}
+                        >
+                          <SelectTrigger className="w-28 h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Admin">
+                              <div className="flex items-center">
+                                <Shield className="mr-2 h-4 w-4" />
+                                <span>Admin</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="Editor">
+                              <div className="flex items-center">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                <span>Editor</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="Viewer">
+                              <div className="flex items-center">
+                                <Check className="mr-2 h-4 w-4" />
+                                <span>Viewer</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.status === "active" ? (
+                          <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
+                            Pending
+                          </Badge>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            {member.status === "pending" && (
+                              <DropdownMenuItem onClick={() => handleResendInvite(member.id)}>
+                                <Mail className="mr-2 h-4 w-4" />
+                                <span>Resend Invite</span>
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem onClick={() => handleRemoveMember(member.id)}>
+                              <X className="mr-2 h-4 w-4" />
+                              <span>{member.status === "active" ? "Remove" : "Cancel Invite"}</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
       

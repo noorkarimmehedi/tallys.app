@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 
 type DomainType = "forms" | "events";
 type DomainStatus = "verified" | "pending" | "failed";
@@ -42,24 +43,6 @@ interface DomainInterface {
   type: DomainType;
   createdAt: string;
 }
-
-// Mock domains data
-const initialDomains: DomainInterface[] = [
-  {
-    id: 1,
-    domain: "forms.yourdomain.com",
-    status: "verified",
-    type: "forms",
-    createdAt: "2 months ago",
-  },
-  {
-    id: 2,
-    domain: "events.yourdomain.com",
-    status: "pending",
-    type: "events",
-    createdAt: "2 days ago",
-  },
-];
 
 const DomainVerificationSteps = () => (
   <div className="space-y-4 mt-4">
@@ -104,7 +87,12 @@ const DomainVerificationSteps = () => (
 );
 
 const Domains = () => {
-  const [domains, setDomains] = useState<DomainInterface[]>(initialDomains);
+  const { user } = useAuth();
+  // Start with an empty array instead of mock data
+  const [domains, setDomains] = useState<DomainInterface[]>([]);
+  
+  // New users will see the empty state
+  const emptyState = user !== null && domains.length === 0;
   const [isAddDomainOpen, setIsAddDomainOpen] = useState(false);
   const [newDomain, setNewDomain] = useState("");
   const [domainType, setDomainType] = useState<DomainType>("forms");
@@ -246,7 +234,7 @@ const Domains = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          {domains.length === 0 ? (
+          {emptyState ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Globe className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-medium mb-1">No domains added yet</h3>
