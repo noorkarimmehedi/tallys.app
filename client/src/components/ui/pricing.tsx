@@ -73,21 +73,31 @@ export function Pricing({
         </p>
       </div>
 
-      <div className="flex justify-center mb-10">
-        <div className="bg-gray-100 p-6 px-8 rounded-xl border border-gray-200 shadow-md flex items-center gap-4">
-          <span className={`font-semibold text-lg ${isMonthly ? 'text-black font-bold' : 'text-gray-400'}`}>Monthly</span>
-          <div className="relative inline-flex items-center cursor-pointer bg-black p-2 rounded-xl border border-gray-500 shadow-lg">
+      <div className="flex justify-center mb-16 mt-10">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 px-2 rounded-full border border-gray-200 shadow-lg flex items-center relative overflow-hidden backdrop-blur-sm">
+          <div className={`absolute h-full top-0 rounded-full transition-all duration-500 z-0 ${!isMonthly ? 'bg-black w-[52%] right-0' : 'bg-black w-[48%] left-0'}`}></div>
+          
+          <div 
+            className={`px-6 py-3 rounded-full relative z-10 cursor-pointer transition-all duration-300 flex-1 text-center ${isMonthly ? 'text-white font-bold' : 'text-gray-500'}`}
+            onClick={() => setIsMonthly(true)}
+          >
+            Monthly
+          </div>
+          
+          <div 
+            className={`px-6 py-3 rounded-full relative z-10 cursor-pointer transition-all duration-300 flex-1 text-center ${!isMonthly ? 'text-white font-bold' : 'text-gray-500'}`}
+            onClick={() => handleToggle(true)}
+          >
+            Annual <span className="text-xs font-bold ml-1 text-green-400">Save 20%</span>
+          </div>
+          
+          {/* Hidden switch for confetti effect */}
+          <div className="absolute opacity-0 pointer-events-none">
             <PricingSwitch
               ref={switchRef as any}
               checked={!isMonthly}
               onCheckedChange={handleToggle}
             />
-          </div>
-          <div className="flex flex-col items-start">
-            <span className={`font-semibold text-lg ${!isMonthly ? 'text-black font-bold' : 'text-gray-400'}`}>
-              Annual billing
-            </span>
-            <span className="text-sm text-green-600 font-bold">Save 20%</span>
           </div>
         </div>
       </div>
