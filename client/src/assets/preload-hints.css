@@ -1,0 +1,9 @@
+/* Add preload link to help with instant loading */
+head::before {
+  content: "";
+  display: none;
+}
+
+body {
+  content-visibility: auto;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
 import { 
@@ -9,7 +9,8 @@ import {
 import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { useAuth } from "@/hooks/use-auth";
-import logoImage from "@/assets/logo.png";
+// Import SVG logo component for instant loading
+import LogoSVG from "@/components/ui/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -117,10 +118,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
             />
           </div>
           
-          {/* Logo */}
+          {/* Logo - using SVG for instant loading */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 relative z-10">
             <Link href="/" className="flex items-center">
-              <img src={logoImage} alt="Logo" className="h-8" />
+              <LogoSVG className="h-8" />
             </Link>
           </div>
           
@@ -325,7 +326,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation Bar */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm md:hidden">
-          <img src={logoImage} alt="Logo" className="h-6" />
+          <LogoSVG className="h-6" />
           <button 
             type="button" 
             className="text-gray-600 hover:text-gray-900"
