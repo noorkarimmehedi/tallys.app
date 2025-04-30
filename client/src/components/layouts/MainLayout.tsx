@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Tiles } from "@/components/ui/tiles";
-import { Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, BarChart, LogOut } from "lucide-react";
+import { 
+  Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, 
+  LogOut, Globe, Crown, Users, Briefcase, FileText, 
+  Star, MessageSquare, Trash2, HelpCircle
+} from "lucide-react";
 import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { useAuth } from "@/hooks/use-auth";
@@ -122,46 +126,109 @@ export default function MainLayout({ children }: MainLayoutProps) {
           
           {/* Navigation */}
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
-            <div className="px-3 space-y-0.5 font-medium">
-              {/* Home Navigation Item */}
-              <MagnetizeNavItem
-                href="/"
-                icon={<Home />}
-                label="Home"
-                isActive={location === "/"}
-                particleCount={12}
-                attractRadius={40}
-              />
-              
-              {/* Inbox Navigation Item */}
-              <MagnetizeNavItem
-                href="/inbox"
-                icon={<Inbox />}
-                label="Inbox"
-                isActive={location === "/inbox"}
-                particleCount={12}
-                attractRadius={40}
-              />
-              
-              {/* Calendar Navigation Item */}
-              <MagnetizeNavItem
-                href="/calendar"
-                icon={<CalendarDays />}
-                label="Calendar"
-                isActive={location === "/calendar"}
-                particleCount={12}
-                attractRadius={40}
-              />
-              
-              {/* Settings Navigation Item */}
-              <MagnetizeNavItem
-                href="/settings"
-                icon={<Settings />}
-                label="Settings"
-                isActive={location === "/settings"}
-                particleCount={12}
-                attractRadius={40}
-              />
+            {/* Account Management Section */}
+            <div className="px-3 mb-5">
+              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-2 px-2">Account</h3>
+              <div className="space-y-0.5 font-medium">
+                <MagnetizeNavItem
+                  href="/members"
+                  icon={<Users />}
+                  label="Members"
+                  isActive={location === "/members"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+                
+                <MagnetizeNavItem
+                  href="/domains"
+                  icon={<Globe />}
+                  label="Domains"
+                  isActive={location === "/domains"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+                
+                <MagnetizeNavItem
+                  href="/upgrade"
+                  icon={<Crown />}
+                  label="Upgrade plan"
+                  isActive={location === "/upgrade"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+              </div>
+            </div>
+            
+            {/* Workspaces Section */}
+            <div className="px-3 mb-5">
+              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-2 px-2">Workspaces</h3>
+              <div className="space-y-0.5 font-medium">
+                <MagnetizeNavItem
+                  href="/workspace"
+                  icon={<Briefcase className="text-blue-500" />}
+                  label={<span className="flex items-center"><span className="text-blue-500 mr-1">›</span> My workspace</span>}
+                  isActive={location === "/workspace"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+              </div>
+            </div>
+            
+            {/* Product Section */}
+            <div className="px-3 mb-5">
+              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-2 px-2">Product</h3>
+              <div className="space-y-0.5 font-medium">
+                <MagnetizeNavItem
+                  href="/templates"
+                  icon={<FileText />}
+                  label="Templates"
+                  isActive={location === "/templates"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+                
+                <MagnetizeNavItem
+                  href="/whats-new"
+                  icon={<Star />}
+                  label="What's new"
+                  isActive={location === "/whats-new"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+                
+                <MagnetizeNavItem
+                  href="/feature-requests"
+                  icon={<MessageSquare />}
+                  label="Feature requests"
+                  isActive={location === "/feature-requests"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+                
+                <MagnetizeNavItem
+                  href="/trash"
+                  icon={<Trash2 />}
+                  label="Trash"
+                  isActive={location === "/trash"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+              </div>
+            </div>
+            
+            {/* Help Section */}
+            <div className="px-3">
+              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-2 px-2">Help</h3>
+              <div className="space-y-0.5 font-medium">
+                <MagnetizeNavItem
+                  href="/support"
+                  icon={<HelpCircle />}
+                  label="Contact support"
+                  isActive={location === "/support"}
+                  particleCount={12}
+                  attractRadius={40}
+                />
+              </div>
             </div>
           </nav>
           
