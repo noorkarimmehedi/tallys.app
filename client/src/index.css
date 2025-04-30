@@ -491,6 +491,79 @@ button svg,
   }
 }
 
+/* Fix for select border getting cut off on focus */
+[data-radix-select-trigger] {
+  overflow: visible !important; /* Ensure focus ring isn't cut off */
+  transform: translateZ(0); /* Force GPU acceleration for smoother rendering */
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+  margin: 1px; /* Add slight margin to ensure border visibility */
+}
+
+/* Fix for select content to ensure borders render properly */
+[data-radix-select-content] {
+  overflow: visible !important;
+  margin: 4px 0; /* Add a bit of margin to prevent borders being cut */
+  z-index: 99;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Better shadow */
+}
+
+/* Fix scroll area inside select to maintain scrollability */
+[data-radix-select-viewport] {
+  overflow: auto;
+}
+
+/* Ensure the selected item outline is fully visible */
+[data-radix-select-item][data-highlighted] {
+  outline: none !important;
+  background-color: hsl(var(--accent));
+  border-radius: 4px;
+}
+
+/* Fix focus ring on select elements */
+[data-radix-select-trigger][data-state="open"],
+[data-radix-select-trigger]:focus-visible {
+  outline: 2px solid black !important; /* Ensure black border is visible */
+  outline-offset: 1px !important; /* Add space around the outline */
+  border-color: transparent !important; /* Remove default border */
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important; /* Add shadow for better visibility */
+}
+
+/* Form field container fixes */
+.form-field,
+.form-question,
+.form-section,
+.field-container {
+  overflow: visible !important; /* Ensure borders and focus rings are visible */
+  padding: 2px !important; /* Add padding to ensure border is visible */
+  position: relative !important; /* Ensure proper stacking context */
+  z-index: 1 !important; /* Set stacking context */
+}
+
+/* Fix for mobile form elements' outline/border visibility */
+@media (max-width: 767px) {
+  /* Ensure form container doesn't hide borders */
+  .form-container, 
+  .form-question, 
+  .form-field {
+    overflow: visible !important;
+    padding: 4px !important; /* More padding on mobile */
+    margin-bottom: 4px !important; /* Add more space between elements */
+  }
+  
+  /* Ensure select trigger is fully visible on mobile */
+  [data-radix-select-trigger] {
+    margin: 2px !important; /* More margin on mobile */
+  }
+  
+  /* Increase tap target size on mobile */
+  [data-radix-select-trigger],
+  [data-radix-select-item] {
+    min-height: 44px !important; /* Larger for better touch targets */
+  }
+}
+
 /* ENHANCED Mobile phone input styles */
 @media (max-width: 767px) {
   /* Make country dropdown take more screen space on mobile */
