@@ -13,8 +13,23 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        base: "20px",
+      },
+      boxShadow: {
+        shadow: "4px 4px 0 0 rgba(0, 0, 0, 0.1)",
+      },
+      translate: {
+        boxShadowX: "4px",
+        boxShadowY: "4px",
+        reverseBoxShadowX: "-4px",
+        reverseBoxShadowY: "-4px",
       },
       colors: {
+        bw: "#ffffff",
+        main: "#ffffff",
+        mtext: "#000000",
+        text: "#000000",
+        custom_border: "#e5e5e5",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

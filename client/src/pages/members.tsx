@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
   PlusCircle, UserPlus, MoreHorizontal, Search, Check, Mail, X, Shield, ArrowUpDown
 } from "lucide-react";
+import { ButtonPrototype } from "@/components/ui/button-prototype";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -158,10 +159,10 @@ const Members = () => {
         
         <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
           <DialogTrigger asChild>
-            <button className="buy-now-button flex items-center gap-2">
+            <ButtonPrototype className="flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
               <span>Invite Member</span>
-            </button>
+            </ButtonPrototype>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -235,12 +236,11 @@ const Members = () => {
               <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
                 Invite team members to collaborate on your workspace. They'll receive an email invitation.
               </p>
-              <button 
-                className="buy-now-button"
+              <ButtonPrototype 
                 onClick={() => setIsInviteDialogOpen(true)}
               >
                 Invite Your First Team Member
-              </button>
+              </ButtonPrototype>
             </div>
           ) : (
             <div className="overflow-x-auto">
