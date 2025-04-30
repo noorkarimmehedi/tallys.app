@@ -88,7 +88,7 @@ export function Pricing({
             className={`px-6 py-3 rounded-full relative z-10 cursor-pointer transition-all duration-300 flex-1 text-center ${!isMonthly ? 'text-white font-bold' : 'text-gray-500'}`}
             onClick={() => handleToggle(true)}
           >
-            Annual <span className="text-xs font-bold ml-1 text-green-400">Save 20%</span>
+            Annual <span className="text-xs font-extrabold ml-1 text-red-700 bg-red-100 px-1.5 py-0.5 rounded-md animate-pulse">Save 20%</span>
           </div>
           
           {/* Hidden switch for confetti effect */}
