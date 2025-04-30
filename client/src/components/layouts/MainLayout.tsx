@@ -128,14 +128,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
             {/* Original Navigation Items */}
             <div className="px-3 space-y-0.5 font-medium mb-3">
-              {/* Home Navigation Item with Layout Template Icon */}
+              {/* Home Navigation Item with Grid 2x2 Icon */}
               <MagnetizeNavItem
                 href="/"
                 icon={
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-layout-template">
-                    <rect width="18" height="7" x="3" y="3" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect width="9" height="7" x="3" y="14" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect width="5" height="7" x="16" y="14" rx="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="lucide lucide-grid-2x2">
+                    <path d="M12 3v18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 }
                 label="Home"
