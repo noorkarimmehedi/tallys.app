@@ -331,15 +331,15 @@ const Domains = () => {
                         <span>Verify</span>
                       </ButtonPrototype>
                     )}
-                    <Button
-                      variant="ghost"
+                    <ButtonPrototype
+                      variant="neutral"
                       size="sm"
                       className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleRemoveDomain(domain.id)}
                     >
                       <Trash2 className="h-3 w-3" />
                       <span>Remove</span>
-                    </Button>
+                    </ButtonPrototype>
                   </div>
                 </div>
               ))}
