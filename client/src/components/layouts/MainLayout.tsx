@@ -106,7 +106,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     
       {/* Sidebar */}
       <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex md:flex-shrink-0 fixed inset-0 z-50 md:relative md:z-auto`}>
-        <div className="flex flex-col w-52 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden" style={{ fontFamily: 'Alternate Gothic No2 D, sans-serif' }}>
+        <div className="flex flex-col w-52 bg-white/80 backdrop-blur-sm border-r border-gray-200 h-full relative overflow-hidden" style={{ fontFamily: 'Alternate Gothic No2 BT, sans-serif' }}>
           {/* Grid Tiles Background for sidebar */}
           <div className="absolute inset-0 overflow-hidden z-0">
             <Tiles 
@@ -171,7 +171,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Account Management Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-1 px-2">Account</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'Chivo, sans-serif', fontWeight: 500 }}>Account</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/members"
@@ -204,7 +204,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Workspaces Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-1 px-2">Workspaces</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'Chivo, sans-serif', fontWeight: 500 }}>Workspaces</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/workspace"
@@ -219,7 +219,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Product Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-1 px-2">Product</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'Chivo, sans-serif', fontWeight: 500 }}>Product</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/templates"
@@ -261,7 +261,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Help Section */}
             <div className="px-3 mb-2">
-              <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-1 px-2">Help</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'Chivo, sans-serif', fontWeight: 500 }}>Help</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/support"
