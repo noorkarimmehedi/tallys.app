@@ -19,6 +19,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import AuthPage from "@/pages/auth-page";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import PlaceholderPage from "@/pages/placeholder-page";
 import WorkspacePage from "@/pages/workspace-page";
 import Members from "@/pages/members";
@@ -196,10 +197,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Router />
-          <Toaster />
-        </TooltipProvider>
+        <WorkspaceProvider>
+          <TooltipProvider>
+            <Router />
+            <Toaster />
+          </TooltipProvider>
+        </WorkspaceProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
