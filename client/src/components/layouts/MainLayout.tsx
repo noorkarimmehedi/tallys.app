@@ -4,13 +4,16 @@ import { Tiles } from "@/components/ui/tiles";
 import { 
   Home, Inbox, CalendarDays, Settings, User, Menu, LayoutGrid, 
   LogOut, Globe, Crown, Users, Briefcase, FileText, 
-  Star, MessageSquare, Trash2, HelpCircle
+  Star, MessageSquare, Trash2, HelpCircle, FolderPlus, Plus
 } from "lucide-react";
 import { MagnetizeNavItem } from "@/components/ui/magnetize-nav-item";
 import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
 import { useAuth } from "@/hooks/use-auth";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { CreateWorkspace } from "@/components/workspace/CreateWorkspace";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -288,7 +291,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Workspaces Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-700 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 800 }}>Workspaces</h3>
+              <div className="flex items-center justify-between mb-1 px-2 group">
+                <h3 className="text-xs uppercase text-gray-700" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 800 }}>Workspaces</h3>
+                <WorkspaceAddButton />
+              </div>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/workspace"
@@ -298,6 +304,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   particleCount={12}
                   attractRadius={40}
                 />
+                {/* Additional workspaces will be dynamically added here */}
               </div>
             </div>
             
