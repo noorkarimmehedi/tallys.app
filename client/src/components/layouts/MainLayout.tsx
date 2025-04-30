@@ -171,7 +171,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Account Management Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>Account</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>Account</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/members"
@@ -204,7 +204,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Workspaces Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>Workspaces</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>Workspaces</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/workspace"
@@ -219,7 +219,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Product Section */}
             <div className="px-3 mb-3">
-              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>Product</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>Product</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/templates"
@@ -261,7 +261,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             
             {/* Help Section */}
             <div className="px-3 mb-2">
-              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>Help</h3>
+              <h3 className="text-xs uppercase text-gray-500 mb-1 px-2" style={{ fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>Help</h3>
               <div className="space-y-0.5 font-medium">
                 <MagnetizeNavItem
                   href="/support"
