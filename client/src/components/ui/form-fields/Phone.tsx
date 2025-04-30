@@ -1,6 +1,6 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Phone as PhoneIcon } from "lucide-react";
+import { Phone as PhoneIcon, Search } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
@@ -29,28 +29,28 @@ export default function Phone({ value, onChange, label, description, required, p
           value={value}
           onChange={(phone) => onChange(phone)}
           disabled={preview}
-          inputStyle={{
-            width: "100%",
-            height: "40px",
-            fontSize: "14px",
-            borderRadius: "0.375rem",
-            borderColor: "hsl(var(--border))",
-            backgroundColor: preview ? "hsl(var(--muted))" : "transparent"
-          }}
-          buttonStyle={{
-            borderColor: "hsl(var(--border))",
-            borderRadius: "0.375rem 0 0 0.375rem",
-            backgroundColor: preview ? "hsl(var(--muted))" : "transparent"
-          }}
-          dropdownStyle={{
-            fontFamily: "Familjen Grotesk, ui-sans-serif, system-ui",
-            fontSize: "14px"
-          }}
+          countryCodeEditable={false}
+          preferredCountries={['us', 'ca', 'gb', 'au']}
+          enableSearch={true}
+          searchPlaceholder="Search countries..."
+          inputClass="rounded-lg phone-input-field"
+          buttonClass="rounded-l-lg phone-input-button"
           placeholder="Enter phone number"
           containerClass="phone-input"
-          searchPlaceholder="Search countries"
-          enableSearch={true}
+          searchClass="modern-search"
+          dropdownClass="modern-dropdown"
+          specialLabel={""}
+          autoFormat={true}
+          disableSearchIcon={true}
+          disableDropdown={preview}
+          enableLongNumbers={true}
+          searchNotFound="No countries found"
         />
+        
+        {/* Custom search icon for the dropdown */}
+        <div className="phone-dropdown-search-icon">
+          <Search size={16} />
+        </div>
       </div>
     </div>
   );
