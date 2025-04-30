@@ -76,7 +76,7 @@ export function Pricing({
       <div className="flex justify-center mb-10">
         <div className="bg-gray-100 p-6 px-8 rounded-xl border border-gray-200 shadow-md flex items-center gap-4">
           <span className={`font-semibold text-lg ${isMonthly ? 'text-black font-bold' : 'text-gray-400'}`}>Monthly</span>
-          <div className="relative inline-flex items-center cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-700 p-2 rounded-xl border border-blue-400 shadow-lg">
+          <div className="relative inline-flex items-center cursor-pointer bg-black p-2 rounded-xl border border-gray-500 shadow-lg">
             <PricingSwitch
               ref={switchRef as any}
               checked={!isMonthly}
