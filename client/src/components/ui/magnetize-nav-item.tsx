@@ -9,7 +9,7 @@ import { Link } from "wouter";
 interface MagnetizeNavItemProps {
     href: string;
     icon: React.ReactNode;
-    label: string;
+    label: React.ReactNode;
     isActive: boolean;
     className?: string;
     particleCount?: number;

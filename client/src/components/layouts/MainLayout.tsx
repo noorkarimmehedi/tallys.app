@@ -126,6 +126,49 @@ export default function MainLayout({ children }: MainLayoutProps) {
           
           {/* Navigation */}
           <nav className="flex-1 pt-2 pb-2 overflow-y-auto relative z-10">
+            {/* Original Navigation Items */}
+            <div className="px-3 space-y-0.5 font-medium mb-5">
+              {/* Home Navigation Item */}
+              <MagnetizeNavItem
+                href="/"
+                icon={<Home />}
+                label="Home"
+                isActive={location === "/"}
+                particleCount={12}
+                attractRadius={40}
+              />
+              
+              {/* Inbox Navigation Item */}
+              <MagnetizeNavItem
+                href="/inbox"
+                icon={<Inbox />}
+                label="Inbox"
+                isActive={location === "/inbox"}
+                particleCount={12}
+                attractRadius={40}
+              />
+              
+              {/* Calendar Navigation Item */}
+              <MagnetizeNavItem
+                href="/calendar"
+                icon={<CalendarDays />}
+                label="Calendar"
+                isActive={location === "/calendar"}
+                particleCount={12}
+                attractRadius={40}
+              />
+              
+              {/* Settings Navigation Item */}
+              <MagnetizeNavItem
+                href="/settings"
+                icon={<Settings />}
+                label="Settings"
+                isActive={location === "/settings"}
+                particleCount={12}
+                attractRadius={40}
+              />
+            </div>
+            
             {/* Account Management Section */}
             <div className="px-3 mb-5">
               <h3 className="text-xs uppercase text-gray-500 font-medium font-[500] mb-2 px-2">Account</h3>
