@@ -258,7 +258,7 @@ function FormSectionAccordion({
             </div>
           </AccordionTrigger>
           <AccordionContent 
-            className={`px-3 sm:px-4 ${!isMobile ? 'transition-all transform-gpu' : 'accordion-content-mobile'}`}
+            className={`px-2 sm:px-4 ${!isMobile ? 'transition-all transform-gpu' : 'accordion-content-mobile'}`}
             style={isMobile ? { 
               WebkitTransformStyle: 'preserve-3d',
               WebkitBackfaceVisibility: 'hidden',
@@ -270,7 +270,8 @@ function FormSectionAccordion({
               overflowY: 'hidden',
               willChange: 'height',
               userSelect: 'none',
-              touchAction: 'manipulation'
+              touchAction: 'manipulation',
+              maxWidth: '100%'
             } : undefined}
           >
             <div className="py-2 space-y-4">

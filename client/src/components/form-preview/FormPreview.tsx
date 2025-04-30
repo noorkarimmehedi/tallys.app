@@ -107,7 +107,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   
   if (completed) {
     return (
-      <div className="flex items-center justify-center min-h-screen relative">
+      <div className="flex items-center justify-center min-h-screen relative overflow-x-hidden">
         {/* Tiles Background */}
         <div className="absolute inset-0 -z-10 opacity-30">
           <Tiles 
@@ -118,7 +118,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
           />
         </div>
         
-        <div className="max-w-xl w-full p-6">
+        <div className="max-w-xl w-full p-3 sm:p-6 mx-auto">
           <Card className="bg-white/90 backdrop-blur-md shadow-sm">
             <CardContent className="p-8 text-center">
               <div className="text-5xl text-green-500 mb-4">
@@ -145,7 +145,7 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen relative">
+    <div className="flex items-center justify-center min-h-screen relative overflow-x-hidden">
       {/* Tiles Background */}
       <div className="absolute inset-0 -z-10 opacity-30">
         <Tiles 
@@ -181,8 +181,8 @@ export function FormPreview({ form, preview = false }: FormPreviewProps) {
         </div>
       )}
       
-      <div className="w-full max-w-[600px] px-3 sm:px-6 py-4 sm:py-6" style={{ marginTop: form.theme?.logoUrl ? '45px' : '0' }}>
-        <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-[600px] px-1 sm:px-6 py-4 sm:py-6 mx-auto" style={{ marginTop: form.theme?.logoUrl ? '45px' : '0' }}>
+        <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-sm p-3 sm:p-6 md:p-8">
           <div className="text-center mb-6 sm:mb-8">
             <h3 className="text-xl sm:text-2xl font-bold mb-2 font-['Alternate_Gothic', 'sans-serif'] tracking-wide">{form.title}</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Please complete all the sections below</p>
